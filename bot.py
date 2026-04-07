@@ -47,7 +47,8 @@ def services_inline_kb():
         [InlineKeyboardButton(text="🛒 متجر إلكتروني", callback_data="srv_store")],
         [InlineKeyboardButton(text="🔧 معاملات برمجية", callback_data="srv_scripts")],
         [InlineKeyboardButton(text="🎨 خدمات مميزة", callback_data="srv_premium")],
-        [InlineKeyboardButton(text="🔙 القائمة الرئيسية", callback_data="main_menu")]    ]
+        [InlineKeyboardButton(text="🔙 القائمة الرئيسية", callback_data="main_menu")]
+    ]
     return InlineKeyboardMarkup(inline_keyboard=kb)
 
 def payment_methods_kb():
@@ -96,7 +97,8 @@ def portfolio_kb():
 def share_kb():
     kb = [
         [InlineKeyboardButton(text="📤 مشاركة البوت", switch_inline_query="🎉 انضم لي على Vexo Bot للخدمات التقنية! ")],
-        [InlineKeyboardButton(text="🎁 استلام الهدية", callback_data="share_claim")],        [InlineKeyboardButton(text="🏆 صدارة المشاركين", callback_data="share_leaderboard")],
+        [InlineKeyboardButton(text="🎁 استلام الهدية", callback_data="share_claim")],
+        [InlineKeyboardButton(text="🏆 صدارة المشاركين", callback_data="share_leaderboard")],
         [InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]
     ]
     return InlineKeyboardMarkup(inline_keyboard=kb)
@@ -145,7 +147,8 @@ async def start_handler(message: types.Message):
     
     await message.answer(
         "🎉 **استخدم /help لمعرفة جميع الأوامر**",
-        parse_mode="Markdown"    )
+        parse_mode="Markdown"
+    )
 
 async def services_handler(message: types.Message):
     text = """
@@ -243,7 +246,8 @@ async def portfolio_handler(message: types.Message):
 
 🤖 **البوتات:**
 • بوت متجر إلكتروني - 150$
-• بوت حماية متقدم - 200$• بوت خدمة عملاء - 180$
+• بوت حماية متقدم - 200$
+• بوت خدمة عملاء - 180$
 
 📱 **التطبيقات:**
 • تطبيق توصيل طلبات - 800$
@@ -292,7 +296,8 @@ async def profile_handler(message: types.Message):
     
     if orders:
         for order in orders[:5]:
-            status_emoji = {                "pending": "⏳ قيد المراجعة",
+            status_emoji = {
+                "pending": "⏳ قيد المراجعة",
                 "processing": "🔄 قيد التنفيذ", 
                 "completed": "✅ مكتمل",
                 "rejected": "❌ مرفوض"
@@ -488,7 +493,8 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
         await state.update_data(service_type="🍎 تطبيق iOS")
         await state.set_state(OrderState.details)
         await call.message.edit_text(
-            "✅ **تطبيق iOS**\n\n"            "📝 **أرسل تفاصيل التطبيق:**",
+            "✅ **تطبيق iOS**\n\n"
+            "📝 **أرسل تفاصيل التطبيق:**",
             reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]])
         )
     
@@ -537,7 +543,8 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
             "• دعم لمدة سنة\n"
             "• تحديثات مجانية\n\n"
             "🥈 **الباقة الفضية** (500$):\n"
-            "• بوت + موقع\n"            "• دعم 6 أشهر\n\n"
+            "• بوت + موقع\n"
+            "• دعم 6 أشهر\n\n"
             "📞 **للاستفسار:** @abohamed12",
             reply_markup=services_inline_kb()
         )
@@ -586,7 +593,8 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
             )
         except:
             pass
-        elif data == "ticket_new":
+    
+    elif data == "ticket_new":
         await state.set_state(SupportState.message)
         await call.message.edit_text(
             "🎫 **فتح تذكرة دعم جديدة**\n\n"
@@ -635,7 +643,8 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
             "🎊 **الباقة الكاملة:** 25% خصم\n"
             "🏆 **الطلبات الكبيرة:** خصم حتى 30%\n\n"
             "💡 **استخدم الكود عند الطلب!**",
-            reply_markup=offers_kb()        )
+            reply_markup=offers_kb()
+        )
     
     elif data == "offers_coupons":
         await call.message.edit_text(
@@ -684,7 +693,8 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
             f"🔗 رابط البوت: @VexoServiceBot",
             reply_markup=share_kb()
         )
-        elif data == "share_leaderboard":
+    
+    elif data == "share_leaderboard":
         await call.message.edit_text(
             "🏆 **صدارة المشاركين**\n\n"
             "🥇 المستخدم الأول: 500 نقطة\n"
@@ -733,7 +743,8 @@ async def handle_order_details(message: types.Message, state: FSMContext):
             reply_markup=main_keyboard()
         )
         
-        try:            await message.bot.send_message(
+        try:
+            await message.bot.send_message(
                 config.ADMIN_ID,
                 f"🎫 **تذكرة دعم جديدة!**\n\n"
                 f"👤 المستخدم: {message.from_user.username or message.from_user.first_name}\n"

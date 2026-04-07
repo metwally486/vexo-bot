@@ -3,115 +3,723 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vexo Admin Dashboard</title>
+    <title>Vexo Admin Dashboard - لوحة التحكم</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: #f5f5f5; 
-            padding: 20px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
         }
-        .container { max-width: 1200px; margin: 0 auto; }
-        h1 { color: #333; margin-bottom: 30px; text-align: center; }
-        .card { 
-            background: white; 
-            padding: 20px; 
-            margin-bottom: 20px; 
-            border-radius: 10px; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+
+        :root {
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
         }
-        table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            margin-top: 10px;
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
         }
-        th, td { 
-            padding: 12px; 
-            text-align: right; 
-            border-bottom: 1px solid #ddd; 
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            overflow: hidden;
         }
-        th { background: #007bff; color: white; }
-        tr:hover { background: #f5f5f5; }
-        .status-pending { color: #ffc107; font-weight: bold; }
-        .status-processing { color: #17a2b8; font-weight: bold; }
-        .status-completed { color: #28a745; font-weight: bold; }
-        .status-rejected { color: #dc3545; font-weight: bold; }
-        button { 
-            padding: 8px 15px; 
-            border: none; 
-            border-radius: 5px; 
-            cursor: pointer; 
-            margin: 2px;
-            font-size: 14px;
+
+        .bg-animation span {
+            position: absolute;
+            display: block;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);            animation: float 25s infinite;
+            bottom: -150px;
         }
-        .btn-success { background: #28a745; color: white; }
-        .btn-warning { background: #ffc107; color: #000; }
-        .btn-info { background: #17a2b8; color: white; }
-        button:hover { opacity: 0.9; }        .loading { text-align: center; padding: 20px; color: #666; }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-1000px) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Header & Logo */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            position: relative;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }        }
+
+        .logo svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .brand-name {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.5rem 1.5rem;
+            background: var(--light);
+            border-radius: 50px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.15);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon.blue { background: #dbeafe; color: #3b82f6; }
+        .stat-icon.green { background: #d1fae5; color: #10b981; }
+        .stat-icon.yellow { background: #fef3c7; color: #f59e0b; }
+        .stat-icon.purple { background: #e0e7ff; color: #6366f1; }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+        .stat-label {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            font-weight: 600;
+        }
+
+        .stat-change.positive { color: var(--success); }
+        .stat-change.negative { color: var(--danger); }
+
+        /* Charts Section */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        /* Orders Table */
+        .table-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .table-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            width: 300px;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;        }
+
+        thead {
+            background: var(--light);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: right;
+            font-weight: 700;
+            color: var(--dark);
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .status-badge {
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-processing { background: #dbeafe; color: #1e40af; }
+        .status-completed { background: #d1fae5; color: #065f46; }
+        .status-rejected { background: #fee2e2; color: #991b1b; }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-success { background: var(--success); color: white; }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #64748b;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e2e8f0;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .brand-name {
+                font-size: 1.3rem;
+            }
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-box input {
+                width: 100%;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            td, th {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: white;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            z-index: 2000;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .notification.success { border-right: 4px solid var(--success); }
+        .notification.error { border-right: 4px solid var(--danger); }
     </style>
 </head>
 <body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <span style="left: 10%; animation-delay: 0s;"></span>
+        <span style="left: 20%; animation-delay: 2s;"></span>
+        <span style="left: 30%; animation-delay: 4s;"></span>
+        <span style="left: 40%; animation-delay: 6s;"></span>
+        <span style="left: 50%; animation-delay: 8s;"></span>
+        <span style="left: 60%; animation-delay: 10s;"></span>        <span style="left: 70%; animation-delay: 12s;"></span>
+        <span style="left: 80%; animation-delay: 14s;"></span>
+        <span style="left: 90%; animation-delay: 16s;"></span>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-container">
+                <div class="logo">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <circle cx="50" cy="50" r="45" fill="url(#grad1)" opacity="0.1"/>
+                        <path d="M50 15 L55 35 L75 35 L60 50 L65 70 L50 55 L35 70 L40 50 L25 35 L45 35 Z" 
+                              fill="url(#grad1)" stroke="url(#grad1)" stroke-width="2"/>
+                        <circle cx="50" cy="50" r="8" fill="url(#grad1)"/>
+                    </svg>
+                </div>
+                <div class="brand-name">Vexo Admin</div>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar">A</div>
+                <span>المدير</span>
+                <i class="fas fa-bell" style="color: var(--primary); cursor: pointer;"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
     <div class="container">
-        <h1>🚀 Vexo Admin Dashboard</h1>
-        
-        <div class="card">
-            <h2>📦 الطلبات</h2>
-            <div id="loading" class="loading">جاري التحميل...</div>
-            <table id="ordersTable" style="display:none;">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>المستخدم</th>
-                        <th>الخدمة</th>
-                        <th>الميزانية</th>
-                        <th>الحالة</th>
-                        <th>التاريخ</th>
-                        <th>إجراءات</th>
-                    </tr>
-                </thead>
-                <tbody id="ordersBody"></tbody>
-            </table>
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon blue">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="stat-value" id="totalOrders">0</div>
+                <div class="stat-label">إجمالي الطلبات</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> <span id="newOrders">0</span> اليوم
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon green">                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-value" id="completedOrders">0</div>
+                <div class="stat-label">الطلبات المكتملة</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> 95% معدل الإنجاز
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon yellow">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-value" id="pendingOrders">0</div>
+                <div class="stat-label">قيد الانتظار</div>
+                <div class="stat-change negative">
+                    <i class="fas fa-exclamation-circle"></i> تحتاج متابعة
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon purple">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-value" id="totalUsers">0</div>
+                <div class="stat-label">إجمالي المستخدمين</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> <span id="newUsers">0</span> هذا الأسبوع
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">📊 توزيع الطلبات حسب الحالة</div>
+                </div>
+                <canvas id="ordersChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">📈 الطلبات خلال الأسبوع</div>
+                </div>
+                <canvas id="weeklyChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="table-card">            <div class="table-header">
+                <div class="table-title">📦 إدارة الطلبات</div>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="البحث عن طلب..." onkeyup="searchOrders()">
+                </div>
+            </div>
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <div>جاري تحميل البيانات...</div>
+            </div>
+            <div class="table-container">
+                <table id="ordersTable" style="display:none;">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>المستخدم</th>
+                            <th>الخدمة</th>
+                            <th>الميزانية</th>
+                            <th>الحالة</th>
+                            <th>التاريخ</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersBody"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
     <script>
-        // ✅ الرابط الحقيقي الخاص بك
+        // Configuration
         const API_URL = "https://vexo-backend-7tk4.onrender.com";
         const API_KEY = "VexoSecret2024!@#";
+
+        let allOrders = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadOrders();
+            setInterval(loadOrders, 30000); // Refresh every 30 seconds
+        });
 
         async function loadOrders() {
             try {
                 const response = await fetch(`${API_URL}/api/orders`, {
-                    headers: { 'X-API-Key': API_KEY }
-                });
+                    headers: { 'X-API-Key': API_KEY }                });
                 const orders = await response.json();
+                allOrders = orders;
                 
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('ordersTable').style.display = 'table';
                 
-                const tbody = document.getElementById('ordersBody');
-                tbody.innerHTML = '';
-                
-                orders.forEach(order => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${order.id}</td>
-                        <td>${order.user_id}</td>                        <td>${order.service_type}</td>
-                        <td>${order.budget}</td>
-                        <td class="status-${order.status}">${order.status}</td>
-                        <td>${new Date(order.created_at).toLocaleDateString('ar-SA')}</td>
-                        <td>
-                            <button class="btn-info" onclick="updateStatus(${order.id}, 'processing')">بدء</button>
-                            <button class="btn-success" onclick="updateStatus(${order.id}, 'completed')">إنجاز</button>
-                            <button class="btn-warning" onclick="updateStatus(${order.id}, 'rejected')">رفض</button>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
+                updateStats(orders);
+                renderOrders(orders);
+                renderCharts(orders);
             } catch (error) {
                 console.error('Error:', error);
-                document.getElementById('loading').textContent = 'حدث خطأ في التحميل';
+                showNotification('حدث خطأ في تحميل البيانات', 'error');
             }
+        }
+
+        function updateStats(orders) {
+            const total = orders.length;
+            const completed = orders.filter(o => o.status === 'completed').length;
+            const pending = orders.filter(o => o.status === 'pending').length;
+            const processing = orders.filter(o => o.status === 'processing').length;
+            
+            // Animate numbers
+            animateNumber('totalOrders', total);
+            animateNumber('completedOrders', completed);
+            animateNumber('pendingOrders', pending);
+            animateNumber('totalUsers', new Set(orders.map(o => o.user_id)).size);
+            
+            // Today's orders
+            const today = new Date().toISOString().split('T')[0];
+            const todayOrders = orders.filter(o => o.created_at && o.created_at.startsWith(today)).length;
+            document.getElementById('newOrders').textContent = todayOrders;
+        }
+
+        function animateNumber(elementId, target) {
+            const element = document.getElementById(elementId);
+            const duration = 1000;
+            const start = parseInt(element.textContent) || 0;
+            const increment = target / (duration / 16);
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = target;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current);
+                }
+            }, 16);        }
+
+        function renderOrders(orders) {
+            const tbody = document.getElementById('ordersBody');
+            tbody.innerHTML = '';
+            
+            orders.forEach(order => {
+                const tr = document.createElement('tr');
+                const date = order.created_at ? new Date(order.created_at).toLocaleDateString('ar-SA') : 'N/A';
+                
+                tr.innerHTML = `
+                    <td>#${order.id}</td>
+                    <td>${order.user_id}</td>
+                    <td>${order.service_type}</td>
+                    <td>${order.budget}</td>
+                    <td><span class="status-badge status-${order.status}">${order.status}</span></td>
+                    <td>${date}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-success" onclick="updateStatus(${order.id}, 'completed')" title="إكمال">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="btn btn-warning" onclick="updateStatus(${order.id}, 'processing')" title="قيد التنفيذ">
+                                <i class="fas fa-spinner"></i>
+                            </button>
+                            <button class="btn btn-danger" onclick="updateStatus(${order.id}, 'rejected')" title="رفض">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderCharts(orders) {
+            // Orders by status
+            const statusCounts = {
+                pending: orders.filter(o => o.status === 'pending').length,
+                processing: orders.filter(o => o.status === 'processing').length,
+                completed: orders.filter(o => o.status === 'completed').length,
+                rejected: orders.filter(o => o.status === 'rejected').length
+            };
+
+            new Chart(document.getElementById('ordersChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['قيد الانتظار', 'قيد التنفيذ', 'مكتمل', 'مرفوض'],
+                    datasets: [{
+                        data: [statusCounts.pending, statusCounts.processing, statusCounts.completed, statusCounts.rejected],                        backgroundColor: ['#f59e0b', '#3b82f6', '#10b981', '#ef4444']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Weekly chart (simplified)
+            new Chart(document.getElementById('weeklyChart'), {
+                type: 'line',
+                data: {
+                    labels: ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'],
+                    datasets: [{
+                        label: 'الطلبات',
+                        data: [3, 5, 2, 8, 6, 4, 7],
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
         }
 
         async function updateStatus(orderId, status) {
@@ -120,14 +728,30 @@
                     method: 'POST',
                     headers: { 'X-API-Key': API_KEY }
                 });
+                showNotification('تم تحديث الحالة بنجاح', 'success');
                 loadOrders();
             } catch (error) {
-                alert('حدث خطأ في التحديث');
+                showNotification('حدث خطأ في التحديث', 'error');
             }
         }
+        function searchOrders() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allOrders.filter(order => 
+                order.id.toString().includes(query) ||
+                order.service_type.toLowerCase().includes(query) ||
+                order.user_id.toString().includes(query)
+            );
+            renderOrders(filtered);
+        }
 
-        loadOrders();
-        setInterval(loadOrders, 30000);
+        function showNotification(message, type) {
+            const notif = document.getElementById('notification');
+            notif.textContent = message;
+            notif.className = `notification ${type} show`;
+            setTimeout(() => {
+                notif.classList.remove('show');
+            }, 3000);
+        }
     </script>
 </body>
 </html>

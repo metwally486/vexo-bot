@@ -47,7 +47,8 @@ async def health_check() -> bool:
         return False
 
 def get_pool_info() -> Dict[str, Any]:
-    """الحصول على معلومات مجموعة الاتصالات"""    if pool:
+    """الحصول على معلومات مجموعة الاتصالات"""
+    if pool:
         return {
             'size': pool.get_size(),
             'free_size': pool.get_free_size(),
@@ -96,7 +97,8 @@ async def add_points(user_id: int, points: int) -> bool:
     try:
         async with pool.acquire() as conn:
             await conn.execute(
-                """                UPDATE users 
+                """
+                UPDATE users 
                 SET loyalty_points = loyalty_points + $1,
                     updated_at = NOW()
                 WHERE id = $2
@@ -145,7 +147,8 @@ async def create_order(
                 ) 
                 VALUES ($1, $2, $3, $4, 'pending', NOW()) 
                 RETURNING id
-                """,                user_id, service_type, details, budget
+                """,
+                user_id, service_type, details, budget
             )
             return order_id
     except Exception as e:
@@ -194,7 +197,8 @@ async def get_order_by_id(order_id: int) -> Optional[Dict[str, Any]]:
     try:
         async with pool.acquire() as conn:
             row = await conn.fetchrow(
-                """                SELECT o.*, u.username, u.full_name 
+                """
+                SELECT o.*, u.username, u.full_name 
                 FROM orders o
                 LEFT JOIN users u ON o.user_id = u.id
                 WHERE o.id = $1
@@ -243,7 +247,8 @@ async def update_order_notes(order_id: int, notes: str) -> bool:
 
 async def get_orders_by_status(status: str, limit: int = 50) -> List[Dict[str, Any]]:
     """الحصول على الطلبات حسب الحالة"""
-    try:        async with pool.acquire() as conn:
+    try:
+        async with pool.acquire() as conn:
             rows = await conn.fetch(
                 """
                 SELECT * FROM orders 
@@ -292,7 +297,8 @@ async def get_user_tickets(user_id: int, limit: int = 10) -> List[Dict[str, Any]
             )
             return [dict(r) for r in rows]
     except Exception as e:
-        print(f"❌ Error in get_user_tickets: {e}")        return []
+        print(f"❌ Error in get_user_tickets: {e}")
+        return []
 
 async def get_all_open_tickets(limit: int = 50) -> List[Dict[str, Any]]:
     """الحصول على جميع التذاكر المفتوحة"""
@@ -341,7 +347,8 @@ async def add_ticket_reply(ticket_id: int, reply: str, is_admin: bool = True) ->
                     ticket_id, message, is_admin, created_at
                 ) VALUES ($1, $2, $3, NOW())
                 """,
-                ticket_id, reply, is_admin            )
+                ticket_id, reply, is_admin
+            )
             return True
     except Exception as e:
         print(f"❌ Error in add_ticket_reply: {e}")
@@ -390,7 +397,8 @@ async def get_portfolio(project_type: Optional[str] = None, limit: int = 20) -> 
                 )
             else:
                 rows = await conn.fetch(
-                    """                    SELECT * FROM portfolio 
+                    """
+                    SELECT * FROM portfolio 
                     ORDER BY created_at DESC
                     LIMIT $1
                     """,
@@ -439,7 +447,8 @@ async def get_dashboard_stats() -> Dict[str, Any]:
                 """
             )
             
-            # إجمالي النقاط الموزعة            total_points = await conn.fetchval(
+            # إجمالي النقاط الموزعة
+            total_points = await conn.fetchval(
                 "SELECT COALESCE(SUM(loyalty_points), 0) FROM users"
             )
             
@@ -488,7 +497,8 @@ async def get_services() -> List[Dict[str, Any]]:
         async with pool.acquire() as conn:
             rows = await conn.fetch("SELECT * FROM services ORDER BY id")
             return [dict(r) for r in rows]
-    except Exception as e:        print(f"❌ Error in get_services: {e}")
+    except Exception as e:
+        print(f"❌ Error in get_services: {e}")
         return []
 
 # ==================== دوال مساعدة ====================
@@ -537,5 +547,6 @@ __all__ = [
     # الخدمات
     'get_services',
     
-    # مساعدة    'execute_query', 'format_date'
-]
+    # مساعدة
+    'execute_query', 'format_date'
+        ]

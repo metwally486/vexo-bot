@@ -5,25 +5,27 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 import config
 import database as db
-import random
-from datetime import datetime, timedelta
+from datetime import datetime
+
+# ==================== معلومات الشركة ====================
+COMPANY_NAME = "Vexo للخدمات التقنية"
+CEO_NAME = "متولي الوصابي"
+CEO_USERNAME = "@m_7_1_1_w"
+CHANNEL_LINK = "https://t.me/abod_IT"
+SUPPORT_USERNAME = "@m_7_1_1_w"
 
 # ==================== حالات النموذج ====================
 
 class OrderState(StatesGroup):
     service_type = State()
-    service_category = State()
     details = State()
     budget = State()
+    country = State()
     payment_method = State()
     confirm = State()
 
 class SupportState(StatesGroup):
     message = State()
-
-class PaymentState(StatesGroup):
-    amount = State()
-    wallet = State()
 
 # ==================== الأزرار الرئيسية ====================
 
@@ -33,7 +35,7 @@ def main_keyboard():
         [KeyboardButton(text="🎁 العروض والهدايا"), KeyboardButton(text="💳 طرق الدفع")],
         [KeyboardButton(text="📁 أعمالنا"), KeyboardButton(text="👤 حسابي")],
         [KeyboardButton(text="🤝 شارك واربح"), KeyboardButton(text="💬 الدعم الفني")],
-        [KeyboardButton(text="📞 تواصل مع المدير")]
+        [KeyboardButton(text="📞 تواصل مع الإدارة")]
     ]
     return ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True)
 
@@ -51,14 +53,51 @@ def services_inline_kb():
     ]
     return InlineKeyboardMarkup(inline_keyboard=kb)
 
-def payment_methods_kb():
+def country_selection_kb():
     kb = [
-        [InlineKeyboardButton(text="📱 جيب (Jeew)", callback_data="pay_jeew")],
-        [InlineKeyboardButton(text="💳 ون كاش (OneCash)", callback_data="pay_onecash")],
-        [InlineKeyboardButton(text="💰 كريمي (Kareemi)", callback_data="pay_kareemi")],
-        [InlineKeyboardButton(text="📲 جوالي (Jawali)", callback_data="pay_jawali")],
-        [InlineKeyboardButton(text="💵 موني (Monee)", callback_data="pay_monee")],
-        [InlineKeyboardButton(text="🌍 تحويل دولي (532174)", callback_data="pay_international")],
+        [InlineKeyboardButton(text="🇾🇪 اليمن", callback_data="country_yemen")],
+        [InlineKeyboardButton(text="🌍 دولة أخرى", callback_data="country_other")],
+        [InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=kb)
+
+def yemen_payment_kb():
+    kb = [
+        [InlineKeyboardButton(text="🏦 البنوك اليمنية", callback_data="yemen_banks")],
+        [InlineKeyboardButton(text="📱 المحافظ الإلكترونية", callback_data="yemen_wallets")],
+        [InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=kb)
+
+def yemen_banks_kb():
+    kb = [
+        [InlineKeyboardButton(text="💰 الكريمي", callback_data="bank_kareemi")],
+        [InlineKeyboardButton(text="🤝 تضامن", callback_data="bank_tadhamon")],
+        [InlineKeyboardButton(text="🏛 بنك اليمن والكويت", callback_data="bank_yemen_kuwait")],
+        [InlineKeyboardButton(text="🏦 البنك الأهلي", callback_data="bank_ahli")],
+        [InlineKeyboardButton(text="🏦 بنك صنعاء", callback_data="bank_sanaa")],
+        [InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=kb)
+
+def yemen_wallets_kb():
+    kb = [
+        [InlineKeyboardButton(text="📱 جيب (Jeew)", callback_data="wallet_jeew")],
+        [InlineKeyboardButton(text="📲 جوالي (Jawali)", callback_data="wallet_jawali")],
+        [InlineKeyboardButton(text="💵 ون كاش (OneCash)", callback_data="wallet_onecash")],
+        [InlineKeyboardButton(text="💰 موني (Monee)", callback_data="wallet_monee")],
+        [InlineKeyboardButton(text="💳 فلوسك (Floosak)", callback_data="wallet_floosak")],
+        [InlineKeyboardButton(text="📱 عمرون (Omran)", callback_data="wallet_omran")],
+        [InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=kb)
+
+def international_payment_kb():
+    kb = [
+        [InlineKeyboardButton(text="💳 باي بال (PayPal)", callback_data="intl_paypal")],
+        [InlineKeyboardButton(text="💵 ويسترن يونيون", callback_data="intl_western")],
+        [InlineKeyboardButton(text="🏦 تحويل بنكي", callback_data="intl_bank")],
+        [InlineKeyboardButton(text="💰 USDT (Crypto)", callback_data="intl_usdt")],
         [InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]
     ]
     return InlineKeyboardMarkup(inline_keyboard=kb)
@@ -78,8 +117,8 @@ def support_kb():
         [InlineKeyboardButton(text="🎫 فتح تذكرة جديدة", callback_data="ticket_new")],
         [InlineKeyboardButton(text="📋 تذاكري السابقة", callback_data="ticket_my")],
         [InlineKeyboardButton(text="❓ الأسئلة الشائعة", callback_data="faq")],
-        [InlineKeyboardButton(text="👨‍💻 الدعم الفني المباشر", url="https://t.me/m_7_1_1_w")],
-        [InlineKeyboardButton(text="📞 المدير", url="https://t.me/abohamed12")],
+        [InlineKeyboardButton(text="👨‍💻 الدعم الفني", url=f"https://t.me/{SUPPORT_USERNAME.replace('@', '')}")],
+        [InlineKeyboardButton(text="📞 المدير التنفيذي", url=f"https://t.me/{CEO_USERNAME.replace('@', '')}")],
         [InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]
     ]
     return InlineKeyboardMarkup(inline_keyboard=kb)
@@ -96,10 +135,8 @@ def portfolio_kb():
 
 def share_kb():
     kb = [
-        [InlineKeyboardButton(text="📤 مشاركة البوت", switch_inline_query="🎉 انضم لي على Vexo Bot للخدمات التقنية! ")],
-        [InlineKeyboardButton(text="🎁 استلام الهدية", callback_data="share_claim")],
-        [InlineKeyboardButton(text="🏆 صدارة المشاركين", callback_data="share_leaderboard")],
-        [InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]
+        [InlineKeyboardButton(text="📤 مشاركة البوت", switch_inline_query="🎉 انضم لي على Vexo للخدمات التقنية! "), InlineKeyboardButton(text="🎁 استلام الهدية", callback_data="share_claim"), InlineKeyboardButton(text="🏆 صدارة المشاركين", callback_data="share_leaderboard")],
+        [InlineKeyboardButton(text="📢 الانضمام للقناة", url=CHANNEL_LINK), InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]
     ]
     return InlineKeyboardMarkup(inline_keyboard=kb)
 
@@ -115,15 +152,28 @@ def offers_kb():
 
 # ==================== المعالجات ====================
 
+async def check_channel_subscription(message: types.Message) -> bool:
+    """التحقق من اشتراك المستخدم في القناة"""
+    try:
+        channel_username = "abod_IT"  # بدون @
+        member = await message.bot.get_chat_member(channel_username, message.from_user.id)
+        return member.status in ['member', 'administrator', 'creator']
+    except:
+        return False
+
 async def start_handler(message: types.Message):
     await db.add_user(message.from_user.id, message.from_user.username, message.from_user.full_name)
     
+    # التحقق من الاشتراك في القناة
+    is_subscribed = await check_channel_subscription(message)
+    
     welcome_text = f"""
-🌟 **أهلاً وسهلاً بك في Vexo Bot** 🌟
+🌟 **أهلاً وسهلاً بك في {COMPANY_NAME}** 🌟
 ━━━━━━━━━━━━━━━━━━━━
 
 👋 **مرحباً:** {message.from_user.first_name}
-🤖 **بوت الخدمات التقنية المتكامل**
+ **شركة {COMPANY_NAME}**
+👨‍💼 **المدير التنفيذي:** {CEO_NAME}
 
 💎 **لماذا تختارنا؟**
 ✅ أسعار منافسة وجودة عالية
@@ -135,8 +185,16 @@ async def start_handler(message: types.Message):
 🔸 خصم 10% للطلب الأول
 🔸 خصم 15% عند مشاركة البوت
 🔸 نقاط ولاء على كل طلب
+🔸 هدايا حصرية للمشتركين
 
-📌 **اختر من القائمة:**
+📢 **تابعنا على القناة:** {CHANNEL_LINK}
+"""
+    
+    if not is_subscribed:
+        welcome_text += f"""
+
+⚠️ **ملاحظة مهمة:**
+للحصول على جميع المزايا والهدايا، يرجى الانضمام لقناتنا أولاً:{CHANNEL_LINK}
 """
     
     await message.answer(
@@ -144,15 +202,10 @@ async def start_handler(message: types.Message):
         reply_markup=main_keyboard(),
         parse_mode="Markdown"
     )
-    
-    await message.answer(
-        "🎉 **استخدم /help لمعرفة جميع الأوامر**",
-        parse_mode="Markdown"
-    )
 
 async def services_handler(message: types.Message):
-    text = """
-🎯 **خدماتنا التقنية المتكاملة**
+    text = f"""
+🎯 **خدمات {COMPANY_NAME} المتكاملة**
 ━━━━━━━━━━━━━━━━━━━━
 
 🤖 **بوتات تلجرام:**
@@ -191,41 +244,27 @@ async def services_handler(message: types.Message):
    • هوية بصرية
    • تسويق إلكتروني
    💰 من 50$
-
 📞 **للطلب:** اضغط 'طلب جديد'
+👨‍💼 **المدير:** {CEO_NAME} ({CEO_USERNAME})
 """
     await message.answer(text, reply_markup=services_inline_kb(), parse_mode="Markdown")
 
 async def payment_handler(message: types.Message):
-    text = """💳 **طرق الدفع المتاحة**
+    text = f"""
+💳 **طرق الدفع المتاحة**
 ━━━━━━━━━━━━━━━━━━━━
 
-📱 **المحافظ المحلية:**
+🌍 **اختر دولتك لعرض طرق الدفع:**
 
-1️⃣ **جيب (Jeew)**
-   📲 الرقم: يُرسل بعد تأكيد الطلب
-   ⏱ التفعيل: فوري
+🇾🇪 **اليمن:**
+   • البنوك اليمنية (الكريمي، تضامن...)
+   • المحافظ الإلكترونية (جيب، جوالي...)
 
-2️⃣ **ون كاش (OneCash)**
-   📲 الرقم: يُرسل بعد تأكيد الطلب
-   ⏱ التفعيل: فوري
-
-3️⃣ **كريمي (Kareemi)**
-   📲 الرقم: يُرسل بعد تأكيد الطلب
-   ⏱ التفعيل: خلال ساعة
-
-4️⃣ **جوالي (Jawali)**
-   📲 الرقم: يُرسل بعد تأكيد الطلب
-   ⏱ التفعيل: فوري
-
-5️⃣ **موني (Monee)**
-   📲 الرقم: يُرسل بعد تأكيد الطلب
-   ⏱ التفعيل: فوري
-
-🌍 **التحويل الدولي:**
-   🏦 رقم الحساب: 532174
-   💵 حدد المبلغ عند الطلب
-   ⏱ التفعيل: 24-48 ساعة
+🌍 **دول أخرى:**
+   • باي بال (PayPal)
+   • ويسترن يونيون
+   • تحويل بنكي دولي
+   • USDT (Crypto)
 
 📝 **ملاحظات مهمة:**
 • يتم إرسال تفاصيل الدفع بعد تأكيد الطلب
@@ -234,15 +273,17 @@ async def payment_handler(message: types.Message):
 • الحد الأدنى للطلب: 50$
 
 💡 **لبدء الطلب:** اضغط 'طلب جديد'
+
+👨‍💼 **للاستفسار:** {CEO_USERNAME}
 """
-    await message.answer(text, reply_markup=payment_methods_kb(), parse_mode="Markdown")
+    await message.answer(text, reply_markup=country_selection_kb(), parse_mode="Markdown")
 
 async def portfolio_handler(message: types.Message):
-    text = """
-📁 **أعمالنا ومشاريعنا**
+    text = f"""
+📁 **أعمال {COMPANY_NAME}**
 ━━━━━━━━━━━━━━━━━━━━
 
-🎨 **نماذج من أعمالنا:**
+🎨 **نماذج من مشاريعنا:**
 
 🤖 **البوتات:**
 • بوت متجر إلكتروني - 150$
@@ -301,8 +342,7 @@ async def profile_handler(message: types.Message):
                 "processing": "🔄 قيد التنفيذ", 
                 "completed": "✅ مكتمل",
                 "rejected": "❌ مرفوض"
-            }.get(order['status'], "⏳")
-            
+            }.get(order['status'], "⏳")            
             date_str = "N/A"
             if hasattr(order.get('created_at'), 'strftime'):
                 date_str = order['created_at'].strftime('%Y-%m-%d')
@@ -326,6 +366,8 @@ async def profile_handler(message: types.Message):
 • كل 10 نقاط = خصم 1$
 • شارك البوت واربح 50 نقطة
 • اطلب واحصل على نقاط
+
+👨‍💼 **المدير:** {CEO_USERNAME}
 """
     
     await message.answer(text, parse_mode="Markdown")
@@ -333,25 +375,26 @@ async def profile_handler(message: types.Message):
 async def order_handler(message: types.Message, state: FSMContext):
     await state.set_state(OrderState.service_type)
     
-    text = """
-📝 **بدء طلب جديد**
+    text = f"""
+📝 **بدء طلب جديد - {COMPANY_NAME}**
 ━━━━━━━━━━━━━━━━━━━━
 
 🎯 **اختر نوع الخدمة:**
 
 💡 **نصيحة:** اختر الخدمة الأنسب لمشروعك
+👨‍ **للاستفسار:** {CEO_USERNAME}
 """
     await message.answer(text, reply_markup=services_inline_kb(), parse_mode="Markdown")
 
 async def support_handler(message: types.Message):
-    text = """
-💬 **الدعم الفني**
+    text = f"""
+💬 **الدعم الفني - {COMPANY_NAME}**
 ━━━━━━━━━━━━━━━━━━━━
-👨‍ **فريقنا جاهز لمساعدتك!**
 
+👨‍ **فريقنا جاهز لمساعدتك!**
 📞 **التواصل المباشر:**
-├ المدير: @abohamed12
-└ الدعم الفني: @m_7_1_1_w
+├ المدير التنفيذي: {CEO_USERNAME}
+└ الدعم الفني: {SUPPORT_USERNAME}
 
 ⏱ **وقت الاستجابة:**
 ├ خلال 24 ساعة للتذاكر
@@ -367,35 +410,41 @@ async def support_handler(message: types.Message):
 • حلول فورية
 
 💡 **نحن هنا لمساعدتك 24/7!**
+
+📢 **تابعنا:** {CHANNEL_LINK}
 """
     await message.answer(text, reply_markup=support_kb(), parse_mode="Markdown")
 
 async def contact_admin(message: types.Message):
     text = f"""
-📞 **تواصل مع المدير**
+📞 **تواصل مع الإدارة**
 ━━━━━━━━━━━━━━━━━━━━
 
-👤 **المدير:** @abohamed12
+👨‍💼 **المدير التنفيذي:** {CEO_NAME}
+📱 **الحساب:** {CEO_USERNAME}
 
 💡 **متى تتواصل؟**
 • للاستفسارات المهمة
 • للمشاريع الكبيرة
 • للشكاوى والاقتراحات
+• للاستشارات المجانية
 
 ⏱ **متوفر:** 9 صباحاً - 11 مساءً
 
 🔗 **اضغط هنا للتواصل:**
-https://t.me/abohamed12
+https://t.me/{CEO_USERNAME.replace('@', '')}
+
+📢 **القناة الرسمية:** {CHANNEL_LINK}
 """
     await message.answer(text, parse_mode="Markdown")
 
 async def share_handler(message: types.Message):
     user = await db.get_user(message.from_user.id)
-    points = user['loyalty_points'] if user else 0
-    
+    points = user['loyalty_points'] if user else 0    
     text = f"""
-🤝 **شارك واربح**
+🤝 **شارك واربح - {COMPANY_NAME}**
 ━━━━━━━━━━━━━━━━━━━━
+
 🎁 **برنامج الإحالة:**
 
 💰 **كيف تربح؟**
@@ -413,12 +462,17 @@ async def share_handler(message: types.Message):
 
 📤 **شارك الآن:**
 اضغط الزر أدناه لمشاركة البوت
+
+📢 **لا تنسى الانضمام للقناة:**
+{CHANNEL_LINK}
+
+👨‍💼 **المدير:** {CEO_USERNAME}
 """
     await message.answer(text, reply_markup=share_kb(), parse_mode="Markdown")
 
 async def offers_handler(message: types.Message):
-    text = """
-🎁 **العروض والهدايا**
+    text = f"""
+🎁 **العروض والهدايا - {COMPANY_NAME}**
 ━━━━━━━━━━━━━━━━━━━━
 
 🔥 **العروض الحالية:**
@@ -444,7 +498,11 @@ async def offers_handler(message: types.Message):
 • SHARE20 = 20% (بعد مشاركة البوت)
 • VIP25 = 25% (للطلبات فوق 1000$)
 
-💡 **استخدم الكود عند الطلب!**"""
+💡 **استخدم الكود عند الطلب!**
+
+👨‍💼 **المدير:** {CEO_USERNAME}
+📢 **القناة:** {CHANNEL_LINK}
+"""
     await message.answer(text, reply_markup=offers_kb(), parse_mode="Markdown")
 
 async def callback_handler(call: types.CallbackQuery, state: FSMContext):
@@ -453,102 +511,116 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
     if data == "main_menu":
         await call.message.edit_text("📋 **القائمة الرئيسية:**", reply_markup=main_keyboard())
     
-    elif data == "srv_create_bot":
-        await state.update_data(service_type="🤖 إنشاء بوت تلجرام")
+    # خدمات
+    elif data.startswith("srv_"):
+        service_map = {
+            "srv_create_bot": "🤖 إنشاء بوت تلجرام",
+            "srv_dev_bot": "⚙️ تطوير بوت موجود",
+            "srv_android": "📱 تطبيق أندرويد",
+            "srv_ios": "🍎 تطبيق iOS",
+            "srv_website": "💻 موقع إلكتروني",
+            "srv_store": "🛒 متجر إلكتروني",
+            "srv_scripts": "🔧 معاملات برمجية",
+            "srv_premium": "🎨 خدمات مميزة"
+        }
+        service_name = service_map.get(data, "خدمة")
+        await state.update_data(service_type=service_name)
         await state.set_state(OrderState.details)
         await call.message.edit_text(
-            "✅ **إنشاء بوت تلجرام**\n\n"
-            "📝 **أرسل تفاصيل البوت المطلوب:**\n"
-            "• ما وظيفة البوت؟\n"
-            "• ما الميزات المطلوبة؟\n"
-            "• هل هناك متطلبات خاصة?",
+            f"✅ {service_name}\n\n"
+            f"📝 **أرسل تفاصيل المشروع:**\n"
+            f"• ما الوظيفة المطلوبة؟\n"
+            f"• ما الميزات الخاصة؟\n"
+            f"• هل هناك متطلبات إضافية؟",
             reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]])
         )
     
-    elif data == "srv_dev_bot":
-        await state.update_data(service_type="⚙️ تطوير بوت موجود")
-        await state.set_state(OrderState.details)
+    # اختيار الدولة
+    elif data == "country_yemen":
         await call.message.edit_text(
-            "✅ **تطوير بوت موجود**\n\n"
-            "📝 **أرسل:**\n"
-            "• رابط البوت الحالي\n"
-            "• التطويرات المطلوبة\n"
-            "• المشاكل الحالية",
-            reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]])
+            "🇾🇪 **اليمن - طرق الدفع**\n\n"
+            "💳 **اختر طريقة الدفع:**",
+            reply_markup=yemen_payment_kb()
         )
     
-    elif data == "srv_android":
-        await state.update_data(service_type="📱 تطبيق أندرويد")
-        await state.set_state(OrderState.details)
+    elif data == "country_other":
         await call.message.edit_text(
-            "✅ **تطبيق أندرويد**\n\n"
-            "📝 **أرسل تفاصيل التطبيق:**\n"
-            "• نوع التطبيق (متجر، خدمة، لعبة...)\n"
-            "• الميزات المطلوبة\n"
-            "• التصميم المطلوب",
-            reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]])
+            "🌍 **دول أخرى - طرق الدفع**\n\n"
+            "💳 **اختر طريقة الدفع الدولية:**",
+            reply_markup=international_payment_kb()
         )
     
-    elif data == "srv_ios":
-        await state.update_data(service_type="🍎 تطبيق iOS")
-        await state.set_state(OrderState.details)
+    # البنوك اليمنية
+    elif data == "yemen_banks":
         await call.message.edit_text(
-            "✅ **تطبيق iOS**\n\n"
-            "📝 **أرسل تفاصيل التطبيق:**",
-            reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]])
+            "🏦 **البنوك اليمنية**\n\n"
+            "📋 **اختر البنك:**\n\n"
+            "💡 **ملاحظة:** سيتم إرسال رقم الحساب بعد تأكيد الطلب",
+            reply_markup=yemen_banks_kb()
         )
     
-    elif data == "srv_website":
-        await state.update_data(service_type="💻 موقع إلكتروني")
-        await state.set_state(OrderState.details)
+    elif data.startswith("bank_"):
+        bank_map = {
+            "bank_kareemi": "💰 الكريمي",
+            "bank_tadhamon": "🤝 تضامن",
+            "bank_yemen_kuwait": "🏛 بنك اليمن والكويت",
+            "bank_ahli": "🏦 البنك الأهلي",
+            "bank_sanaa": "🏦 بنك صنعاء"
+        }
+        bank_name = bank_map.get(data, "البنك")
         await call.message.edit_text(
-            "✅ **موقع إلكتروني**\n\n"
-            "📝 **أرسل:**\n"
-            "• نوع الموقع\n"
-            "• الصفحات المطلوبة\n"
-            "• الميزات الخاصة",
-            reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]])
+            f"✅ {bank_name}\n\n"
+            f"📝 **سيتم إرسال رقم الحساب**\n"
+            f"بعد تأكيد طلبك\n\n"
+            f"💡 **لبدء الطلب:** اضغط 'طلب جديد'",
+            reply_markup=yemen_banks_kb()
         )
     
-    elif data == "srv_store":
-        await state.update_data(service_type="🛒 متجر إلكتروني")
-        await state.set_state(OrderState.details)
+    # المحافظ اليمنية
+    elif data == "yemen_wallets":
         await call.message.edit_text(
-            "✅ **متجر إلكتروني**\n\n"
-            "📝 **أرسل:**\n"
-            "• نوع المنتجات\n"
-            "• طرق الدفع المطلوبة\n"
-            "• الميزات الإضافية",
-            reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]])
+            "📱 **المحافظ الإلكترونية - اليمن**\n\n"
+            "💳 **اختر المحفظة:**",
+            reply_markup=yemen_wallets_kb()
         )
     
-    elif data == "srv_scripts":
-        await state.update_data(service_type="🔧 معاملات برمجية")
-        await state.set_state(OrderState.details)
+    elif data.startswith("wallet_"):
+        wallet_map = {
+            "wallet_jeew": "📱 جيب (Jeew)",
+            "wallet_jawali": "📲 جوالي (Jawali)",
+            "wallet_onecash": "💵 ون كاش (OneCash)",
+            "wallet_monee": "💰 موني (Monee)",
+            "wallet_floosak": "💳 فلوسك (Floosak)",
+            "wallet_omran": "📱 عمرون (Omran)"
+        }
+        wallet_name = wallet_map.get(data, "المحفظة")
         await call.message.edit_text(
-            "✅ **معاملات برمجية**\n\n"
-            "📝 **أرسل:**\n"
-            "• نوع السكريبت\n"
-            "• الوظيفة المطلوبة\n"
-            "• اللغة المفضلة",
-            reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]])
+            f"✅ {wallet_name}\n\n"
+            f"📝 **سيتم إرسال رقم المحفظة**\n"
+            f"بعد تأكيد طلبك\n\n"
+            f"💡 **لبدء الطلب:** اضغط 'طلب جديد'",
+            reply_markup=yemen_wallets_kb()
         )
     
-    elif data == "srv_premium":
+    # الدفع الدولي
+    elif data.startswith("intl_"):
+        intl_map = {
+            "intl_paypal": "💳 باي بال (PayPal)",
+            "intl_western": "💵 ويسترن يونيون",
+            "intl_bank": "🏦 تحويل بنكي",
+            "intl_usdt": "💰 USDT (Crypto)"
+        }
+        method_name = intl_map.get(data, "الطريقة")
         await call.message.edit_text(
-            "🎁 **الخدمات المميزة**\n\n"
-            "💎 **باقات VIP:**\n\n"
-            "🥇 **الباقة الذهبية** (1000$):\n"
-            "• بوت + موقع + تطبيق\n"
-            "• دعم لمدة سنة\n"
-            "• تحديثات مجانية\n\n"
-            "🥈 **الباقة الفضية** (500$):\n"
-            "• بوت + موقع\n"
-            "• دعم 6 أشهر\n\n"
-            "📞 **للاستفسار:** @abohamed12",
-            reply_markup=services_inline_kb()
+            f"✅ {method_name}\n\n"
+            f"📝 **سيتم إرسال تفاصيل الدفع**\n"
+            f"بعد تأكيد طلبك\n\n"
+            f"⏱ **التفعيل:** 24-48 ساعة\n\n"
+            f"💡 **لبدء الطلب:** اضغط 'طلب جديد'",
+            reply_markup=international_payment_kb()
         )
     
+    # الميزانية
     elif data.startswith("budget_"):
         budget_map = {
             "budget_low": "أقل من 100$",
@@ -559,41 +631,46 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
         await state.update_data(budget=budget_map[data])
         
         data_state = await state.get_data()
-        await db.create_order(
+        order_id = await db.create_order(
             user_id=call.from_user.id,
             service_type=data_state.get("service_type", "عام"),
             details=data_state.get("details", ""),
             budget=budget_map[data]
         )
         
-        await db.add_points(call.from_user.id, 10)
-        await state.clear()
-        
-        await call.message.edit_text(
-            f"✅ **تم استلام طلبك بنجاح!**\n\n"
-            f"🎉 **تهانينا!** حصلت على 10 نقاط ولاء\n\n"
-            f"📦 **تفاصيل الطلب:**\n"
-            f"├ الخدمة: {data_state.get('service_type')}\n"
-            f"├ الميزانية: {budget_map[data]}\n"
-            f"└ التفاصيل: {data_state.get('details')[:100]}...\n\n"
-            f"🔔 **سيتم مراجعته خلال 24 ساعة**\n"
-            f"💡 **تابع حسابك لمعرفة التحديثات**",
-            reply_markup=main_keyboard()
-        )
-        
-        try:
-            await call.message.bot.send_message(
-                config.ADMIN_ID,
-                f"🔔 **طلب جديد!**\n\n"
-                f"👤 المستخدم: {call.from_user.username or call.from_user.first_name}\n"
-                f"🆔 ID: {call.from_user.id}\n"
-                f"📦 الخدمة: {data_state.get('service_type')}\n"
-                f"💰 الميزانية: {budget_map[data]}\n"
-                f"📝 التفاصيل: {data_state.get('details')}"
+        if order_id:
+            await db.add_points(call.from_user.id, 10)
+            await state.clear()
+            
+            await call.message.edit_text(
+                f"✅ **تم استلام طلبك بنجاح!**\n\n"
+                f"🎉 **تهانينا!** حصلت على 10 نقاط ولاء\n\n"
+                f"📦 **تفاصيل الطلب:**\n"
+                f"├ رقم الطلب: #{order_id}\n"
+                f"├ الخدمة: {data_state.get('service_type')}\n"
+                f"├ الميزانية: {budget_map[data]}\n"
+                f"└ التفاصيل: {data_state.get('details')[:100]}...\n\n"
+                f"🔔 **سيتم مراجعته خلال 24 ساعة**\n"
+                f"💡 **تابع حسابك لمعرفة التحديثات**\n\n"
+                f"👨‍💼 **المدير:** {CEO_USERNAME}",
+                reply_markup=main_keyboard()
             )
-        except:
-            pass
+            
+            # إشعار للمدير
+            try:
+                await call.message.bot.send_message(
+                    config.ADMIN_ID,
+                    f"🔔 **طلب جديد!**\n\n"
+                    f"👤 المستخدم: {call.from_user.username or call.from_user.first_name}\n"
+                    f"🆔 ID: {call.from_user.id}\n"
+                    f"📦 الخدمة: {data_state.get('service_type')}\n"
+                    f"💰 الميزانية: {budget_map[data]}\n"
+                    f"📝 التفاصيل: {data_state.get('details')}"
+                )
+            except:
+                pass
     
+    # الدعم الفني
     elif data == "ticket_new":
         await state.set_state(SupportState.message)
         await call.message.edit_text(
@@ -609,10 +686,9 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
         await call.message.edit_text("📋 **تذاكرك السابقة:**\n\n⏳ قريباً...", reply_markup=support_kb())
     
     elif data == "faq":
-        faq_text = """
-❓ **الأسئلة الشائعة**
+        faq_text = f"""
+❓ **الأسئلة الشائعة - {COMPANY_NAME}**
 ━━━━━━━━━━━━━━━━━━━━
-
 **س: كم وقت التنفيذ؟**
 ج: 3-7 أيام للبوتات، 7-14 يوم للتطبيقات
 
@@ -620,7 +696,7 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
 ج: نعم، ضمان 30 يوم على جميع المشاريع
 
 **س: طرق الدفع؟**
-ج: محافظ محلية (جيب، ون كاش...) وتحويل دولي
+ج: محافظ محلية (جيب، ون كاش...) وبنوك يمنية ودولية
 
 **س: هل هناك دعم بعد التسليم؟**
 ج: نعم، دعم مجاني لمدة شهر
@@ -633,9 +709,13 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
 
 **س: كيف أربح نقاط؟**
 ج: اطلب، شارك البوت، احصل على مكافآت
+
+👨‍💼 **للاستفسار:** {CEO_USERNAME}
+📢 **القناة:** {CHANNEL_LINK}
 """
         await call.message.edit_text(faq_text, reply_markup=support_kb())
     
+    # العروض
     elif data == "offers_current":
         await call.message.edit_text(
             "🔥 **العروض الحالية**\n\n"
@@ -690,7 +770,8 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
             f"🎁 **رصيدك من النقاط:** {points}\n\n"
             f"💰 **القيمة:** {points * 0.1}$\n\n"
             f"📤 **شارك الآن واربح 50 نقطة!**\n"
-            f"🔗 رابط البوت: @VexoServiceBot",
+            f"🔗 رابط البوت: @VexoServiceBot\n\n"
+            f"📢 **لا تنسى الانضمام للقناة:**\n{CHANNEL_LINK}",
             reply_markup=share_kb()
         )
     
@@ -706,15 +787,6 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
     
     elif data.startswith("port_"):
         await call.message.edit_text("📌 **قريباً...**\n\nنعمل على إضافة الأعمال!", reply_markup=portfolio_kb())
-    
-    elif data.startswith("pay_"):
-        await call.message.edit_text(
-            "💳 **طرق الدفع**\n\n"
-            "📝 **سيتم إرسال تفاصيل الدفع**\n"
-            "بعد تأكيد طلبك\n\n"
-            "💡 **لبدء الطلب:** اضغط 'طلب جديد'",
-            reply_markup=payment_methods_kb()
-        )
     
     await call.answer()
 
@@ -739,7 +811,8 @@ async def handle_order_details(message: types.Message, state: FSMContext):
             f"🎫 رقم التذكرة: #{ticket_id}\n"
             f"📝 رسالتك: {message.text[:100]}...\n\n"
             f"⏱ **سنرد عليك خلال 24 ساعة**\n"
-            f"💬 **للتواصل السريع:** @m_7_1_1_w",
+            f"💬 **للتواصل السريع:** {SUPPORT_USERNAME}\n"
+            f"👨‍💼 **المدير:** {CEO_USERNAME}",
             reply_markup=main_keyboard()
         )
         
@@ -763,13 +836,12 @@ def register_handlers(dp: Dispatcher):
     dp.message.register(order_handler, F.text == "📝 طلب جديد")
     dp.message.register(support_handler, F.text == "💬 الدعم الفني")
     dp.message.register(payment_handler, F.text == "💳 طرق الدفع")
-    dp.message.register(contact_admin, F.text == "📞 تواصل مع المدير")
+    dp.message.register(contact_admin, F.text == "📞 تواصل مع الإدارة")
     dp.message.register(share_handler, F.text == "🤝 شارك واربح")
-    dp.message.register(offers_handler, F.text == "🎁 العروض والهدايا")
-    
+    dp.message.register(offers_handler, F.text == "🎁 العروض والهدايا")    
     dp.message.register(handle_order_details, ~F.text.in_([
         "🎯 خدماتنا", "📁 أعمالنا", "👤 حسابي", "📝 طلب جديد",
-        "💬 الدعم الفني", "💳 طرق الدفع", "📞 تواصل مع المدير",
+        "💬 الدعم الفني", "💳 طرق الدفع", "📞 تواصل مع الإدارة",
         "🤝 شارك واربح", "🎁 العروض والهدايا"
     ]))
     

@@ -1,21 +1,19 @@
 import os
 from dotenv import load_dotenv
 
-# تحميل ملف .env (يعمل في البيئة المحلية فقط)
+# تحميل ملف .env للمحلي فقط
 load_dotenv()
 
-# جلب توكن البوت من إعدادات البيئة في Render
+# الإعدادات الأساسية - تأكد من إضافتها في Dashboard الخاص بـ Render
 BOT_TOKEN = os.getenv("BOT_TOKEN")
+DATABASE_URL = os.getenv("DATABASE_URL")
+API_SECRET_KEY = os.getenv("API_SECRET_KEY", "vexo_secret_123")
 
-# جلب معرف الأدمن مع وضع قيمة افتراضية (0) لتجنب خطأ التحويل الرقمي
+# تحويل ADMIN_ID لرقم مع معالجة الأخطاء
 try:
     ADMIN_ID = int(os.getenv("ADMIN_ID", 0))
-except (TypeError, ValueError):
+except (ValueError, TypeError):
     ADMIN_ID = 0
 
-# روابط قاعدة البيانات والمفاتيح السرية
-DATABASE_URL = os.getenv("DATABASE_URL")
-API_SECRET_KEY = os.getenv("API_SECRET_KEY")
-
-# ملاحظة للعبقري: تأكد من إضافة هذه الأسماء في 'Environment Variables' على Render
-
+# إعداد المنفذ لـ Render
+PORT = int(os.getenv("PORT", 8000))

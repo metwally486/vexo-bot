@@ -20,12 +20,12 @@ async def lifespan(app: FastAPI):
     
     yield
     
-    # إيقاف التشغيل
-    await bot.session.close()
+    # إيقاف التشغيل - تصحيح: استخدام bot.close() بدلاً من bot.session.close()
+    await bot.close()
 
 app = FastAPI(lifespan=lifespan)
 
-# السماح لجميع الروابط (لـ Vercel)
+# السماح لجميع الروابط (لـ Render / Vercel)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -34,9 +34,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# التحقق من المفتاح
+# التحقق من المفتاح (تأكد من وجود API_SECRET_KEY في config.py)
 async def verify_token(x_api_key: str = Header(None)):
-    if x_api_key != config.API_SECRET_KEY:
+    if not hasattr(config, 'API_SECRET_KEY') or x_api_key != config.API_SECRET_KEY:
         raise HTTPException(status_code=401, detail="Invalid API Key")
     return True
 

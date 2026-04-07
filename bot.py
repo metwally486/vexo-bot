@@ -34,12 +34,11 @@ class PortfolioState(StatesGroup):
 # ==================== الأزرار الرئيسية ====================
 
 def main_keyboard():
-    """الأزرار الرئيسية كما تظهر في الصورة"""
     kb = [
         [KeyboardButton(text="🎯 خدماتنا"), KeyboardButton(text="📝 طلب جديد")],
         [KeyboardButton(text="🎁 العروض والهدايا"), KeyboardButton(text="💳 طرق الدفع")],
         [KeyboardButton(text="📁 أعمالنا"), KeyboardButton(text="👤 حسابي")],
-        [KeyboardButton(text="🤝 شارك واريح"), KeyboardButton(text="💬 الدعم الفني")],  # الخطأ الإملائي مقصود حسب الصورة
+        [KeyboardButton(text="🤝 شارك واريح"), KeyboardButton(text="💬 الدعم الفني")],
         [KeyboardButton(text="تواصل مع الإدارة")]
     ]
     return ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True)
@@ -216,7 +215,7 @@ async def start_handler(message: types.Message):
     await message.answer(
         welcome_text,
         reply_markup=main_keyboard(),
-        parse_mode="Markdown"
+        parse_mode="HTML"
     )
 
 async def services_handler(message: types.Message):
@@ -264,7 +263,7 @@ async def services_handler(message: types.Message):
 📞 **للطلب:** اضغط 'طلب جديد'
 👨‍💼 **المدير:** {ADMIN_USERNAME}
 """
-    await message.answer(text, reply_markup=services_inline_kb(), parse_mode="Markdown")
+    await message.answer(text, reply_markup=services_inline_kb(), parse_mode="HTML")
 
 async def payment_handler(message: types.Message):
     text = f"""
@@ -293,7 +292,7 @@ async def payment_handler(message: types.Message):
 
 👨‍💼 **للاستفسار:** {ADMIN_USERNAME}
 """
-    await message.answer(text, reply_markup=country_selection_kb(), parse_mode="Markdown")
+    await message.answer(text, reply_markup=country_selection_kb(), parse_mode="HTML")
 
 async def portfolio_handler(message: types.Message):
     text = f"""
@@ -323,7 +322,7 @@ async def portfolio_handler(message: types.Message):
 
 📌 **اختر نوع المشروع:**
 """
-    await message.answer(text, reply_markup=portfolio_kb(), parse_mode="Markdown")
+    await message.answer(text, reply_markup=portfolio_kb(), parse_mode="HTML")
 
 async def profile_handler(message: types.Message):
     user = await db.get_user(message.from_user.id)
@@ -389,7 +388,7 @@ async def profile_handler(message: types.Message):
 📢 **القناة:** {CHANNEL_LINK}
 """
     
-    await message.answer(text, parse_mode="Markdown")
+    await message.answer(text, parse_mode="HTML")
 
 async def order_handler(message: types.Message, state: FSMContext):
     await state.set_state(OrderState.service_type)
@@ -403,7 +402,7 @@ async def order_handler(message: types.Message, state: FSMContext):
 💡 **نصيحة:** اختر الخدمة الأنسب لمشروعك
 👨‍💼 **للاستفسار:** {ADMIN_USERNAME}
 """
-    await message.answer(text, reply_markup=services_inline_kb(), parse_mode="Markdown")
+    await message.answer(text, reply_markup=services_inline_kb(), parse_mode="HTML")
 
 async def support_handler(message: types.Message):
     text = f"""
@@ -433,7 +432,7 @@ async def support_handler(message: types.Message):
 
 📢 **تابعنا:** {CHANNEL_LINK}
 """
-    await message.answer(text, reply_markup=support_kb(), parse_mode="Markdown")
+    await message.answer(text, reply_markup=support_kb(), parse_mode="HTML")
 
 async def contact_admin(message: types.Message):
     text = f"""
@@ -456,7 +455,7 @@ https://t.me/{ADMIN_USERNAME.replace('@', '')}
 
 📢 **القناة الرسمية:** {CHANNEL_LINK}
 """
-    await message.answer(text, parse_mode="Markdown")
+    await message.answer(text, parse_mode="HTML")
 
 async def share_handler(message: types.Message):
     user = await db.get_user(message.from_user.id)
@@ -489,7 +488,7 @@ async def share_handler(message: types.Message):
 
 👨‍💼 **المدير:** {ADMIN_USERNAME}
 """
-    await message.answer(text, reply_markup=share_kb(), parse_mode="Markdown")
+    await message.answer(text, reply_markup=share_kb(), parse_mode="HTML")
 
 async def offers_handler(message: types.Message):
     text = f"""
@@ -524,7 +523,7 @@ async def offers_handler(message: types.Message):
 👨‍💼 **المدير:** {ADMIN_USERNAME}
 📢 **القناة:** {CHANNEL_LINK}
 """
-    await message.answer(text, reply_markup=offers_kb(), parse_mode="Markdown")
+    await message.answer(text, reply_markup=offers_kb(), parse_mode="HTML")
 
 async def callback_handler(call: types.CallbackQuery, state: FSMContext):
     data = call.data
@@ -928,8 +927,8 @@ def register_handlers(dp: Dispatcher):
     dp.message.register(order_handler, F.text == "📝 طلب جديد")
     dp.message.register(support_handler, F.text == "💬 الدعم الفني")
     dp.message.register(payment_handler, F.text == "💳 طرق الدفع")
-    dp.message.register(contact_admin, F.text == "تواصل مع الإدارة")       # النص كما في الصورة
-    dp.message.register(share_handler, F.text == "🤝 شارك واريح")          # النص كما في الصورة (خطأ إملائي مقصود)
+    dp.message.register(contact_admin, F.text == "تواصل مع الإدارة")
+    dp.message.register(share_handler, F.text == "🤝 شارك واريح")
     dp.message.register(offers_handler, F.text == "🎁 العروض والهدايا")
     
     dp.message.register(handle_order_details, ~F.text.in_([

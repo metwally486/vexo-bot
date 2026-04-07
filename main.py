@@ -2,8 +2,6 @@ from fastapi import FastAPI, Header, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 import asyncio
-import os
-import uvicorn
 import config
 import database as db
 from bot import register_handlers
@@ -11,26 +9,23 @@ from aiogram import Bot, Dispatcher
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # 1. تهيئة قاعدة البيانات
+    # بدء التشغيل
     await db.init_db()
-    
-    # 2. إعداد البوت
     bot = Bot(token=config.BOT_TOKEN)
     dp = Dispatcher()
     register_handlers(dp)
     
-    # 3. تشغيل البوت في الخلفية (Polling)
-    polling_task = asyncio.create_task(dp.start_polling(bot))
-    print("Vexo Bot is starting...")
+    # تشغيل البوت في الخلفية
+    asyncio.create_task(dp.start_polling(bot))
     
     yield
     
-    # 4. إغلاق الجلسات عند التوقف
-    polling_task.cancel()
+    # إيقاف التشغيل
     await bot.session.close()
 
 app = FastAPI(lifespan=lifespan)
 
+# السماح لجميع الروابط (لـ Vercel)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -39,11 +34,27 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# التحقق من المفتاح
+async def verify_token(x_api_key: str = Header(None)):
+    if x_api_key != config.API_SECRET_KEY:
+        raise HTTPException(status_code=401, detail="Invalid API Key")
+    return True
+
+# نقاط API
 @app.get("/")
 async def root():
-    return {"status": "running", "service": "Vexo-Bot API"}
+    return {"message": "Vexo Bot API is running! ✅"}
 
-# تشغيل السيرفر بالمنفذ الصحيح لـ Render
+@app.get("/api/orders")
+async def get_orders(api_key: str = Depends(verify_token)):
+    orders = await db.get_all_orders()
+    return orders
+
+@app.post("/api/orders/{order_id}/status")
+async def update_order_status(order_id: int, status: str, api_key: str = Depends(verify_token)):
+    await db.update_order_status(order_id, status)
+    return {"message": "Status updated successfully"}
+
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

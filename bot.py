@@ -10,9 +10,10 @@ from datetime import datetime
 # ==================== معلومات الشركة ====================
 COMPANY_NAME = "Vexo للخدمات التقنية"
 CEO_NAME = "متولي الوصابي"
-CEO_USERNAME = "@m_7_1_1_w"
+ADMIN_USERNAME = "@m_7_1_1_w"  # المدير
+SUPPORT_USERNAME = "@abohamed12"  # الدعم الفني
 CHANNEL_LINK = "https://t.me/abod_IT"
-SUPPORT_USERNAME = "@m_7_1_1_w"
+CHANNEL_USERNAME = "abod_IT"
 
 # ==================== حالات النموذج ====================
 
@@ -20,22 +21,26 @@ class OrderState(StatesGroup):
     service_type = State()
     details = State()
     budget = State()
-    country = State()
-    payment_method = State()
-    confirm = State()
 
 class SupportState(StatesGroup):
     message = State()
 
+class PortfolioState(StatesGroup):
+    title = State()
+    project_type = State()
+    description = State()
+    preview_link = State()
+
 # ==================== الأزرار الرئيسية ====================
 
 def main_keyboard():
+    """الأزرار الرئيسية كما تظهر في الصورة"""
     kb = [
         [KeyboardButton(text="🎯 خدماتنا"), KeyboardButton(text="📝 طلب جديد")],
         [KeyboardButton(text="🎁 العروض والهدايا"), KeyboardButton(text="💳 طرق الدفع")],
         [KeyboardButton(text="📁 أعمالنا"), KeyboardButton(text="👤 حسابي")],
-        [KeyboardButton(text="🤝 شارك واربح"), KeyboardButton(text="💬 الدعم الفني")],
-        [KeyboardButton(text="📞 تواصل مع الإدارة")]
+        [KeyboardButton(text="🤝 شارك واريح"), KeyboardButton(text="💬 الدعم الفني")],  # الخطأ الإملائي مقصود حسب الصورة
+        [KeyboardButton(text="تواصل مع الإدارة")]
     ]
     return ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True)
 
@@ -118,7 +123,7 @@ def support_kb():
         [InlineKeyboardButton(text="📋 تذاكري السابقة", callback_data="ticket_my")],
         [InlineKeyboardButton(text="❓ الأسئلة الشائعة", callback_data="faq")],
         [InlineKeyboardButton(text="👨‍💻 الدعم الفني", url=f"https://t.me/{SUPPORT_USERNAME.replace('@', '')}")],
-        [InlineKeyboardButton(text="📞 المدير التنفيذي", url=f"https://t.me/{CEO_USERNAME.replace('@', '')}")],
+        [InlineKeyboardButton(text="📞 المدير التنفيذي", url=f"https://t.me/{ADMIN_USERNAME.replace('@', '')}")],
         [InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]
     ]
     return InlineKeyboardMarkup(inline_keyboard=kb)
@@ -129,14 +134,18 @@ def portfolio_kb():
         [InlineKeyboardButton(text="📱 التطبيقات", callback_data="port_app")],
         [InlineKeyboardButton(text="💻 المواقع", callback_data="port_web")],
         [InlineKeyboardButton(text="🛒 المتاجر", callback_data="port_store")],
+        [InlineKeyboardButton(text="📚 الكل", callback_data="port_all")],
         [InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]
     ]
     return InlineKeyboardMarkup(inline_keyboard=kb)
 
 def share_kb():
     kb = [
-        [InlineKeyboardButton(text="📤 مشاركة البوت", switch_inline_query="🎉 انضم لي على Vexo للخدمات التقنية! "), InlineKeyboardButton(text="🎁 استلام الهدية", callback_data="share_claim"), InlineKeyboardButton(text="🏆 صدارة المشاركين", callback_data="share_leaderboard")],
-        [InlineKeyboardButton(text="📢 الانضمام للقناة", url=CHANNEL_LINK), InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]
+        [InlineKeyboardButton(text="📤 مشاركة البوت", switch_inline_query=f"🎉 انضم لي على {COMPANY_NAME} للخدمات التقنية! 🚀\n\n🔗 الرابط: @VexoServiceBot")],
+        [InlineKeyboardButton(text="🎁 استلام الهدية", callback_data="share_claim")],
+        [InlineKeyboardButton(text="🏆 صدارة المشاركين", callback_data="share_leaderboard")],
+        [InlineKeyboardButton(text="📢 الانضمام للقناة", url=CHANNEL_LINK)],
+        [InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]
     ]
     return InlineKeyboardMarkup(inline_keyboard=kb)
 
@@ -150,13 +159,20 @@ def offers_kb():
     ]
     return InlineKeyboardMarkup(inline_keyboard=kb)
 
+def admin_portfolio_kb():
+    kb = [
+        [InlineKeyboardButton(text="➕ إضافة مشروع", callback_data="portfolio_add")],
+        [InlineKeyboardButton(text="📋 عرض المشاريع", callback_data="portfolio_list")],
+        [InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=kb)
+
 # ==================== المعالجات ====================
 
 async def check_channel_subscription(message: types.Message) -> bool:
     """التحقق من اشتراك المستخدم في القناة"""
     try:
-        channel_username = "abod_IT"  # بدون @
-        member = await message.bot.get_chat_member(channel_username, message.from_user.id)
+        member = await message.bot.get_chat_member(CHANNEL_USERNAME, message.from_user.id)
         return member.status in ['member', 'administrator', 'creator']
     except:
         return False
@@ -164,7 +180,6 @@ async def check_channel_subscription(message: types.Message) -> bool:
 async def start_handler(message: types.Message):
     await db.add_user(message.from_user.id, message.from_user.username, message.from_user.full_name)
     
-    # التحقق من الاشتراك في القناة
     is_subscribed = await check_channel_subscription(message)
     
     welcome_text = f"""
@@ -172,7 +187,7 @@ async def start_handler(message: types.Message):
 ━━━━━━━━━━━━━━━━━━━━
 
 👋 **مرحباً:** {message.from_user.first_name}
- **شركة {COMPANY_NAME}**
+🏢 **شركة {COMPANY_NAME}**
 👨‍💼 **المدير التنفيذي:** {CEO_NAME}
 
 💎 **لماذا تختارنا؟**
@@ -194,7 +209,8 @@ async def start_handler(message: types.Message):
         welcome_text += f"""
 
 ⚠️ **ملاحظة مهمة:**
-للحصول على جميع المزايا والهدايا، يرجى الانضمام لقناتنا أولاً:{CHANNEL_LINK}
+للحصول على جميع المزايا والهدايا، يرجى الانضمام لقناتنا أولاً:
+{CHANNEL_LINK}
 """
     
     await message.answer(
@@ -244,8 +260,9 @@ async def services_handler(message: types.Message):
    • هوية بصرية
    • تسويق إلكتروني
    💰 من 50$
+
 📞 **للطلب:** اضغط 'طلب جديد'
-👨‍💼 **المدير:** {CEO_NAME} ({CEO_USERNAME})
+👨‍💼 **المدير:** {ADMIN_USERNAME}
 """
     await message.answer(text, reply_markup=services_inline_kb(), parse_mode="Markdown")
 
@@ -274,7 +291,7 @@ async def payment_handler(message: types.Message):
 
 💡 **لبدء الطلب:** اضغط 'طلب جديد'
 
-👨‍💼 **للاستفسار:** {CEO_USERNAME}
+👨‍💼 **للاستفسار:** {ADMIN_USERNAME}
 """
     await message.answer(text, reply_markup=country_selection_kb(), parse_mode="Markdown")
 
@@ -342,7 +359,8 @@ async def profile_handler(message: types.Message):
                 "processing": "🔄 قيد التنفيذ", 
                 "completed": "✅ مكتمل",
                 "rejected": "❌ مرفوض"
-            }.get(order['status'], "⏳")            
+            }.get(order['status'], "⏳")
+            
             date_str = "N/A"
             if hasattr(order.get('created_at'), 'strftime'):
                 date_str = order['created_at'].strftime('%Y-%m-%d')
@@ -367,7 +385,8 @@ async def profile_handler(message: types.Message):
 • شارك البوت واربح 50 نقطة
 • اطلب واحصل على نقاط
 
-👨‍💼 **المدير:** {CEO_USERNAME}
+👨‍💼 **المدير:** {ADMIN_USERNAME}
+📢 **القناة:** {CHANNEL_LINK}
 """
     
     await message.answer(text, parse_mode="Markdown")
@@ -382,7 +401,7 @@ async def order_handler(message: types.Message, state: FSMContext):
 🎯 **اختر نوع الخدمة:**
 
 💡 **نصيحة:** اختر الخدمة الأنسب لمشروعك
-👨‍ **للاستفسار:** {CEO_USERNAME}
+👨‍💼 **للاستفسار:** {ADMIN_USERNAME}
 """
     await message.answer(text, reply_markup=services_inline_kb(), parse_mode="Markdown")
 
@@ -391,10 +410,11 @@ async def support_handler(message: types.Message):
 💬 **الدعم الفني - {COMPANY_NAME}**
 ━━━━━━━━━━━━━━━━━━━━
 
-👨‍ **فريقنا جاهز لمساعدتك!**
+👨‍💼 **فريقنا جاهز لمساعدتك!**
+
 📞 **التواصل المباشر:**
-├ المدير التنفيذي: {CEO_USERNAME}
-└ الدعم الفني: {SUPPORT_USERNAME}
+├ الدعم الفني: {SUPPORT_USERNAME}
+└ المدير التنفيذي: {ADMIN_USERNAME}
 
 ⏱ **وقت الاستجابة:**
 ├ خلال 24 ساعة للتذاكر
@@ -421,7 +441,7 @@ async def contact_admin(message: types.Message):
 ━━━━━━━━━━━━━━━━━━━━
 
 👨‍💼 **المدير التنفيذي:** {CEO_NAME}
-📱 **الحساب:** {CEO_USERNAME}
+📱 **الحساب:** {ADMIN_USERNAME}
 
 💡 **متى تتواصل؟**
 • للاستفسارات المهمة
@@ -432,7 +452,7 @@ async def contact_admin(message: types.Message):
 ⏱ **متوفر:** 9 صباحاً - 11 مساءً
 
 🔗 **اضغط هنا للتواصل:**
-https://t.me/{CEO_USERNAME.replace('@', '')}
+https://t.me/{ADMIN_USERNAME.replace('@', '')}
 
 📢 **القناة الرسمية:** {CHANNEL_LINK}
 """
@@ -440,7 +460,8 @@ https://t.me/{CEO_USERNAME.replace('@', '')}
 
 async def share_handler(message: types.Message):
     user = await db.get_user(message.from_user.id)
-    points = user['loyalty_points'] if user else 0    
+    points = user['loyalty_points'] if user else 0
+    
     text = f"""
 🤝 **شارك واربح - {COMPANY_NAME}**
 ━━━━━━━━━━━━━━━━━━━━
@@ -466,7 +487,7 @@ async def share_handler(message: types.Message):
 📢 **لا تنسى الانضمام للقناة:**
 {CHANNEL_LINK}
 
-👨‍💼 **المدير:** {CEO_USERNAME}
+👨‍💼 **المدير:** {ADMIN_USERNAME}
 """
     await message.answer(text, reply_markup=share_kb(), parse_mode="Markdown")
 
@@ -500,7 +521,7 @@ async def offers_handler(message: types.Message):
 
 💡 **استخدم الكود عند الطلب!**
 
-👨‍💼 **المدير:** {CEO_USERNAME}
+👨‍💼 **المدير:** {ADMIN_USERNAME}
 📢 **القناة:** {CHANNEL_LINK}
 """
     await message.answer(text, reply_markup=offers_kb(), parse_mode="Markdown")
@@ -652,11 +673,10 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
                 f"└ التفاصيل: {data_state.get('details')[:100]}...\n\n"
                 f"🔔 **سيتم مراجعته خلال 24 ساعة**\n"
                 f"💡 **تابع حسابك لمعرفة التحديثات**\n\n"
-                f"👨‍💼 **المدير:** {CEO_USERNAME}",
+                f"👨‍💼 **المدير:** {ADMIN_USERNAME}",
                 reply_markup=main_keyboard()
             )
             
-            # إشعار للمدير
             try:
                 await call.message.bot.send_message(
                     config.ADMIN_ID,
@@ -683,12 +703,21 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
         )
     
     elif data == "ticket_my":
-        await call.message.edit_text("📋 **تذاكرك السابقة:**\n\n⏳ قريباً...", reply_markup=support_kb())
+        tickets = await db.get_user_tickets(call.from_user.id)
+        if tickets:
+            text = "📋 **تذاكرك السابقة:**\n\n"
+            for ticket in tickets[:5]:
+                status_emoji = "🟢" if ticket['status'] == 'closed' else "🟡"
+                text += f"{status_emoji} تذكرة #{ticket['id']} - {ticket['status']}\n"
+            await call.message.edit_text(text, reply_markup=support_kb())
+        else:
+            await call.message.edit_text("📋 **لا توجد تذاكر سابقة**", reply_markup=support_kb())
     
     elif data == "faq":
         faq_text = f"""
 ❓ **الأسئلة الشائعة - {COMPANY_NAME}**
 ━━━━━━━━━━━━━━━━━━━━
+
 **س: كم وقت التنفيذ؟**
 ج: 3-7 أيام للبوتات، 7-14 يوم للتطبيقات
 
@@ -710,7 +739,7 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
 **س: كيف أربح نقاط؟**
 ج: اطلب، شارك البوت، احصل على مكافآت
 
-👨‍💼 **للاستفسار:** {CEO_USERNAME}
+👨‍💼 **للاستفسار:** {ADMIN_USERNAME}
 📢 **القناة:** {CHANNEL_LINK}
 """
         await call.message.edit_text(faq_text, reply_markup=support_kb())
@@ -785,8 +814,71 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
             reply_markup=share_kb()
         )
     
-    elif data.startswith("port_"):
-        await call.message.edit_text("📌 **قريباً...**\n\nنعمل على إضافة الأعمال!", reply_markup=portfolio_kb())
+    # الأعمال (Portfolio)
+    elif data == "port_bot":
+        projects = await db.get_portfolio("bot")
+        if projects:
+            text = "🤖 **مشاريع البوتات:**\n\n"
+            for proj in projects[:3]:
+                text += f"• **{proj['title']}**\n"
+                if proj.get('description'):
+                    text += f"  {proj['description'][:100]}\n"
+                text += "\n"
+            await call.message.edit_text(text, reply_markup=portfolio_kb())
+        else:
+            await call.message.edit_text("🤖 **مشاريع البوتات:**\n\n📌 قريباً...", reply_markup=portfolio_kb())
+    
+    elif data == "port_app":
+        projects = await db.get_portfolio("app")
+        if projects:
+            text = "📱 **مشاريع التطبيقات:**\n\n"
+            for proj in projects[:3]:
+                text += f"• **{proj['title']}**\n"
+                if proj.get('description'):
+                    text += f"  {proj['description'][:100]}\n"
+                text += "\n"
+            await call.message.edit_text(text, reply_markup=portfolio_kb())
+        else:
+            await call.message.edit_text("📱 **مشاريع التطبيقات:**\n\n📌 قريباً...", reply_markup=portfolio_kb())
+    
+    elif data == "port_web":
+        projects = await db.get_portfolio("web")
+        if projects:
+            text = "💻 **مشاريع المواقع:**\n\n"
+            for proj in projects[:3]:
+                text += f"• **{proj['title']}**\n"
+                if proj.get('description'):
+                    text += f"  {proj['description'][:100]}\n"
+                text += "\n"
+            await call.message.edit_text(text, reply_markup=portfolio_kb())
+        else:
+            await call.message.edit_text("💻 **مشاريع المواقع:**\n\n📌 قريباً...", reply_markup=portfolio_kb())
+    
+    elif data == "port_store":
+        projects = await db.get_portfolio("store")
+        if projects:
+            text = "🛒 **مشاريع المتاجر:**\n\n"
+            for proj in projects[:3]:
+                text += f"• **{proj['title']}**\n"
+                if proj.get('description'):
+                    text += f"  {proj['description'][:100]}\n"
+                text += "\n"
+            await call.message.edit_text(text, reply_markup=portfolio_kb())
+        else:
+            await call.message.edit_text("🛒 **مشاريع المتاجر:**\n\n📌 قريباً...", reply_markup=portfolio_kb())
+    
+    elif data == "port_all":
+        projects = await db.get_portfolio()
+        if projects:
+            text = "📚 **جميع المشاريع:**\n\n"
+            for proj in projects[:5]:
+                text += f"• **{proj['title']}** ({proj['type']})\n"
+                if proj.get('description'):
+                    text += f"  {proj['description'][:100]}\n"
+                text += "\n"
+            await call.message.edit_text(text, reply_markup=portfolio_kb())
+        else:
+            await call.message.edit_text("📚 **جميع المشاريع:**\n\n📌 قريباً...", reply_markup=portfolio_kb())
     
     await call.answer()
 
@@ -812,7 +904,7 @@ async def handle_order_details(message: types.Message, state: FSMContext):
             f"📝 رسالتك: {message.text[:100]}...\n\n"
             f"⏱ **سنرد عليك خلال 24 ساعة**\n"
             f"💬 **للتواصل السريع:** {SUPPORT_USERNAME}\n"
-            f"👨‍💼 **المدير:** {CEO_USERNAME}",
+            f"👨‍💼 **المدير:** {ADMIN_USERNAME}",
             reply_markup=main_keyboard()
         )
         
@@ -836,13 +928,14 @@ def register_handlers(dp: Dispatcher):
     dp.message.register(order_handler, F.text == "📝 طلب جديد")
     dp.message.register(support_handler, F.text == "💬 الدعم الفني")
     dp.message.register(payment_handler, F.text == "💳 طرق الدفع")
-    dp.message.register(contact_admin, F.text == "📞 تواصل مع الإدارة")
-    dp.message.register(share_handler, F.text == "🤝 شارك واربح")
-    dp.message.register(offers_handler, F.text == "🎁 العروض والهدايا")    
+    dp.message.register(contact_admin, F.text == "تواصل مع الإدارة")       # النص كما في الصورة
+    dp.message.register(share_handler, F.text == "🤝 شارك واريح")          # النص كما في الصورة (خطأ إملائي مقصود)
+    dp.message.register(offers_handler, F.text == "🎁 العروض والهدايا")
+    
     dp.message.register(handle_order_details, ~F.text.in_([
         "🎯 خدماتنا", "📁 أعمالنا", "👤 حسابي", "📝 طلب جديد",
-        "💬 الدعم الفني", "💳 طرق الدفع", "📞 تواصل مع الإدارة",
-        "🤝 شارك واربح", "🎁 العروض والهدايا"
+        "💬 الدعم الفني", "💳 طرق الدفع", "تواصل مع الإدارة",
+        "🤝 شارك واريح", "🎁 العروض والهدايا"
     ]))
     
     dp.callback_query.register(callback_handler)

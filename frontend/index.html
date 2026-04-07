@@ -47,7 +47,8 @@ def services_inline_kb():
     kb = [
         [InlineKeyboardButton(text="🤖 إنشاء بوت تلجرام", callback_data="srv_create_bot")],
         [InlineKeyboardButton(text="⚙️ تطوير بوت موجود", callback_data="srv_dev_bot")],
-        [InlineKeyboardButton(text="📱 تطبيق أندرويد", callback_data="srv_android")],        [InlineKeyboardButton(text="🍎 تطبيق iOS", callback_data="srv_ios")],
+        [InlineKeyboardButton(text="📱 تطبيق أندرويد", callback_data="srv_android")],
+        [InlineKeyboardButton(text="🍎 تطبيق iOS", callback_data="srv_ios")],
         [InlineKeyboardButton(text="💻 موقع إلكتروني", callback_data="srv_website")],
         [InlineKeyboardButton(text="🛒 متجر إلكتروني", callback_data="srv_store")],
         [InlineKeyboardButton(text="🔧 معاملات برمجية", callback_data="srv_scripts")],
@@ -96,7 +97,8 @@ def yemen_wallets_kb():
     return InlineKeyboardMarkup(inline_keyboard=kb)
 
 def international_payment_kb():
-    kb = [        [InlineKeyboardButton(text="💳 باي بال (PayPal)", callback_data="intl_paypal")],
+    kb = [
+        [InlineKeyboardButton(text="💳 باي بال (PayPal)", callback_data="intl_paypal")],
         [InlineKeyboardButton(text="💵 ويسترن يونيون", callback_data="intl_western")],
         [InlineKeyboardButton(text="🏦 تحويل بنكي", callback_data="intl_bank")],
         [InlineKeyboardButton(text="💰 USDT (Crypto)", callback_data="intl_usdt")],
@@ -145,6 +147,7 @@ def share_kb():
         [InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]
     ]
     return InlineKeyboardMarkup(inline_keyboard=kb)
+
 def offers_kb():
     kb = [
         [InlineKeyboardButton(text="🎁 العروض الحالية", callback_data="offers_current")],
@@ -159,7 +162,7 @@ def admin_portfolio_kb():
     kb = [
         [InlineKeyboardButton(text="➕ إضافة مشروع", callback_data="portfolio_add")],
         [InlineKeyboardButton(text="📋 عرض المشاريع", callback_data="portfolio_list")],
-        [InlineKeyboardButton(text=" رجوع", callback_data="main_menu")]
+        [InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]
     ]
     return InlineKeyboardMarkup(inline_keyboard=kb)
 
@@ -184,7 +187,7 @@ async def start_handler(message: types.Message):
 
 👋 **مرحباً:** {message.from_user.first_name}
 🏢 **شركة {COMPANY_NAME}**
-👨‍ **المدير التنفيذي:** {CEO_NAME}
+👨‍💼 **المدير التنفيذي:** {CEO_NAME}
 
 💎 **لماذا تختارنا؟**
 ✅ أسعار منافسة وجودة عالية
@@ -194,7 +197,8 @@ async def start_handler(message: types.Message):
 
 🎁 **عروض خاصة:**
 🔸 خصم 10% للطلب الأول
-🔸 خصم 15% عند مشاركة البوت🔸 نقاط ولاء على كل طلب
+🔸 خصم 15% عند مشاركة البوت
+🔸 نقاط ولاء على كل طلب
 🔸 هدايا حصرية للمشتركين
 
 📢 **تابعنا على القناة:** {CHANNEL_LINK}
@@ -243,6 +247,7 @@ async def services_handler(message: types.Message):
    • أنظمة دفع متعددة
    • إدارة مخزون وطلبات
    💰 من 400$
+
 🔧 **معاملات برمجية:**
    • سكربتات مخصصة
    • أتمتة المهام
@@ -256,7 +261,7 @@ async def services_handler(message: types.Message):
    💰 من 50$
 
 📞 **للطلب:** اضغط 'طلب جديد'
-👨‍ **المدير:** {ADMIN_USERNAME}
+👨‍💼 **المدير:** {ADMIN_USERNAME}
 """
     await message.answer(text, reply_markup=services_inline_kb(), parse_mode="Markdown")
 
@@ -285,7 +290,7 @@ async def payment_handler(message: types.Message):
 
 💡 **لبدء الطلب:** اضغط 'طلب جديد'
 
-👨‍ **للاستفسار:** {ADMIN_USERNAME}
+👨‍💼 **للاستفسار:** {ADMIN_USERNAME}
 """
     await message.answer(text, reply_markup=country_selection_kb(), parse_mode="Markdown")
 
@@ -293,6 +298,7 @@ async def portfolio_handler(message: types.Message):
     text = f"""
 📁 **أعمال {COMPANY_NAME}**
 ━━━━━━━━━━━━━━━━━━━━
+
 🎨 **نماذج من مشاريعنا:**
 
 🤖 **البوتات:**
@@ -338,9 +344,10 @@ async def profile_handler(message: types.Message):
 ├ الطلبات المكتملة: {completed}
 └ نقاط الولاء: {points} 🪙
 
- **مزاياك:**
+🎁 **مزاياك:**
 ├ خصم متاح: {discount_percent}%
 └ الرصيد: {points * 0.1}$ (قابل للاستخدام)
+
 📦 **آخر طلباتك:**
 """
     
@@ -391,8 +398,9 @@ async def order_handler(message: types.Message, state: FSMContext):
 ━━━━━━━━━━━━━━━━━━━━
 
 🎯 **اختر نوع الخدمة:**
+
 💡 **نصيحة:** اختر الخدمة الأنسب لمشروعك
-👨‍ **للاستفسار:** {ADMIN_USERNAME}
+👨‍💼 **للاستفسار:** {ADMIN_USERNAME}
 """
     await message.answer(text, reply_markup=services_inline_kb(), parse_mode="Markdown")
 
@@ -439,6 +447,7 @@ async def contact_admin(message: types.Message):
 • للمشاريع الكبيرة
 • للشكاوى والاقتراحات
 • للاستشارات المجانية
+
 ⏱ **متوفر:** 9 صباحاً - 11 مساءً
 
 🔗 **اضغط هنا للتواصل:**
@@ -488,7 +497,8 @@ async def offers_handler(message: types.Message):
 
 🔥 **العروض الحالية:**
 
-🎉 **عرض الطلب الأول:**• خصم 10% على أول طلب
+🎉 **عرض الطلب الأول:**
+• خصم 10% على أول طلب
 • الكود: FIRST10
 • ساري دائماً
 
@@ -537,7 +547,8 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
         await state.update_data(service_type=service_name)
         await state.set_state(OrderState.details)
         await call.message.edit_text(
-            f"✅ {service_name}\n\n"            f"📝 **أرسل تفاصيل المشروع:**\n"
+            f"✅ {service_name}\n\n"
+            f"📝 **أرسل تفاصيل المشروع:**\n"
             f"• ما الوظيفة المطلوبة؟\n"
             f"• ما الميزات الخاصة؟\n"
             f"• هل هناك متطلبات إضافية؟",
@@ -586,7 +597,8 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
         )
     
     # المحافظ اليمنية
-    elif data == "yemen_wallets":        await call.message.edit_text(
+    elif data == "yemen_wallets":
+        await call.message.edit_text(
             "📱 **المحافظ الإلكترونية - اليمن**\n\n"
             "💳 **اختر المحفظة:**",
             reply_markup=yemen_wallets_kb()
@@ -635,7 +647,8 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
             "budget_mid": "100$ - 300$",
             "budget_high": "300$ - 1000$",
             "budget_premium": "أكثر من 1000$"
-        }        await state.update_data(budget=budget_map[data])
+        }
+        await state.update_data(budget=budget_map[data])
         
         data_state = await state.get_data()
         order_id = await db.create_order(
@@ -684,7 +697,8 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
             "📝 **اكتب مشكلتك بالتفصيل:**\n"
             "• ما المشكلة؟\n"
             "• متى ظهرت؟\n"
-            "• ما الخطوات التي جربتها؟",            reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="🔙 إلغاء", callback_data="main_menu")]])
+            "• ما الخطوات التي جربتها؟",
+            reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="🔙 إلغاء", callback_data="main_menu")]])
         )
     
     elif data == "ticket_my":
@@ -733,7 +747,8 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
     elif data == "offers_current":
         await call.message.edit_text(
             "🔥 **العروض الحالية**\n\n"
-            "🎉 **عرض الطلب الأول:** 10% خصم\n"            "🎊 **الباقة الكاملة:** 25% خصم\n"
+            "🎉 **عرض الطلب الأول:** 10% خصم\n"
+            "🎊 **الباقة الكاملة:** 25% خصم\n"
             "🏆 **الطلبات الكبيرة:** خصم حتى 30%\n\n"
             "💡 **استخدم الكود عند الطلب!**",
             reply_markup=offers_kb()
@@ -782,7 +797,8 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
         await call.message.edit_text(
             f"🎁 **رصيدك من النقاط:** {points}\n\n"
             f"💰 **القيمة:** {points * 0.1}$\n\n"
-            f"📤 **شارك الآن واربح 50 نقطة!**\n"            f"🔗 رابط البوت: @VexoServiceBot\n\n"
+            f"📤 **شارك الآن واربح 50 نقطة!**\n"
+            f"🔗 رابط البوت: @VexoServiceBot\n\n"
             f"📢 **لا تنسى الانضمام للقناة:**\n{CHANNEL_LINK}",
             reply_markup=share_kb()
         )
@@ -831,7 +847,8 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
             for proj in projects[:3]:
                 text += f"• **{proj['title']}**\n"
                 if proj.get('description'):
-                    text += f"  {proj['description'][:100]}\n"                text += "\n"
+                    text += f"  {proj['description'][:100]}\n"
+                text += "\n"
             await call.message.edit_text(text, reply_markup=portfolio_kb())
         else:
             await call.message.edit_text("💻 **مشاريع المواقع:**\n\n📌 قريباً...", reply_markup=portfolio_kb())
@@ -880,12 +897,13 @@ async def handle_order_details(message: types.Message, state: FSMContext):
         ticket_id = await db.create_ticket(message.from_user.id, message.text)
         await state.clear()
         
-        await message.answer(            f"✅ **تم فتح تذكرة الدعم!**\n\n"
+        await message.answer(
+            f"✅ **تم فتح تذكرة الدعم!**\n\n"
             f"🎫 رقم التذكرة: #{ticket_id}\n"
             f"📝 رسالتك: {message.text[:100]}...\n\n"
             f"⏱ **سنرد عليك خلال 24 ساعة**\n"
             f"💬 **للتواصل السريع:** {SUPPORT_USERNAME}\n"
-            f"👨‍ **المدير:** {ADMIN_USERNAME}",
+            f"👨‍💼 **المدير:** {ADMIN_USERNAME}",
             reply_markup=main_keyboard()
         )
         

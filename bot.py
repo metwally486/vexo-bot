@@ -6,8 +6,10 @@ from aiogram.fsm.state import State, StatesGroup
 import config
 import database as db
 import random
+from datetime import datetime, timedelta
 
-# حالات النموذج (FSM)
+# ==================== حالات النموذج ====================
+
 class OrderState(StatesGroup):
     service_type = State()
     service_category = State()
@@ -23,7 +25,7 @@ class PaymentState(StatesGroup):
     amount = State()
     wallet = State()
 
-# ==================== الأزرار ====================
+# ==================== الأزرار الرئيسية ====================
 
 def main_keyboard():
     kb = [
@@ -43,11 +45,11 @@ def services_inline_kb():
         [InlineKeyboardButton(text="🍎 تطبيق iOS", callback_data="srv_ios")],
         [InlineKeyboardButton(text="💻 موقع إلكتروني", callback_data="srv_website")],
         [InlineKeyboardButton(text="🛒 متجر إلكتروني", callback_data="srv_store")],
-        [InlineKeyboardButton(text=" خدمات أخرى", callback_data="srv_other")],
-        [InlineKeyboardButton(text="🎁 خدمات مميزة", callback_data="srv_premium")],
-        [InlineKeyboardButton(text="🔙 القائمة الرئيسية", callback_data="main_menu")]
-    ]
+        [InlineKeyboardButton(text="🔧 معاملات برمجية", callback_data="srv_scripts")],
+        [InlineKeyboardButton(text="🎨 خدمات مميزة", callback_data="srv_premium")],
+        [InlineKeyboardButton(text="🔙 القائمة الرئيسية", callback_data="main_menu")]    ]
     return InlineKeyboardMarkup(inline_keyboard=kb)
+
 def payment_methods_kb():
     kb = [
         [InlineKeyboardButton(text="📱 جيب (Jeew)", callback_data="pay_jeew")],
@@ -55,7 +57,7 @@ def payment_methods_kb():
         [InlineKeyboardButton(text="💰 كريمي (Kareemi)", callback_data="pay_kareemi")],
         [InlineKeyboardButton(text="📲 جوالي (Jawali)", callback_data="pay_jawali")],
         [InlineKeyboardButton(text="💵 موني (Monee)", callback_data="pay_monee")],
-        [InlineKeyboardButton(text="🌍 تحويل دولي", callback_data="pay_international")],
+        [InlineKeyboardButton(text="🌍 تحويل دولي (532174)", callback_data="pay_international")],
         [InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]
     ]
     return InlineKeyboardMarkup(inline_keyboard=kb)
@@ -73,9 +75,10 @@ def budget_kb():
 def support_kb():
     kb = [
         [InlineKeyboardButton(text="🎫 فتح تذكرة جديدة", callback_data="ticket_new")],
-        [InlineKeyboardButton(text="📋 تذاكري", callback_data="ticket_my")],
+        [InlineKeyboardButton(text="📋 تذاكري السابقة", callback_data="ticket_my")],
         [InlineKeyboardButton(text="❓ الأسئلة الشائعة", callback_data="faq")],
         [InlineKeyboardButton(text="👨‍💻 الدعم الفني المباشر", url="https://t.me/m_7_1_1_w")],
+        [InlineKeyboardButton(text="📞 المدير", url="https://t.me/abohamed12")],
         [InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]
     ]
     return InlineKeyboardMarkup(inline_keyboard=kb)
@@ -93,15 +96,17 @@ def portfolio_kb():
 def share_kb():
     kb = [
         [InlineKeyboardButton(text="📤 مشاركة البوت", switch_inline_query="🎉 انضم لي على Vexo Bot للخدمات التقنية! ")],
-        [InlineKeyboardButton(text="🎁 استلام الهدية", callback_data="share_claim")],
+        [InlineKeyboardButton(text="🎁 استلام الهدية", callback_data="share_claim")],        [InlineKeyboardButton(text="🏆 صدارة المشاركين", callback_data="share_leaderboard")],
         [InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]
     ]
     return InlineKeyboardMarkup(inline_keyboard=kb)
+
 def offers_kb():
     kb = [
         [InlineKeyboardButton(text="🎁 العروض الحالية", callback_data="offers_current")],
         [InlineKeyboardButton(text="🎟️ كوبونات الخصم", callback_data="offers_coupons")],
-        [InlineKeyboardButton(text=" برنامج الولاء", callback_data="offers_loyalty")],
+        [InlineKeyboardButton(text="🏆 برنامج الولاء", callback_data="offers_loyalty")],
+        [InlineKeyboardButton(text="🎪 عروض موسمية", callback_data="offers_seasonal")],
         [InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]
     ]
     return InlineKeyboardMarkup(inline_keyboard=kb)
@@ -132,20 +137,18 @@ async def start_handler(message: types.Message):
 📌 **اختر من القائمة:**
 """
     
-    # إرسال صورة ترحيبية (اختياري)
     await message.answer(
         welcome_text,
         reply_markup=main_keyboard(),
         parse_mode="Markdown"
     )
     
-    # رسالة ترحيبية إضافية
     await message.answer(
         "🎉 **استخدم /help لمعرفة جميع الأوامر**",
-        parse_mode="Markdown"
-    )
+        parse_mode="Markdown"    )
 
-async def services_handler(message: types.Message):    text = """
+async def services_handler(message: types.Message):
+    text = """
 🎯 **خدماتنا التقنية المتكاملة**
 ━━━━━━━━━━━━━━━━━━━━
 
@@ -174,49 +177,58 @@ async def services_handler(message: types.Message):    text = """
    • إدارة مخزون وطلبات
    💰 من 400$
 
-🔧 **خدمات أخرى:**
-   • برمجة خاصة
-   • استشارات تقنية
-   • صيانة وتطوير
+🔧 **معاملات برمجية:**
+   • سكربتات مخصصة
+   • أتمتة المهام
+   • تكامل APIs
+   💰 من 150$
 
-🎁 **خدمات مميزة:**
+🎨 **خدمات مميزة:**
    • تصميم شعارات
    • هوية بصرية
    • تسويق إلكتروني
+   💰 من 50$
 
 📞 **للطلب:** اضغط 'طلب جديد'
 """
     await message.answer(text, reply_markup=services_inline_kb(), parse_mode="Markdown")
 
 async def payment_handler(message: types.Message):
-    text = """
-💳 **طرق الدفع المتاحة**
+    text = """💳 **طرق الدفع المتاحة**
 ━━━━━━━━━━━━━━━━━━━━
 
 📱 **المحافظ المحلية:**
+
 1️⃣ **جيب (Jeew)**
-   📲 رقم المحفظة: سيتم إرساله بعد الطلب
+   📲 الرقم: يُرسل بعد تأكيد الطلب
+   ⏱ التفعيل: فوري
 
 2️⃣ **ون كاش (OneCash)**
-   📲 رقم المحفظة: سيتم إرساله بعد الطلب
+   📲 الرقم: يُرسل بعد تأكيد الطلب
+   ⏱ التفعيل: فوري
 
 3️⃣ **كريمي (Kareemi)**
-   📲 رقم المحفظة: سيتم إرساله بعد الطلب
+   📲 الرقم: يُرسل بعد تأكيد الطلب
+   ⏱ التفعيل: خلال ساعة
 
 4️⃣ **جوالي (Jawali)**
-   📲 رقم المحفظة: سيتم إرساله بعد الطلب
+   📲 الرقم: يُرسل بعد تأكيد الطلب
+   ⏱ التفعيل: فوري
 
 5️⃣ **موني (Monee)**
-   📲 رقم المحفظة: سيتم إرساله بعد الطلب
+   📲 الرقم: يُرسل بعد تأكيد الطلب
+   ⏱ التفعيل: فوري
 
 🌍 **التحويل الدولي:**
    🏦 رقم الحساب: 532174
    💵 حدد المبلغ عند الطلب
+   ⏱ التفعيل: 24-48 ساعة
 
 📝 **ملاحظات مهمة:**
 • يتم إرسال تفاصيل الدفع بعد تأكيد الطلب
 • يحتفظ بالإيصال بعد التحويل
 • يتم تفعيل الطلب خلال 24 ساعة
+• الحد الأدنى للطلب: 50$
 
 💡 **لبدء الطلب:** اضغط 'طلب جديد'
 """
@@ -227,7 +239,27 @@ async def portfolio_handler(message: types.Message):
 📁 **أعمالنا ومشاريعنا**
 ━━━━━━━━━━━━━━━━━━━━
 
-اختر نوع المشروع لعرض الأعمال السابقة
+🎨 **نماذج من أعمالنا:**
+
+🤖 **البوتات:**
+• بوت متجر إلكتروني - 150$
+• بوت حماية متقدم - 200$• بوت خدمة عملاء - 180$
+
+📱 **التطبيقات:**
+• تطبيق توصيل طلبات - 800$
+• تطبيق إدارة مهام - 650$
+• تطبيق متجر - 950$
+
+💻 **المواقع:**
+• موقع شركة - 350$
+• موقع متجر - 550$
+• موقع خدمات - 400$
+
+🛒 **المتاجر:**
+• متجر إلكتروني كامل - 750$
+• متجر مع بوت - 900$
+
+📌 **اختر نوع المشروع:**
 """
     await message.answer(text, reply_markup=portfolio_kb(), parse_mode="Markdown")
 
@@ -235,20 +267,23 @@ async def profile_handler(message: types.Message):
     user = await db.get_user(message.from_user.id)
     orders = await db.get_user_orders(message.from_user.id)
     
-    # حساب النقاط
     points = user['loyalty_points'] if user else 0
-    discount_percent = min(points // 10, 25)  # خصم حتى 25%
+    discount_percent = min(points // 10, 25)
+    
+    completed = len([o for o in orders if o['status'] == 'completed'])
+    pending = len([o for o in orders if o['status'] in ['pending', 'processing']])
     
     text = f"""
 👤 **معلومات حسابك**
 ━━━━━━━━━━━━━━━━━━━━
 
-📊 **الإحصائيات:**├ إجمالي الطلبات: {len(orders)}
-├ الطلبات النشطة: {len([o for o in orders if o['status'] in ['pending', 'processing']])}
-├ الطلبات المكتملة: {len([o for o in orders if o['status'] == 'completed'])}
+📊 **الإحصائيات:**
+├ إجمالي الطلبات: {len(orders)}
+├ الطلبات النشطة: {pending}
+├ الطلبات المكتملة: {completed}
 └ نقاط الولاء: {points} 🪙
 
- **مزاياك:**
+🎁 **مزاياك:**
 ├ خصم متاح: {discount_percent}%
 └ الرصيد: {points * 0.1}$ (قابل للاستخدام)
 
@@ -256,20 +291,25 @@ async def profile_handler(message: types.Message):
 """
     
     if orders:
-        for order in orders[:3]:
-            status_emoji = {
-                "pending": "⏳ قيد المراجعة",
+        for order in orders[:5]:
+            status_emoji = {                "pending": "⏳ قيد المراجعة",
                 "processing": "🔄 قيد التنفيذ", 
                 "completed": "✅ مكتمل",
                 "rejected": "❌ مرفوض"
             }.get(order['status'], "⏳")
+            
+            date_str = "N/A"
+            if hasattr(order.get('created_at'), 'strftime'):
+                date_str = order['created_at'].strftime('%Y-%m-%d')
+            elif order.get('created_at'):
+                date_str = str(order['created_at'])[:10]
             
             text += f"""
 ┌────────────────
 │ {status_emoji} **طلب #{order['id']}**
 │ ├ الخدمة: {order['service_type']}
 │ ├ الميزانية: {order['budget']}
-│ └ التاريخ: {order['created_at'].strftime('%Y-%m-%d') if hasattr(order['created_at'], 'strftime') else 'N/A'}
+│ └ التاريخ: {date_str}
 └────────────────
 """
     else:
@@ -293,6 +333,7 @@ async def order_handler(message: types.Message, state: FSMContext):
 ━━━━━━━━━━━━━━━━━━━━
 
 🎯 **اختر نوع الخدمة:**
+
 💡 **نصيحة:** اختر الخدمة الأنسب لمشروعك
 """
     await message.answer(text, reply_markup=services_inline_kb(), parse_mode="Markdown")
@@ -301,8 +342,7 @@ async def support_handler(message: types.Message):
     text = """
 💬 **الدعم الفني**
 ━━━━━━━━━━━━━━━━━━━━
-
-👨‍💻 **فريقنا جاهز لمساعدتك!**
+👨‍ **فريقنا جاهز لمساعدتك!**
 
 📞 **التواصل المباشر:**
 ├ المدير: @abohamed12
@@ -341,13 +381,16 @@ async def contact_admin(message: types.Message):
 
 🔗 **اضغط هنا للتواصل:**
 https://t.me/abohamed12
-"""    await message.answer(text, parse_mode="Markdown")
+"""
+    await message.answer(text, parse_mode="Markdown")
 
 async def share_handler(message: types.Message):
-    text = """
+    user = await db.get_user(message.from_user.id)
+    points = user['loyalty_points'] if user else 0
+    
+    text = f"""
 🤝 **شارك واربح**
 ━━━━━━━━━━━━━━━━━━━━
-
 🎁 **برنامج الإحالة:**
 
 💰 **كيف تربح؟**
@@ -359,6 +402,9 @@ async def share_handler(message: types.Message):
 • 50 نقطة = خصم 5$
 • 100 نقطة = خصم 10$
 • 200 نقطة = خصم 25$ + هدية
+
+📊 **رصيدك الحالي:** {points} نقطة
+💵 **القيمة:** {points * 0.1}$
 
 📤 **شارك الآن:**
 اضغط الزر أدناه لمشاركة البوت
@@ -375,6 +421,7 @@ async def offers_handler(message: types.Message):
 🎉 **عرض الطلب الأول:**
 • خصم 10% على أول طلب
 • الكود: FIRST10
+• ساري دائماً
 
 🎊 **عرض الباقة الكاملة:**
 • موقع + بوت + تطبيق
@@ -391,8 +438,8 @@ async def offers_handler(message: types.Message):
 • VEXO15 = 15% (للطلبات فوق 300$)
 • SHARE20 = 20% (بعد مشاركة البوت)
 • VIP25 = 25% (للطلبات فوق 1000$)
-💡 **استخدم الكود عند الطلب!**
-"""
+
+💡 **استخدم الكود عند الطلب!**"""
     await message.answer(text, reply_markup=offers_kb(), parse_mode="Markdown")
 
 async def callback_handler(call: types.CallbackQuery, state: FSMContext):
@@ -401,7 +448,6 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
     if data == "main_menu":
         await call.message.edit_text("📋 **القائمة الرئيسية:**", reply_markup=main_keyboard())
     
-    # خدمات
     elif data == "srv_create_bot":
         await state.update_data(service_type="🤖 إنشاء بوت تلجرام")
         await state.set_state(OrderState.details)
@@ -410,7 +456,7 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
             "📝 **أرسل تفاصيل البوت المطلوب:**\n"
             "• ما وظيفة البوت؟\n"
             "• ما الميزات المطلوبة؟\n"
-            "• هل هناك متطلبات خاصة؟",
+            "• هل هناك متطلبات خاصة?",
             reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]])
         )
     
@@ -439,10 +485,10 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
         )
     
     elif data == "srv_ios":
-        await state.update_data(service_type="🍎 تطبيق iOS")        await state.set_state(OrderState.details)
+        await state.update_data(service_type="🍎 تطبيق iOS")
+        await state.set_state(OrderState.details)
         await call.message.edit_text(
-            "✅ **تطبيق iOS**\n\n"
-            "📝 **أرسل تفاصيل التطبيق:**",
+            "✅ **تطبيق iOS**\n\n"            "📝 **أرسل تفاصيل التطبيق:**",
             reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]])
         )
     
@@ -470,6 +516,18 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
             reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]])
         )
     
+    elif data == "srv_scripts":
+        await state.update_data(service_type="🔧 معاملات برمجية")
+        await state.set_state(OrderState.details)
+        await call.message.edit_text(
+            "✅ **معاملات برمجية**\n\n"
+            "📝 **أرسل:**\n"
+            "• نوع السكريبت\n"
+            "• الوظيفة المطلوبة\n"
+            "• اللغة المفضلة",
+            reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]])
+        )
+    
     elif data == "srv_premium":
         await call.message.edit_text(
             "🎁 **الخدمات المميزة**\n\n"
@@ -479,8 +537,7 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
             "• دعم لمدة سنة\n"
             "• تحديثات مجانية\n\n"
             "🥈 **الباقة الفضية** (500$):\n"
-            "• بوت + موقع\n"
-            "• دعم 6 أشهر\n\n"
+            "• بوت + موقع\n"            "• دعم 6 أشهر\n\n"
             "📞 **للاستفسار:** @abohamed12",
             reply_markup=services_inline_kb()
         )
@@ -488,7 +545,8 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
     elif data.startswith("budget_"):
         budget_map = {
             "budget_low": "أقل من 100$",
-            "budget_mid": "100$ - 300$",            "budget_high": "300$ - 1000$",
+            "budget_mid": "100$ - 300$",
+            "budget_high": "300$ - 1000$",
             "budget_premium": "أكثر من 1000$"
         }
         await state.update_data(budget=budget_map[data])
@@ -501,9 +559,7 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
             budget=budget_map[data]
         )
         
-        # إضافة نقاط
         await db.add_points(call.from_user.id, 10)
-        
         await state.clear()
         
         await call.message.edit_text(
@@ -518,7 +574,6 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
             reply_markup=main_keyboard()
         )
         
-        # إشعار للمدير
         try:
             await call.message.bot.send_message(
                 config.ADMIN_ID,
@@ -531,17 +586,19 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
             )
         except:
             pass
-    
-    # الدعم الفني
-    elif data == "ticket_new":
+        elif data == "ticket_new":
         await state.set_state(SupportState.message)
         await call.message.edit_text(
             "🎫 **فتح تذكرة دعم جديدة**\n\n"
-            "📝 **اكتب مشكلتك بالتفصيل:**\n"            "• ما المشكلة؟\n"
+            "📝 **اكتب مشكلتك بالتفصيل:**\n"
+            "• ما المشكلة؟\n"
             "• متى ظهرت؟\n"
             "• ما الخطوات التي جربتها؟",
             reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="🔙 إلغاء", callback_data="main_menu")]])
         )
+    
+    elif data == "ticket_my":
+        await call.message.edit_text("📋 **تذاكرك السابقة:**\n\n⏳ قريباً...", reply_markup=support_kb())
     
     elif data == "faq":
         faq_text = """
@@ -571,7 +628,6 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
 """
         await call.message.edit_text(faq_text, reply_markup=support_kb())
     
-    # العروض
     elif data == "offers_current":
         await call.message.edit_text(
             "🔥 **العروض الحالية**\n\n"
@@ -579,6 +635,16 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
             "🎊 **الباقة الكاملة:** 25% خصم\n"
             "🏆 **الطلبات الكبيرة:** خصم حتى 30%\n\n"
             "💡 **استخدم الكود عند الطلب!**",
+            reply_markup=offers_kb()        )
+    
+    elif data == "offers_coupons":
+        await call.message.edit_text(
+            "🎟️ **كوبونات الخصم**\n\n"
+            "FIRST10 = 10% (الطلب الأول)\n"
+            "VEXO15 = 15% (فوق 300$)\n"
+            "SHARE20 = 20% (بعد المشاركة)\n"
+            "VIP25 = 25% (فوق 1000$)\n\n"
+            "💡 **اطلب الكود من المدير**",
             reply_markup=offers_kb()
         )
     
@@ -586,7 +652,8 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
         await call.message.edit_text(
             "🏆 **برنامج الولاء**\n\n"
             "💰 **كيف يعمل؟**\n"
-            "• كل طلب = 10-50 نقطة\n"            "• كل مشاركة = 50 نقطة\n"
+            "• كل طلب = 10-50 نقطة\n"
+            "• كل مشاركة = 50 نقطة\n"
             "• كل 10 نقاط = 1$ خصم\n\n"
             "🎁 **مستويات الولاء:**\n"
             "🥉 برونزي: 0-100 نقطة\n"
@@ -596,7 +663,16 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
             reply_markup=offers_kb()
         )
     
-    # المشاركة
+    elif data == "offers_seasonal":
+        await call.message.edit_text(
+            "🎪 **عروض موسمية**\n\n"
+            "🎄 **عرض العيد:** 20% خصم\n"
+            "🎓 **عرض الطلاب:** 15% خصم\n"
+            "🎂 **عرض السنة الجديدة:** قريباً\n\n"
+            "📢 **تابعنا للعروض الجديدة!**",
+            reply_markup=offers_kb()
+        )
+    
     elif data == "share_claim":
         user = await db.get_user(call.from_user.id)
         points = user['loyalty_points'] if user else 0
@@ -607,6 +683,27 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
             f"📤 **شارك الآن واربح 50 نقطة!**\n"
             f"🔗 رابط البوت: @VexoServiceBot",
             reply_markup=share_kb()
+        )
+        elif data == "share_leaderboard":
+        await call.message.edit_text(
+            "🏆 **صدارة المشاركين**\n\n"
+            "🥇 المستخدم الأول: 500 نقطة\n"
+            "🥈 المستخدم الثاني: 350 نقطة\n"
+            "🥉 المستخدم الثالث: 200 نقطة\n\n"
+            "📊 **أنت:** شارك لتظهر هنا!",
+            reply_markup=share_kb()
+        )
+    
+    elif data.startswith("port_"):
+        await call.message.edit_text("📌 **قريباً...**\n\nنعمل على إضافة الأعمال!", reply_markup=portfolio_kb())
+    
+    elif data.startswith("pay_"):
+        await call.message.edit_text(
+            "💳 **طرق الدفع**\n\n"
+            "📝 **سيتم إرسال تفاصيل الدفع**\n"
+            "بعد تأكيد طلبك\n\n"
+            "💡 **لبدء الطلب:** اضغط 'طلب جديد'",
+            reply_markup=payment_methods_kb()
         )
     
     await call.answer()
@@ -635,9 +732,8 @@ async def handle_order_details(message: types.Message, state: FSMContext):
             f"💬 **للتواصل السريع:** @m_7_1_1_w",
             reply_markup=main_keyboard()
         )
-                # إشعار للمدير
-        try:
-            await message.bot.send_message(
+        
+        try:            await message.bot.send_message(
                 config.ADMIN_ID,
                 f"🎫 **تذكرة دعم جديدة!**\n\n"
                 f"👤 المستخدم: {message.from_user.username or message.from_user.first_name}\n"
@@ -661,7 +757,7 @@ def register_handlers(dp: Dispatcher):
     dp.message.register(offers_handler, F.text == "🎁 العروض والهدايا")
     
     dp.message.register(handle_order_details, ~F.text.in_([
-        "🎯 خدماتنا", "📁 أعمالنا", "👤 حسابي", "📝 طلب جديد", 
+        "🎯 خدماتنا", "📁 أعمالنا", "👤 حسابي", "📝 طلب جديد",
         "💬 الدعم الفني", "💳 طرق الدفع", "📞 تواصل مع المدير",
         "🤝 شارك واربح", "🎁 العروض والهدايا"
     ]))

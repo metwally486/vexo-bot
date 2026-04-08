@@ -201,14 +201,18 @@
         }
         
         /* Portfolio Grid */
-        .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; }
-        .portfolio-item { background: white; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); transition: transform 0.2s; }
+        .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+        .portfolio-item { background: white; border-radius: 16px; overflow: hidden; box-shadow: var(--shadow); transition: transform 0.2s; }
         body.dark-mode .portfolio-item { background: var(--gray-dark); }
         .portfolio-item:hover { transform: translateY(-4px); }
-        .portfolio-img { width: 100%; height: 150px; object-fit: cover; background: var(--light); }
+        .portfolio-img { width: 100%; height: 160px; object-fit: cover; background: var(--light); }
         .portfolio-info { padding: 1rem; }
-        .portfolio-title { font-weight: 700; margin-bottom: 0.5rem; }
-        .portfolio-type { font-size: 0.8rem; color: var(--gray); }
+        .portfolio-title { font-weight: 800; font-size: 1.1rem; margin-bottom: 0.25rem; }
+        .portfolio-type { font-size: 0.8rem; color: var(--gray); margin-bottom: 0.5rem; }
+        .portfolio-price { font-weight: 700; color: var(--success); margin: 0.5rem 0; }
+        .portfolio-features { font-size: 0.8rem; color: var(--gray); margin: 0.5rem 0; list-style: none; padding-right: 1rem; }
+        .portfolio-features li { margin-bottom: 0.25rem; }
+        .portfolio-features i { margin-left: 0.5rem; color: var(--primary); font-size: 0.7rem; }
         
         /* Overlay */
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
@@ -374,7 +378,7 @@
 <!-- Notification -->
 <div id="notification" class="notification"></div>
 
-<!-- Portfolio Modal -->
+<!-- Portfolio Modal (Updated with price and features) -->
 <div class="modal" id="portfolioModal">
     <div class="modal-content">
         <div class="modal-header">
@@ -382,20 +386,29 @@
             <button class="modal-close" onclick="closePortfolioModal()">&times;</button>
         </div>
         <div class="form-group">
-            <label>عنوان المشروع</label>
-            <input type="text" id="portfolioTitle" placeholder="مثال: بوت متجر إلكتروني">
+            <label>عنوان المشروع *</label>
+            <input type="text" id="portfolioTitle" placeholder="مثال: بوت متجر إلكتروني" required>
         </div>
         <div class="form-group">
-            <label>نوع المشروع</label>
-            <select id="portfolioType">
-                <option value="bot">بوت تلجرام</option>
-                <option value="app">تطبيق جوال</option>
-                <option value="web">موقع إلكتروني</option>                <option value="store">متجر إلكتروني</option>
+            <label>نوع المشروع *</label>
+            <select id="portfolioType" required>
+                <option value="bot">🤖 بوت تلجرام</option>
+                <option value="app">📱 تطبيق جوال</option>
+                <option value="web">💻 موقع إلكتروني</option>
+                <option value="store">🛒 متجر إلكتروني</option>
             </select>
         </div>
         <div class="form-group">
-            <label>الوصف</label>
-            <textarea id="portfolioDesc" rows="3" placeholder="وصف المشروع..."></textarea>
+            <label>الوصف *</label>
+            <textarea id="portfolioDesc" rows="3" placeholder="وصف المشروع والميزات..." required></textarea>
+        </div>
+        <div class="form-group">
+            <label>السعر</label>
+            <input type="text" id="portfolioPrice" placeholder="مثال: 150$">
+        </div>
+        <div class="form-group">
+            <label>الميزات (افصل بينها بفاصلة)</label>
+            <input type="text" id="portfolioFeatures" placeholder="مثال: إدارة منتجات، دفع إلكتروني، إشعارات">
         </div>
         <div class="form-group">
             <label>رابط المعاينة</label>
@@ -404,6 +417,7 @@
         <div class="form-group">
             <label>رابط الصورة</label>
             <input type="url" id="portfolioImage" placeholder="https://... (اختياري)">
+            <small style="color: var(--gray); font-size: 0.75rem;">💡 يمكنك استخدام روابط من imgur.com أو أي استضافة صور</small>
         </div>
         <button class="btn btn-primary" onclick="addPortfolioItem()" style="width: 100%;">
             <i class="fas fa-plus"></i> إضافة المشروع
@@ -597,7 +611,7 @@ function renderOrders() {
 }
 
 function renderTickets() {
-    let html = '<table><thead><tr><th>#</th><th>المستخدم</th><th>الرسالة</th><th>الحالة</th><th>التاريخ</th><th>إجراء</th></tr></thead><tbody>';
+    let html = '<tr><thead><tr><th>#</th><th>المستخدم</th><th>الرسالة</th><th>الحالة</th><th>التاريخ</th><th>إجراء</th></tr></thead><tbody>';
     allTickets.forEach(t => {
         html += `<tr>
             <td>#${t.id}</td>
@@ -613,9 +627,9 @@ function renderTickets() {
 }
 
 function renderUsers() {
-    let html = '<table><thead><tr><th>المعرف</th><th>الاسم</th><th>النقاط</th><th>تاريخ الانضمام</th></tr></thead><tbody>';
+    let html = '</table><thead><tr><th>المعرف</th><th>الاسم</th><th>النقاط</th><th>تاريخ الانضمام</th></tr></thead><tbody>';
     // Note: This is simplified - you'd need a proper /api/users endpoint
-    html += `<tr><td colspan="4" style="text-align:center;color:var(--gray)">جاري تطوير عرض المستخدمين...</td></tr>`;
+    html += `<tr><td colspan="4" style="text-align:center;color:var(--gray)">جاري تطوير عرض المستخدمين......</td></tr>`;
     html += '</tbody></table>';
     document.getElementById('usersContainer').innerHTML = html;
 }
@@ -628,17 +642,41 @@ function renderPortfolio() {
     
     let html = '';
     allPortfolio.forEach(p => {
+        // معالجة الميزات كقائمة
+        let featuresHtml = '';
+        if (p.features) {
+            const featuresList = p.features.split(',').map(f => f.trim());
+            featuresHtml = '<ul class="portfolio-features">';
+            featuresList.forEach(f => {
+                if (f) featuresHtml += `<li><i class="fas fa-circle"></i> ${f}</li>`;
+            });
+            featuresHtml += '</ul>';
+        }
+        
         html += `<div class="portfolio-item">
             ${p.image_url ? `<img src="${p.image_url}" class="portfolio-img" alt="${p.title}">` : '<div class="portfolio-img" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;color:white;font-size:3rem"><i class="fas fa-briefcase"></i></div>'}
             <div class="portfolio-info">
-                <div class="portfolio-title">${p.title}</div>
+                <div class="portfolio-title">${escapeHtml(p.title)}</div>
                 <div class="portfolio-type">${p.type}</div>
-                ${p.description ? `<p style="margin-top:0.5rem;font-size:0.85rem;color:var(--gray)">${p.description.substring(0, 100)}...</p>` : ''}
+                ${p.price ? `<div class="portfolio-price">💰 ${escapeHtml(p.price)}</div>` : ''}
+                ${p.description ? `<p style="margin-top:0.5rem;font-size:0.85rem;color:var(--gray)">${escapeHtml(p.description.substring(0, 150))}${p.description.length > 150 ? '...' : ''}</p>` : ''}
+                ${featuresHtml}
                 ${p.preview_link ? `<a href="${p.preview_link}" target="_blank" class="btn btn-primary btn-sm" style="margin-top:0.5rem;display:inline-block"><i class="fas fa-external-link-alt"></i> معاينة</a>` : ''}
                 <button class="btn btn-danger btn-sm" onclick="deletePortfolioItem(${p.id})" style="margin-top:0.5rem;display:inline-block"><i class="fas fa-trash"></i> حذف</button>            </div>
         </div>`;
     });
     document.getElementById('portfolioContainer').innerHTML = html;
+}
+
+// دالة مساعدة لتنظيف النص
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
 }
 
 // ==================== العمليات ====================
@@ -668,23 +706,37 @@ window.closeTicket = async (ticketId) => {
     }
 };
 
+// فتح مودال إضافة مشروع
 window.openPortfolioModal = () => {
     document.getElementById('portfolioModal').style.display = 'flex';
 };
 
+// إغلاق المودال مع تفريغ الحقول
 window.closePortfolioModal = () => {
     document.getElementById('portfolioModal').style.display = 'none';
+    // تفريغ الحقول
+    document.getElementById('portfolioTitle').value = '';
+    document.getElementById('portfolioType').value = 'bot';
+    document.getElementById('portfolioDesc').value = '';
+    document.getElementById('portfolioLink').value = '';
+    document.getElementById('portfolioImage').value = '';
+    document.getElementById('portfolioPrice').value = '';
+    document.getElementById('portfolioFeatures').value = '';
 };
 
+// إضافة مشروع مع السعر والميزات
 window.addPortfolioItem = async () => {
     const title = document.getElementById('portfolioTitle').value;
     const type = document.getElementById('portfolioType').value;
     const description = document.getElementById('portfolioDesc').value;
     const preview_link = document.getElementById('portfolioLink').value;
     const image_url = document.getElementById('portfolioImage').value;
+    const price = document.getElementById('portfolioPrice').value;
+    const features = document.getElementById('portfolioFeatures').value;
     
     if (!title) {
-        showNotification('الرجاء إدخال عنوان المشروع', 'error');        return;
+        showNotification('الرجاء إدخال عنوان المشروع', 'error');
+        return;
     }
     
     try {
@@ -694,17 +746,19 @@ window.addPortfolioItem = async () => {
                 'X-API-Key': API_KEY,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ title, type, description, preview_link, image_url })
+            body: JSON.stringify({ 
+                title, 
+                type, 
+                description, 
+                preview_link, 
+                image_url,
+                price,
+                features
+            })
         });
         showNotification('تمت إضافة المشروع بنجاح');
         closePortfolioModal();
         loadAllData();
-        
-        // Clear form
-        document.getElementById('portfolioTitle').value = '';
-        document.getElementById('portfolioDesc').value = '';
-        document.getElementById('portfolioLink').value = '';
-        document.getElementById('portfolioImage').value = '';
     } catch (e) {
         showNotification('خطأ في الإضافة', 'error');
     }

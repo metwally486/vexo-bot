@@ -7,13 +7,14 @@ import config
 import database as db
 from datetime import datetime
 
-# ==================== معلومات الشركة ====================
+# ==================== معلومات الشركة والحسابات ====================
 COMPANY_NAME = "Vexo للخدمات التقنية"
 CEO_NAME = "متولي الوصابي"
-ADMIN_USERNAME = "@m_7_1_1_w"
-SUPPORT_USERNAME = "@abohamed12"
-CHANNEL_LINK = "https://t.me/abod_IT"
-CHANNEL_USERNAME = "abod_IT"
+ADMIN_USERNAME = "@m_7_1_1_w"           # حساب المدير
+SUPPORT_USERNAME = "@abohamed12"        # حساب الدعم الفني
+CHANNEL_LINK = "https://t.me/abod_IT"   # قناة الأعمال
+CHANNEL_USERNAME = "abod_IT"            # معرف القناة بدون @
+ORDERS_CHANNEL_USERNAME = "@Vixo_Company"  # قناة استلام الطلبات
 
 # ==================== حالات النموذج ====================
 
@@ -27,7 +28,7 @@ class OrderState(StatesGroup):
 class SupportState(StatesGroup):
     message = State()
 
-# ==================== الأزرار ====================
+# ==================== الأزرار الرئيسية ====================
 
 def main_keyboard():
     kb = [
@@ -129,7 +130,7 @@ def offers_kb():
 # ==================== دوال مساعدة ====================
 
 async def check_channel_subscription(user_id: int, bot: Bot) -> bool:
-    """التحقق من اشتراك المستخدم في القناة"""
+    """التحقق من اشتراك المستخدم في قناة الأعمال"""
     try:
         member = await bot.get_chat_member(CHANNEL_USERNAME, user_id)
         return member.status in ['member', 'administrator', 'creator']
@@ -548,6 +549,7 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
             await db.add_points(call.from_user.id, 10)
             await state.clear()
 
+            # رسالة تأكيد للمستخدم
             await call.message.edit_text(
                 f"✅ **تم استلام طلبك بنجاح!**\n\n"
                 f"🎉 **تهانينا!** حصلت على 10 نقاط ولاء\n\n"
@@ -558,10 +560,11 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
                 f"🔔 **الحالة: قيد المراجعة**\n"
                 f"💡 **تابع حسابك لمعرفة التحديثات**\n\n"
                 f"👨‍💼 **المدير:** {ADMIN_USERNAME}",
-                reply_markup=main_keyboard(),
+                reply_markup=main_keyboard(),  # العودة إلى القائمة الرئيسية
                 parse_mode="Markdown"
             )
 
+            # إرسال إشعار للمدير
             try:
                 await call.message.bot.send_message(
                     config.ADMIN_ID,
@@ -574,6 +577,21 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
                 )
             except:
                 pass
+
+            # إرسال إشعار إلى قناة الطلبات (@Vixo_Company)
+            try:
+                await call.message.bot.send_message(
+                    ORDERS_CHANNEL_USERNAME,
+                    f"🔔 **طلب جديد #{order_id}**\n\n"
+                    f"👤 المستخدم: {call.from_user.username or call.from_user.first_name}\n"
+                    f"🆔 ID: {call.from_user.id}\n"
+                    f"📦 الخدمة: {data_state.get('service_type')}\n"
+                    f"💰 الميزانية: {data_state.get('budget')}\n"
+                    f"📝 التفاصيل: {data_state.get('details')}\n\n"
+                    f"📅 التاريخ: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+                )
+            except Exception as e:
+                print(f"⚠️ فشل إرسال الإشعار إلى القناة: {e}")
 
         await call.answer()
         return
@@ -613,14 +631,13 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
         await call.answer()
         return
 
-    # المشاركة (share_claim) - التحديث المطلوب
+    # المشاركة (share_claim)
     elif data == "share_claim":
         user = await db.get_user(call.from_user.id)
         points = user['loyalty_points'] if user else 0
 
         is_subscribed = await check_channel_subscription(call.from_user.id, call.message.bot)
 
-        # إضافة نقاط إذا انضم للقناة ولم يحصل عليها سابقاً
         points_added = False
         if is_subscribed:
             already_got_points = await db.get_user_channel_status(call.from_user.id)

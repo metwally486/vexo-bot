@@ -22,7 +22,6 @@ async def init_db():
             )
             print("✅ Database connected successfully")
             print(f"📊 Pool: min=2, max=10, timeout=60s")
-            # تأكد من وجود الجداول مع الأعمدة الجديدة
             await create_tables()
             return True
         except Exception as e:
@@ -33,13 +32,14 @@ async def init_db():
 async def create_tables():
     """إنشاء الجداول إذا لم تكن موجودة (مع الأعمدة الجديدة)"""
     async with pool.acquire() as conn:
-        # جدول المستخدمين
+        # جدول المستخدمين (مع joined_channel_points)
         await conn.execute("""
             CREATE TABLE IF NOT EXISTS users (
                 id BIGINT PRIMARY KEY,
                 username TEXT,
                 full_name TEXT,
                 loyalty_points INTEGER DEFAULT 0,
+                joined_channel_points BOOLEAN DEFAULT FALSE,
                 joined_at TIMESTAMP DEFAULT NOW(),
                 updated_at TIMESTAMP DEFAULT NOW()
             )
@@ -103,7 +103,7 @@ async def create_tables():
                 icon TEXT
             )
         """)
-        print("✅ Tables created/verified with portfolio columns (price, features)")
+        print("✅ Tables created/verified with all required columns")
 
 async def close_db():
     """إغلاق مجموعة الاتصالات بشكل آمن"""
@@ -138,7 +138,6 @@ def get_pool_info() -> Dict[str, Any]:
 # ==================== إدارة المستخدمين ====================
 
 async def add_user(user_id: int, username: Optional[str], full_name: Optional[str]) -> bool:
-    """إضافة مستخدم جديد أو تحديث بياناته"""
     try:
         async with pool.acquire() as conn:
             await conn.execute(
@@ -158,7 +157,6 @@ async def add_user(user_id: int, username: Optional[str], full_name: Optional[st
         return False
 
 async def get_user(user_id: int) -> Optional[Dict[str, Any]]:
-    """الحصول على بيانات مستخدم"""
     try:
         async with pool.acquire() as conn:
             row = await conn.fetchrow("SELECT * FROM users WHERE id = $1", user_id)
@@ -168,7 +166,6 @@ async def get_user(user_id: int) -> Optional[Dict[str, Any]]:
         return None
 
 async def add_points(user_id: int, points: int) -> bool:
-    """إضافة نقاط ولاء للمستخدم"""
     try:
         async with pool.acquire() as conn:
             await conn.execute(
@@ -181,7 +178,6 @@ async def add_points(user_id: int, points: int) -> bool:
         return False
 
 async def deduct_points(user_id: int, points: int) -> bool:
-    """خصم نقاط من المستخدم (للاستبدال)"""
     try:
         async with pool.acquire() as conn:
             result = await conn.execute(
@@ -194,7 +190,6 @@ async def deduct_points(user_id: int, points: int) -> bool:
         return False
 
 async def get_all_users(limit: int = 100) -> List[Dict[str, Any]]:
-    """الحصول على جميع المستخدمين (للوحة الإدارية)"""
     try:
         async with pool.acquire() as conn:
             rows = await conn.fetch("SELECT * FROM users ORDER BY joined_at DESC LIMIT $1", limit)
@@ -202,6 +197,37 @@ async def get_all_users(limit: int = 100) -> List[Dict[str, Any]]:
     except Exception as e:
         print(f"❌ Error in get_all_users: {e}")
         return []
+
+async def mark_channel_joined(user_id: int) -> bool:
+    """تحديد أن المستخدم انضم للقناة وحصل على النقاط"""
+    try:
+        async with pool.acquire() as conn:
+            await conn.execute(
+                """
+                UPDATE users 
+                SET joined_channel_points = TRUE,
+                    updated_at = NOW()
+                WHERE id = $1
+                """,
+                user_id
+            )
+            return True
+    except Exception as e:
+        print(f"❌ Error in mark_channel_joined: {e}")
+        return False
+
+async def get_user_channel_status(user_id: int) -> bool:
+    """التحقق إذا كان المستخدم قد حصل على نقاط القناة"""
+    try:
+        async with pool.acquire() as conn:
+            row = await conn.fetchrow(
+                "SELECT joined_channel_points FROM users WHERE id = $1",
+                user_id
+            )
+            return row['joined_channel_points'] if row else False
+    except Exception as e:
+        print(f"❌ Error in get_user_channel_status: {e}")
+        return False
 
 # ==================== إدارة الطلبات ====================
 
@@ -211,7 +237,8 @@ async def create_order(user_id: int, service_type: str, details: str, budget: st
             order_id = await conn.fetchval(
                 """
                 INSERT INTO orders (user_id, service_type, details, budget, status, created_at) 
-                VALUES ($1, $2, $3, $4, 'pending', NOW()) RETURNING id
+                VALUES ($1, $2, $3, $4, 'pending', NOW()) 
+                RETURNING id
                 """,
                 user_id, service_type, details, budget
             )
@@ -363,7 +390,7 @@ async def get_ticket_replies(ticket_id: int) -> List[Dict[str, Any]]:
         print(f"❌ Error in get_ticket_replies: {e}")
         return []
 
-# ==================== إدارة معرض الأعمال (Portfolio) مع الحقول الجديدة ====================
+# ==================== إدارة معرض الأعمال (Portfolio) ====================
 
 async def add_portfolio_item(
     title: str,
@@ -374,7 +401,6 @@ async def add_portfolio_item(
     price: str = "",
     features: str = ""
 ) -> Optional[int]:
-    """إضافة مشروع جديد لمعرض الأعمال مع جميع التفاصيل (السعر، الميزات)"""
     try:
         async with pool.acquire() as conn:
             item_id = await conn.fetchval(
@@ -393,7 +419,6 @@ async def add_portfolio_item(
         return None
 
 async def get_portfolio(project_type: Optional[str] = None, limit: int = 20) -> List[Dict[str, Any]]:
-    """الحصول على مشاريع معرض الأعمال"""
     try:
         async with pool.acquire() as conn:
             if project_type:
@@ -417,7 +442,6 @@ async def get_portfolio(project_type: Optional[str] = None, limit: int = 20) -> 
         return []
 
 async def get_portfolio_item(item_id: int) -> Optional[Dict[str, Any]]:
-    """الحصول على مشروع محدد بالتفصيل"""
     try:
         async with pool.acquire() as conn:
             row = await conn.fetchrow("SELECT * FROM portfolio WHERE id = $1", item_id)
@@ -435,7 +459,6 @@ async def update_portfolio_item(
     price: Optional[str] = None,
     features: Optional[str] = None
 ) -> bool:
-    """تحديث مشروع في المعرض (أي حقل يتم تمريره فقط)"""
     try:
         async with pool.acquire() as conn:
             updates = []
@@ -478,7 +501,6 @@ async def update_portfolio_item(
         return False
 
 async def delete_portfolio_item(item_id: int) -> bool:
-    """حذف مشروع من المعرض"""
     try:
         async with pool.acquire() as conn:
             await conn.execute("DELETE FROM portfolio WHERE id = $1", item_id)
@@ -488,7 +510,6 @@ async def delete_portfolio_item(item_id: int) -> bool:
         return False
 
 async def get_portfolio_count() -> int:
-    """الحصول على عدد المشاريع في المعرض"""
     try:
         async with pool.acquire() as conn:
             count = await conn.fetchval("SELECT COUNT(*) FROM portfolio")
@@ -529,7 +550,7 @@ async def delete_service(service_id: int) -> bool:
         print(f"❌ Error in delete_service: {e}")
         return False
 
-# ==================== الإحصائيات ولوحة التحكم ====================
+# ==================== الإحصائيات ====================
 
 async def get_dashboard_stats() -> Dict[str, Any]:
     try:
@@ -624,16 +645,25 @@ def format_currency(amount: float, currency: str = '$') -> str:
 # ==================== التصدير ====================
 
 __all__ = [
+    # إدارة الاتصال
     'init_db', 'close_db', 'health_check', 'get_pool_info',
+    # المستخدمين
     'add_user', 'get_user', 'add_points', 'deduct_points', 'get_all_users',
+    'mark_channel_joined', 'get_user_channel_status',
+    # الطلبات
     'create_order', 'get_user_orders', 'get_all_orders',
     'get_order_by_id', 'update_order_status', 'update_order_notes',
     'get_orders_by_status',
+    # التذاكر
     'create_ticket', 'get_user_tickets', 'get_all_open_tickets',
     'update_ticket_status', 'add_ticket_reply', 'get_ticket_replies',
+    # معرض الأعمال
     'add_portfolio_item', 'get_portfolio', 'get_portfolio_item',
     'update_portfolio_item', 'delete_portfolio_item', 'get_portfolio_count',
+    # الخدمات
     'get_services', 'add_service', 'delete_service',
+    # الإحصائيات
     'get_dashboard_stats', 'get_weekly_orders', 'get_monthly_stats',
+    # دوال مساعدة
     'execute_query', 'format_date', 'format_currency'
-        ]
+]

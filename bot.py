@@ -182,32 +182,32 @@ async def start_handler(message: types.Message):
     is_subscribed = await check_channel_subscription(message)
     
     welcome_text = f"""
-🌟 **أهلاً وسهلاً بك في {COMPANY_NAME}** 🌟
+🌟 <b>أهلاً وسهلاً بك في {COMPANY_NAME}</b> 🌟
 ━━━━━━━━━━━━━━━━━━━━
 
-👋 **مرحباً:** {message.from_user.first_name}
-🏢 **شركة {COMPANY_NAME}**
-👨‍💼 **المدير التنفيذي:** {CEO_NAME}
+👋 <b>مرحباً:</b> {message.from_user.first_name}
+🏢 <b>شركة {COMPANY_NAME}</b>
+👨‍💼 <b>المدير التنفيذي:</b> {CEO_NAME}
 
-💎 **لماذا تختارنا؟**
+💎 <b>لماذا تختارنا؟</b>
 ✅ أسعار منافسة وجودة عالية
 ✅ تسليم سريع وضمان حقيقي
 ✅ دعم فني 24/7
 ✅ طرق دفع متعددة ومرنة
 
-🎁 **عروض خاصة:**
+🎁 <b>عروض خاصة:</b>
 🔸 خصم 10% للطلب الأول
 🔸 خصم 15% عند مشاركة البوت
 🔸 نقاط ولاء على كل طلب
 🔸 هدايا حصرية للمشتركين
 
-📢 **تابعنا على القناة:** {CHANNEL_LINK}
+📢 <b>تابعنا على القناة:</b> {CHANNEL_LINK}
 """
     
     if not is_subscribed:
         welcome_text += f"""
 
-⚠️ **ملاحظة مهمة:**
+⚠️ <b>ملاحظة مهمة:</b>
 للحصول على جميع المزايا والهدايا، يرجى الانضمام لقناتنا أولاً:
 {CHANNEL_LINK}
 """
@@ -220,107 +220,78 @@ async def start_handler(message: types.Message):
 
 async def services_handler(message: types.Message):
     text = f"""
-🎯 **خدمات {COMPANY_NAME} المتكاملة**
+🎯 <b>خدمات {COMPANY_NAME} المتكاملة</b>
 ━━━━━━━━━━━━━━━━━━━━
 
-🤖 **بوتات تلجرام:**
-   • إنشاء بوتات متاجر إلكترونية
-   • بوتات حماية وإدارة المجموعات
-   • بوتات خدمة عملاء ذكية
-   • بوتات مخصصة حسب الطلب
-   💰 من 100$
+🤖 <b>بوتات تلجرام:</b> من 100$
+📱 <b>تطبيقات الجوال:</b> من 500$
+💻 <b>مواقع إلكترونية:</b> من 200$
+🛒 <b>متاجر إلكترونية:</b> من 400$
+🔧 <b>معاملات برمجية:</b> من 150$
+🎨 <b>خدمات مميزة:</b> من 50$
 
-📱 **تطبيقات الجوال:**
-   • تطبيقات أندرويد احترافية
-   • تطبيقات iOS (آيفون)
-   • مع لوحة تحكم كاملة
-   💰 من 500$
-
-💻 **المواقع الإلكترونية:**
-   • مواقع متاجر متكاملة
-   • مواقع تعريفية للشركات
-   • لوحات إدارة متطورة
-   💰 من 200$
-
-🛒 **المتاجر الإلكترونية:**
-   • متاجر كاملة مع بوت
-   • أنظمة دفع متعددة
-   • إدارة مخزون وطلبات
-   💰 من 400$
-
-🔧 **معاملات برمجية:**
-   • سكربتات مخصصة
-   • أتمتة المهام
-   • تكامل APIs
-   💰 من 150$
-
-🎨 **خدمات مميزة:**
-   • تصميم شعارات
-   • هوية بصرية
-   • تسويق إلكتروني
-   💰 من 50$
-
-📞 **للطلب:** اضغط 'طلب جديد'
-👨‍💼 **المدير:** {ADMIN_USERNAME}
+📞 <b>للطلب:</b> اضغط 'طلب جديد'
+👨‍💼 <b>المدير:</b> {ADMIN_USERNAME}
 """
     await message.answer(text, reply_markup=services_inline_kb(), parse_mode="HTML")
 
 async def payment_handler(message: types.Message):
     text = f"""
-💳 **طرق الدفع المتاحة**
+💳 <b>طرق الدفع المتاحة</b>
 ━━━━━━━━━━━━━━━━━━━━
 
-🌍 **اختر دولتك لعرض طرق الدفع:**
+🌍 <b>اختر دولتك لعرض طرق الدفع:</b>
 
-🇾🇪 **اليمن:**
+🇾🇪 <b>اليمن:</b>
    • البنوك اليمنية (الكريمي، تضامن...)
    • المحافظ الإلكترونية (جيب، جوالي...)
 
-🌍 **دول أخرى:**
+🌍 <b>دول أخرى:</b>
    • باي بال (PayPal)
    • ويسترن يونيون
    • تحويل بنكي دولي
    • USDT (Crypto)
 
-📝 **ملاحظات مهمة:**
+📝 <b>ملاحظات مهمة:</b>
 • يتم إرسال تفاصيل الدفع بعد تأكيد الطلب
 • يحتفظ بالإيصال بعد التحويل
 • يتم تفعيل الطلب خلال 24 ساعة
 • الحد الأدنى للطلب: 50$
 
-💡 **لبدء الطلب:** اضغط 'طلب جديد'
+💡 <b>لبدء الطلب:</b> اضغط 'طلب جديد'
 
-👨‍💼 **للاستفسار:** {ADMIN_USERNAME}
+👨‍💼 <b>للاستفسار:</b> {ADMIN_USERNAME}
 """
     await message.answer(text, reply_markup=country_selection_kb(), parse_mode="HTML")
 
+# ==================== معالج الأعمال (Portfolio) المحدث ====================
 async def portfolio_handler(message: types.Message):
     text = f"""
-📁 **أعمال {COMPANY_NAME}**
+📁 <b>أعمال {COMPANY_NAME}</b>
 ━━━━━━━━━━━━━━━━━━━━
 
-🎨 **نماذج من مشاريعنا:**
+🎨 <b>نماذج من مشاريعنا:</b>
 
-🤖 **البوتات:**
+🤖 <b>البوتات:</b>
 • بوت متجر إلكتروني - 150$
 • بوت حماية متقدم - 200$
 • بوت خدمة عملاء - 180$
 
-📱 **التطبيقات:**
+📱 <b>التطبيقات:</b>
 • تطبيق توصيل طلبات - 800$
 • تطبيق إدارة مهام - 650$
 • تطبيق متجر - 950$
 
-💻 **المواقع:**
+💻 <b>المواقع:</b>
 • موقع شركة - 350$
 • موقع متجر - 550$
 • موقع خدمات - 400$
 
-🛒 **المتاجر:**
+🛒 <b>المتاجر:</b>
 • متجر إلكتروني كامل - 750$
 • متجر مع بوت - 900$
 
-📌 **اختر نوع المشروع:**
+📌 <b>اختر نوع المشروع لعرض التفاصيل:</b>
 """
     await message.answer(text, reply_markup=portfolio_kb(), parse_mode="HTML")
 
@@ -335,20 +306,20 @@ async def profile_handler(message: types.Message):
     pending = len([o for o in orders if o['status'] in ['pending', 'processing']])
     
     text = f"""
-👤 **معلومات حسابك**
+👤 <b>معلومات حسابك</b>
 ━━━━━━━━━━━━━━━━━━━━
 
-📊 **الإحصائيات:**
+📊 <b>الإحصائيات:</b>
 ├ إجمالي الطلبات: {len(orders)}
 ├ الطلبات النشطة: {pending}
 ├ الطلبات المكتملة: {completed}
 └ نقاط الولاء: {points} 🪙
 
-🎁 **مزاياك:**
+🎁 <b>مزاياك:</b>
 ├ خصم متاح: {discount_percent}%
 └ الرصيد: {points * 0.1}$ (قابل للاستخدام)
 
-📦 **آخر طلباتك:**
+📦 <b>آخر طلباتك:</b>
 """
     
     if orders:
@@ -368,24 +339,24 @@ async def profile_handler(message: types.Message):
             
             text += f"""
 ┌────────────────
-│ {status_emoji} **طلب #{order['id']}**
+│ {status_emoji} <b>طلب #{order['id']}</b>
 │ ├ الخدمة: {order['service_type']}
 │ ├ الميزانية: {order['budget']}
 │ └ التاريخ: {date_str}
 └────────────────
 """
     else:
-        text += "\n❌ **لا توجد طلبات بعد**\n🎁 ابدأ بطلبك الأول واحصل على خصم 10%!"
+        text += "\n❌ <b>لا توجد طلبات بعد</b>\n🎁 ابدأ بطلبك الأول واحصل على خصم 10%!"
     
     text += f"""
 
-💡 **استخدم نقاطك:**
+💡 <b>استخدم نقاطك:</b>
 • كل 10 نقاط = خصم 1$
 • شارك البوت واربح 50 نقطة
 • اطلب واحصل على نقاط
 
-👨‍💼 **المدير:** {ADMIN_USERNAME}
-📢 **القناة:** {CHANNEL_LINK}
+👨‍💼 <b>المدير:</b> {ADMIN_USERNAME}
+📢 <b>القناة:</b> {CHANNEL_LINK}
 """
     
     await message.answer(text, parse_mode="HTML")
@@ -394,66 +365,66 @@ async def order_handler(message: types.Message, state: FSMContext):
     await state.set_state(OrderState.service_type)
     
     text = f"""
-📝 **بدء طلب جديد - {COMPANY_NAME}**
+📝 <b>بدء طلب جديد - {COMPANY_NAME}</b>
 ━━━━━━━━━━━━━━━━━━━━
 
-🎯 **اختر نوع الخدمة:**
+🎯 <b>اختر نوع الخدمة:</b>
 
-💡 **نصيحة:** اختر الخدمة الأنسب لمشروعك
-👨‍💼 **للاستفسار:** {ADMIN_USERNAME}
+💡 نصيحة: اختر الخدمة الأنسب لمشروعك
+👨‍💼 للاستفسار: {ADMIN_USERNAME}
 """
     await message.answer(text, reply_markup=services_inline_kb(), parse_mode="HTML")
 
 async def support_handler(message: types.Message):
     text = f"""
-💬 **الدعم الفني - {COMPANY_NAME}**
+💬 <b>الدعم الفني - {COMPANY_NAME}</b>
 ━━━━━━━━━━━━━━━━━━━━
 
-👨‍💼 **فريقنا جاهز لمساعدتك!**
+👨‍💼 <b>فريقنا جاهز لمساعدتك!</b>
 
-📞 **التواصل المباشر:**
+📞 <b>التواصل المباشر:</b>
 ├ الدعم الفني: {SUPPORT_USERNAME}
 └ المدير التنفيذي: {ADMIN_USERNAME}
 
-⏱ **وقت الاستجابة:**
+⏱ <b>وقت الاستجابة:</b>
 ├ خلال 24 ساعة للتذاكر
 └ فوري للدعم المباشر
 
-🎫 **نظام التذاكر:**
+🎫 <b>نظام التذاكر:</b>
 • تتبع طلباتك
 • محادثة منظمة
 • حفظ السجل
 
-❓ **الأسئلة الشائعة:**
+❓ <b>الأسئلة الشائعة:</b>
 • إجابات سريعة
 • حلول فورية
 
-💡 **نحن هنا لمساعدتك 24/7!**
+💡 نحن هنا لمساعدتك 24/7!
 
-📢 **تابعنا:** {CHANNEL_LINK}
+📢 تابعنا: {CHANNEL_LINK}
 """
     await message.answer(text, reply_markup=support_kb(), parse_mode="HTML")
 
 async def contact_admin(message: types.Message):
     text = f"""
-📞 **تواصل مع الإدارة**
+📞 <b>تواصل مع الإدارة</b>
 ━━━━━━━━━━━━━━━━━━━━
 
-👨‍💼 **المدير التنفيذي:** {CEO_NAME}
-📱 **الحساب:** {ADMIN_USERNAME}
+👨‍💼 <b>المدير التنفيذي:</b> {CEO_NAME}
+📱 <b>الحساب:</b> {ADMIN_USERNAME}
 
-💡 **متى تتواصل؟**
+💡 <b>متى تتواصل؟</b>
 • للاستفسارات المهمة
 • للمشاريع الكبيرة
 • للشكاوى والاقتراحات
 • للاستشارات المجانية
 
-⏱ **متوفر:** 9 صباحاً - 11 مساءً
+⏱ <b>متوفر:</b> 9 صباحاً - 11 مساءً
 
-🔗 **اضغط هنا للتواصل:**
+🔗 <b>اضغط هنا للتواصل:</b>
 https://t.me/{ADMIN_USERNAME.replace('@', '')}
 
-📢 **القناة الرسمية:** {CHANNEL_LINK}
+📢 <b>القناة الرسمية:</b> {CHANNEL_LINK}
 """
     await message.answer(text, parse_mode="HTML")
 
@@ -462,66 +433,66 @@ async def share_handler(message: types.Message):
     points = user['loyalty_points'] if user else 0
     
     text = f"""
-🤝 **شارك واربح - {COMPANY_NAME}**
+🤝 <b>شارك واربح - {COMPANY_NAME}</b>
 ━━━━━━━━━━━━━━━━━━━━
 
-🎁 **برنامج الإحالة:**
+🎁 <b>برنامج الإحالة:</b>
 
-💰 **كيف تربح؟**
+💰 <b>كيف تربح؟</b>
 1️⃣ شارك البوت مع أصدقائك
 2️⃣ احصل على 50 نقطة لكل صديق
 3️⃣ استبدل النقاط بخصومات!
 
-🎯 **المكافآت:**
+🎯 <b>المكافآت:</b>
 • 50 نقطة = خصم 5$
 • 100 نقطة = خصم 10$
 • 200 نقطة = خصم 25$ + هدية
 
-📊 **رصيدك الحالي:** {points} نقطة
-💵 **القيمة:** {points * 0.1}$
+📊 <b>رصيدك الحالي:</b> {points} نقطة
+💵 <b>القيمة:</b> {points * 0.1}$
 
-📤 **شارك الآن:**
+📤 <b>شارك الآن:</b>
 اضغط الزر أدناه لمشاركة البوت
 
-📢 **لا تنسى الانضمام للقناة:**
+📢 <b>لا تنسى الانضمام للقناة:</b>
 {CHANNEL_LINK}
 
-👨‍💼 **المدير:** {ADMIN_USERNAME}
+👨‍💼 <b>المدير:</b> {ADMIN_USERNAME}
 """
     await message.answer(text, reply_markup=share_kb(), parse_mode="HTML")
 
 async def offers_handler(message: types.Message):
     text = f"""
-🎁 **العروض والهدايا - {COMPANY_NAME}**
+🎁 <b>العروض والهدايا - {COMPANY_NAME}</b>
 ━━━━━━━━━━━━━━━━━━━━
 
-🔥 **العروض الحالية:**
+🔥 <b>العروض الحالية:</b>
 
-🎉 **عرض الطلب الأول:**
+🎉 <b>عرض الطلب الأول:</b>
 • خصم 10% على أول طلب
 • الكود: FIRST10
 • ساري دائماً
 
-🎊 **عرض الباقة الكاملة:**
+🎊 <b>عرض الباقة الكاملة:</b>
 • موقع + بوت + تطبيق
 • خصم 25%
 • الكود: VEXO25
 
-🏆 **برنامج الولاء:**
+🏆 <b>برنامج الولاء:</b>
 • اجمع نقاط مع كل طلب
 • استبدلها بخصومات
 • هدايا حصرية
 
-🎟️ **كوبونات الخصم:**
+🎟️ <b>كوبونات الخصم:</b>
 • FIRST10 = 10% (للطلب الأول)
 • VEXO15 = 15% (للطلبات فوق 300$)
 • SHARE20 = 20% (بعد مشاركة البوت)
 • VIP25 = 25% (للطلبات فوق 1000$)
 
-💡 **استخدم الكود عند الطلب!**
+💡 <b>استخدم الكود عند الطلب!</b>
 
-👨‍💼 **المدير:** {ADMIN_USERNAME}
-📢 **القناة:** {CHANNEL_LINK}
+👨‍💼 <b>المدير:</b> {ADMIN_USERNAME}
+📢 <b>القناة:</b> {CHANNEL_LINK}
 """
     await message.answer(text, reply_markup=offers_kb(), parse_mode="HTML")
 
@@ -529,7 +500,7 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
     data = call.data
     
     if data == "main_menu":
-        await call.message.edit_text("📋 **القائمة الرئيسية:**", reply_markup=main_keyboard())
+        await call.message.edit_text("📋 <b>القائمة الرئيسية:</b>", reply_markup=main_keyboard(), parse_mode="HTML")
     
     # خدمات
     elif data.startswith("srv_"):
@@ -548,35 +519,39 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
         await state.set_state(OrderState.details)
         await call.message.edit_text(
             f"✅ {service_name}\n\n"
-            f"📝 **أرسل تفاصيل المشروع:**\n"
+            f"📝 <b>أرسل تفاصيل المشروع:</b>\n"
             f"• ما الوظيفة المطلوبة؟\n"
             f"• ما الميزات الخاصة؟\n"
             f"• هل هناك متطلبات إضافية؟",
-            reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]])
+            reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]]),
+            parse_mode="HTML"
         )
     
     # اختيار الدولة
     elif data == "country_yemen":
         await call.message.edit_text(
-            "🇾🇪 **اليمن - طرق الدفع**\n\n"
-            "💳 **اختر طريقة الدفع:**",
-            reply_markup=yemen_payment_kb()
+            "🇾🇪 <b>اليمن - طرق الدفع</b>\n\n"
+            "💳 <b>اختر طريقة الدفع:</b>",
+            reply_markup=yemen_payment_kb(),
+            parse_mode="HTML"
         )
     
     elif data == "country_other":
         await call.message.edit_text(
-            "🌍 **دول أخرى - طرق الدفع**\n\n"
-            "💳 **اختر طريقة الدفع الدولية:**",
-            reply_markup=international_payment_kb()
+            "🌍 <b>دول أخرى - طرق الدفع</b>\n\n"
+            "💳 <b>اختر طريقة الدفع الدولية:</b>",
+            reply_markup=international_payment_kb(),
+            parse_mode="HTML"
         )
     
     # البنوك اليمنية
     elif data == "yemen_banks":
         await call.message.edit_text(
-            "🏦 **البنوك اليمنية**\n\n"
-            "📋 **اختر البنك:**\n\n"
-            "💡 **ملاحظة:** سيتم إرسال رقم الحساب بعد تأكيد الطلب",
-            reply_markup=yemen_banks_kb()
+            "🏦 <b>البنوك اليمنية</b>\n\n"
+            "📋 <b>اختر البنك:</b>\n\n"
+            "💡 ملاحظة: سيتم إرسال رقم الحساب بعد تأكيد الطلب",
+            reply_markup=yemen_banks_kb(),
+            parse_mode="HTML"
         )
     
     elif data.startswith("bank_"):
@@ -590,18 +565,20 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
         bank_name = bank_map.get(data, "البنك")
         await call.message.edit_text(
             f"✅ {bank_name}\n\n"
-            f"📝 **سيتم إرسال رقم الحساب**\n"
+            f"📝 <b>سيتم إرسال رقم الحساب</b>\n"
             f"بعد تأكيد طلبك\n\n"
-            f"💡 **لبدء الطلب:** اضغط 'طلب جديد'",
-            reply_markup=yemen_banks_kb()
+            f"💡 <b>لبدء الطلب:</b> اضغط 'طلب جديد'",
+            reply_markup=yemen_banks_kb(),
+            parse_mode="HTML"
         )
     
     # المحافظ اليمنية
     elif data == "yemen_wallets":
         await call.message.edit_text(
-            "📱 **المحافظ الإلكترونية - اليمن**\n\n"
-            "💳 **اختر المحفظة:**",
-            reply_markup=yemen_wallets_kb()
+            "📱 <b>المحافظ الإلكترونية - اليمن</b>\n\n"
+            "💳 <b>اختر المحفظة:</b>",
+            reply_markup=yemen_wallets_kb(),
+            parse_mode="HTML"
         )
     
     elif data.startswith("wallet_"):
@@ -616,10 +593,11 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
         wallet_name = wallet_map.get(data, "المحفظة")
         await call.message.edit_text(
             f"✅ {wallet_name}\n\n"
-            f"📝 **سيتم إرسال رقم المحفظة**\n"
+            f"📝 <b>سيتم إرسال رقم المحفظة</b>\n"
             f"بعد تأكيد طلبك\n\n"
-            f"💡 **لبدء الطلب:** اضغط 'طلب جديد'",
-            reply_markup=yemen_wallets_kb()
+            f"💡 <b>لبدء الطلب:</b> اضغط 'طلب جديد'",
+            reply_markup=yemen_wallets_kb(),
+            parse_mode="HTML"
         )
     
     # الدفع الدولي
@@ -633,11 +611,12 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
         method_name = intl_map.get(data, "الطريقة")
         await call.message.edit_text(
             f"✅ {method_name}\n\n"
-            f"📝 **سيتم إرسال تفاصيل الدفع**\n"
+            f"📝 <b>سيتم إرسال تفاصيل الدفع</b>\n"
             f"بعد تأكيد طلبك\n\n"
-            f"⏱ **التفعيل:** 24-48 ساعة\n\n"
-            f"💡 **لبدء الطلب:** اضغط 'طلب جديد'",
-            reply_markup=international_payment_kb()
+            f"⏱ <b>التفعيل:</b> 24-48 ساعة\n\n"
+            f"💡 <b>لبدء الطلب:</b> اضغط 'طلب جديد'",
+            reply_markup=international_payment_kb(),
+            parse_mode="HTML"
         )
     
     # الميزانية
@@ -663,28 +642,30 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
             await state.clear()
             
             await call.message.edit_text(
-                f"✅ **تم استلام طلبك بنجاح!**\n\n"
-                f"🎉 **تهانينا!** حصلت على 10 نقاط ولاء\n\n"
-                f"📦 **تفاصيل الطلب:**\n"
+                f"✅ <b>تم استلام طلبك بنجاح!</b>\n\n"
+                f"🎉 <b>تهانينا!</b> حصلت على 10 نقاط ولاء\n\n"
+                f"📦 <b>تفاصيل الطلب:</b>\n"
                 f"├ رقم الطلب: #{order_id}\n"
                 f"├ الخدمة: {data_state.get('service_type')}\n"
                 f"├ الميزانية: {budget_map[data]}\n"
                 f"└ التفاصيل: {data_state.get('details')[:100]}...\n\n"
-                f"🔔 **سيتم مراجعته خلال 24 ساعة**\n"
-                f"💡 **تابع حسابك لمعرفة التحديثات**\n\n"
-                f"👨‍💼 **المدير:** {ADMIN_USERNAME}",
-                reply_markup=main_keyboard()
+                f"🔔 <b>سيتم مراجعته خلال 24 ساعة</b>\n"
+                f"💡 <b>تابع حسابك لمعرفة التحديثات</b>\n\n"
+                f"👨‍💼 <b>المدير:</b> {ADMIN_USERNAME}",
+                reply_markup=main_keyboard(),
+                parse_mode="HTML"
             )
             
             try:
                 await call.message.bot.send_message(
                     config.ADMIN_ID,
-                    f"🔔 **طلب جديد!**\n\n"
+                    f"🔔 <b>طلب جديد!</b>\n\n"
                     f"👤 المستخدم: {call.from_user.username or call.from_user.first_name}\n"
                     f"🆔 ID: {call.from_user.id}\n"
                     f"📦 الخدمة: {data_state.get('service_type')}\n"
                     f"💰 الميزانية: {budget_map[data]}\n"
-                    f"📝 التفاصيل: {data_state.get('details')}"
+                    f"📝 التفاصيل: {data_state.get('details')}",
+                    parse_mode="HTML"
                 )
             except:
                 pass
@@ -693,101 +674,106 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
     elif data == "ticket_new":
         await state.set_state(SupportState.message)
         await call.message.edit_text(
-            "🎫 **فتح تذكرة دعم جديدة**\n\n"
-            "📝 **اكتب مشكلتك بالتفصيل:**\n"
+            "🎫 <b>فتح تذكرة دعم جديدة</b>\n\n"
+            "📝 <b>اكتب مشكلتك بالتفصيل:</b>\n"
             "• ما المشكلة؟\n"
             "• متى ظهرت؟\n"
             "• ما الخطوات التي جربتها؟",
-            reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="🔙 إلغاء", callback_data="main_menu")]])
+            reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="🔙 إلغاء", callback_data="main_menu")]]),
+            parse_mode="HTML"
         )
     
     elif data == "ticket_my":
         tickets = await db.get_user_tickets(call.from_user.id)
         if tickets:
-            text = "📋 **تذاكرك السابقة:**\n\n"
+            text = "📋 <b>تذاكرك السابقة:</b>\n\n"
             for ticket in tickets[:5]:
                 status_emoji = "🟢" if ticket['status'] == 'closed' else "🟡"
                 text += f"{status_emoji} تذكرة #{ticket['id']} - {ticket['status']}\n"
-            await call.message.edit_text(text, reply_markup=support_kb())
+            await call.message.edit_text(text, reply_markup=support_kb(), parse_mode="HTML")
         else:
-            await call.message.edit_text("📋 **لا توجد تذاكر سابقة**", reply_markup=support_kb())
+            await call.message.edit_text("📋 <b>لا توجد تذاكر سابقة</b>", reply_markup=support_kb(), parse_mode="HTML")
     
     elif data == "faq":
         faq_text = f"""
-❓ **الأسئلة الشائعة - {COMPANY_NAME}**
+❓ <b>الأسئلة الشائعة - {COMPANY_NAME}</b>
 ━━━━━━━━━━━━━━━━━━━━
 
-**س: كم وقت التنفيذ؟**
+<b>س: كم وقت التنفيذ؟</b>
 ج: 3-7 أيام للبوتات، 7-14 يوم للتطبيقات
 
-**س: هل هناك ضمان؟**
+<b>س: هل هناك ضمان؟</b>
 ج: نعم، ضمان 30 يوم على جميع المشاريع
 
-**س: طرق الدفع؟**
+<b>س: طرق الدفع؟</b>
 ج: محافظ محلية (جيب، ون كاش...) وبنوك يمنية ودولية
 
-**س: هل هناك دعم بعد التسليم؟**
+<b>س: هل هناك دعم بعد التسليم؟</b>
 ج: نعم، دعم مجاني لمدة شهر
 
-**س: كيف أطلب؟**
+<b>س: كيف أطلب؟</b>
 ج: اضغط 'طلب جديد' واتبع الخطوات
 
-**س: هل يمكن التعديل بعد التسليم؟**
+<b>س: هل يمكن التعديل بعد التسليم؟</b>
 ج: نعم، بسعر مناسب حسب التعديل
 
-**س: كيف أربح نقاط؟**
+<b>س: كيف أربح نقاط؟</b>
 ج: اطلب، شارك البوت، احصل على مكافآت
 
-👨‍💼 **للاستفسار:** {ADMIN_USERNAME}
-📢 **القناة:** {CHANNEL_LINK}
+👨‍💼 <b>للاستفسار:</b> {ADMIN_USERNAME}
+📢 <b>القناة:</b> {CHANNEL_LINK}
 """
-        await call.message.edit_text(faq_text, reply_markup=support_kb())
+        await call.message.edit_text(faq_text, reply_markup=support_kb(), parse_mode="HTML")
     
     # العروض
     elif data == "offers_current":
         await call.message.edit_text(
-            "🔥 **العروض الحالية**\n\n"
-            "🎉 **عرض الطلب الأول:** 10% خصم\n"
-            "🎊 **الباقة الكاملة:** 25% خصم\n"
-            "🏆 **الطلبات الكبيرة:** خصم حتى 30%\n\n"
-            "💡 **استخدم الكود عند الطلب!**",
-            reply_markup=offers_kb()
+            "🔥 <b>العروض الحالية</b>\n\n"
+            "🎉 <b>عرض الطلب الأول:</b> 10% خصم\n"
+            "🎊 <b>الباقة الكاملة:</b> 25% خصم\n"
+            "🏆 <b>الطلبات الكبيرة:</b> خصم حتى 30%\n\n"
+            "💡 <b>استخدم الكود عند الطلب!</b>",
+            reply_markup=offers_kb(),
+            parse_mode="HTML"
         )
     
     elif data == "offers_coupons":
         await call.message.edit_text(
-            "🎟️ **كوبونات الخصم**\n\n"
+            "🎟️ <b>كوبونات الخصم</b>\n\n"
             "FIRST10 = 10% (الطلب الأول)\n"
             "VEXO15 = 15% (فوق 300$)\n"
             "SHARE20 = 20% (بعد المشاركة)\n"
             "VIP25 = 25% (فوق 1000$)\n\n"
-            "💡 **اطلب الكود من المدير**",
-            reply_markup=offers_kb()
+            "💡 <b>اطلب الكود من المدير</b>",
+            reply_markup=offers_kb(),
+            parse_mode="HTML"
         )
     
     elif data == "offers_loyalty":
         await call.message.edit_text(
-            "🏆 **برنامج الولاء**\n\n"
-            "💰 **كيف يعمل؟**\n"
+            "🏆 <b>برنامج الولاء</b>\n\n"
+            "💰 <b>كيف يعمل؟</b>\n"
             "• كل طلب = 10-50 نقطة\n"
             "• كل مشاركة = 50 نقطة\n"
             "• كل 10 نقاط = 1$ خصم\n\n"
-            "🎁 **مستويات الولاء:**\n"
+            "🎁 <b>مستويات الولاء:</b>\n"
             "🥉 برونزي: 0-100 نقطة\n"
             "🥈 فضي: 100-500 نقطة\n"
             "🥇 ذهبي: 500+ نقطة\n\n"
-            "💎 **مزايا الذهب:** خصم إضافي 5%",
-            reply_markup=offers_kb()
+            "💎 <b>مزايا الذهب:</b> خصم إضافي 5%",
+            reply_markup=offers_kb(),
+            parse_mode="HTML"
         )
     
     elif data == "offers_seasonal":
         await call.message.edit_text(
-            "🎪 **عروض موسمية**\n\n"
-            "🎄 **عرض العيد:** 20% خصم\n"
-            "🎓 **عرض الطلاب:** 15% خصم\n"
-            "🎂 **عرض السنة الجديدة:** قريباً\n\n"
-            "📢 **تابعنا للعروض الجديدة!**",
-            reply_markup=offers_kb()
+            "🎪 <b>عروض موسمية</b>\n\n"
+            "🎄 <b>عرض العيد:</b> 20% خصم\n"
+            "🎓 <b>عرض الطلاب:</b> 15% خصم\n"
+            "🎂 <b>عرض السنة الجديدة:</b> قريباً\n\n"
+            "📢 <b>تابعنا للعروض الجديدة!</b>",
+            reply_markup=offers_kb(),
+            parse_mode="HTML"
         )
     
     elif data == "share_claim":
@@ -795,89 +781,126 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
         points = user['loyalty_points'] if user else 0
         
         await call.message.edit_text(
-            f"🎁 **رصيدك من النقاط:** {points}\n\n"
-            f"💰 **القيمة:** {points * 0.1}$\n\n"
-            f"📤 **شارك الآن واربح 50 نقطة!**\n"
+            f"🎁 <b>رصيدك من النقاط:</b> {points}\n\n"
+            f"💰 <b>القيمة:</b> {points * 0.1}$\n\n"
+            f"📤 <b>شارك الآن واربح 50 نقطة!</b>\n"
             f"🔗 رابط البوت: @VexoServiceBot\n\n"
-            f"📢 **لا تنسى الانضمام للقناة:**\n{CHANNEL_LINK}",
-            reply_markup=share_kb()
+            f"📢 <b>لا تنسى الانضمام للقناة:</b>\n{CHANNEL_LINK}",
+            reply_markup=share_kb(),
+            parse_mode="HTML"
         )
     
     elif data == "share_leaderboard":
         await call.message.edit_text(
-            "🏆 **صدارة المشاركين**\n\n"
+            "🏆 <b>صدارة المشاركين</b>\n\n"
             "🥇 المستخدم الأول: 500 نقطة\n"
             "🥈 المستخدم الثاني: 350 نقطة\n"
             "🥉 المستخدم الثالث: 200 نقطة\n\n"
-            "📊 **أنت:** شارك لتظهر هنا!",
-            reply_markup=share_kb()
+            "📊 <b>أنت:</b> شارك لتظهر هنا!",
+            reply_markup=share_kb(),
+            parse_mode="HTML"
         )
     
-    # الأعمال (Portfolio)
+    # ==================== الأعمال (Portfolio) المحدث ====================
     elif data == "port_bot":
         projects = await db.get_portfolio("bot")
         if projects:
-            text = "🤖 **مشاريع البوتات:**\n\n"
-            for proj in projects[:3]:
-                text += f"• **{proj['title']}**\n"
+            text = "🤖 <b>مشاريع البوتات:</b>\n\n"
+            for proj in projects[:5]:
+                text += f"┌────────────────\n"
+                text += f"│ <b>{proj['title']}</b>\n"
+                if proj.get('price'):
+                    text += f"│ 💰 السعر: {proj['price']}\n"
                 if proj.get('description'):
-                    text += f"  {proj['description'][:100]}\n"
-                text += "\n"
-            await call.message.edit_text(text, reply_markup=portfolio_kb())
+                    desc = proj['description'][:150]
+                    text += f"│ 📝 {desc}{'...' if len(proj['description']) > 150 else ''}\n"
+                if proj.get('features'):
+                    text += f"│ ⭐ الميزات: {proj['features']}\n"
+                if proj.get('preview_link'):
+                    text += f"│ 🔗 <a href='{proj['preview_link']}'>معاينة</a>\n"
+                text += f"└────────────────\n\n"
+            await call.message.edit_text(text, reply_markup=portfolio_kb(), parse_mode="HTML")
         else:
-            await call.message.edit_text("🤖 **مشاريع البوتات:**\n\n📌 قريباً...", reply_markup=portfolio_kb())
+            await call.message.edit_text("🤖 <b>مشاريع البوتات:</b>\n\n📌 قريباً...", reply_markup=portfolio_kb(), parse_mode="HTML")
     
     elif data == "port_app":
         projects = await db.get_portfolio("app")
         if projects:
-            text = "📱 **مشاريع التطبيقات:**\n\n"
-            for proj in projects[:3]:
-                text += f"• **{proj['title']}**\n"
+            text = "📱 <b>مشاريع التطبيقات:</b>\n\n"
+            for proj in projects[:5]:
+                text += f"┌────────────────\n"
+                text += f"│ <b>{proj['title']}</b>\n"
+                if proj.get('price'):
+                    text += f"│ 💰 السعر: {proj['price']}\n"
                 if proj.get('description'):
-                    text += f"  {proj['description'][:100]}\n"
-                text += "\n"
-            await call.message.edit_text(text, reply_markup=portfolio_kb())
+                    desc = proj['description'][:150]
+                    text += f"│ 📝 {desc}{'...' if len(proj['description']) > 150 else ''}\n"
+                if proj.get('features'):
+                    text += f"│ ⭐ الميزات: {proj['features']}\n"
+                if proj.get('preview_link'):
+                    text += f"│ 🔗 <a href='{proj['preview_link']}'>معاينة</a>\n"
+                text += f"└────────────────\n\n"
+            await call.message.edit_text(text, reply_markup=portfolio_kb(), parse_mode="HTML")
         else:
-            await call.message.edit_text("📱 **مشاريع التطبيقات:**\n\n📌 قريباً...", reply_markup=portfolio_kb())
+            await call.message.edit_text("📱 <b>مشاريع التطبيقات:</b>\n\n📌 قريباً...", reply_markup=portfolio_kb(), parse_mode="HTML")
     
     elif data == "port_web":
         projects = await db.get_portfolio("web")
         if projects:
-            text = "💻 **مشاريع المواقع:**\n\n"
-            for proj in projects[:3]:
-                text += f"• **{proj['title']}**\n"
+            text = "💻 <b>مشاريع المواقع:</b>\n\n"
+            for proj in projects[:5]:
+                text += f"┌────────────────\n"
+                text += f"│ <b>{proj['title']}</b>\n"
+                if proj.get('price'):
+                    text += f"│ 💰 السعر: {proj['price']}\n"
                 if proj.get('description'):
-                    text += f"  {proj['description'][:100]}\n"
-                text += "\n"
-            await call.message.edit_text(text, reply_markup=portfolio_kb())
+                    desc = proj['description'][:150]
+                    text += f"│ 📝 {desc}{'...' if len(proj['description']) > 150 else ''}\n"
+                if proj.get('features'):
+                    text += f"│ ⭐ الميزات: {proj['features']}\n"
+                if proj.get('preview_link'):
+                    text += f"│ 🔗 <a href='{proj['preview_link']}'>معاينة</a>\n"
+                text += f"└────────────────\n\n"
+            await call.message.edit_text(text, reply_markup=portfolio_kb(), parse_mode="HTML")
         else:
-            await call.message.edit_text("💻 **مشاريع المواقع:**\n\n📌 قريباً...", reply_markup=portfolio_kb())
+            await call.message.edit_text("💻 <b>مشاريع المواقع:</b>\n\n📌 قريباً...", reply_markup=portfolio_kb(), parse_mode="HTML")
     
     elif data == "port_store":
         projects = await db.get_portfolio("store")
         if projects:
-            text = "🛒 **مشاريع المتاجر:**\n\n"
-            for proj in projects[:3]:
-                text += f"• **{proj['title']}**\n"
+            text = "🛒 <b>مشاريع المتاجر:</b>\n\n"
+            for proj in projects[:5]:
+                text += f"┌────────────────\n"
+                text += f"│ <b>{proj['title']}</b>\n"
+                if proj.get('price'):
+                    text += f"│ 💰 السعر: {proj['price']}\n"
                 if proj.get('description'):
-                    text += f"  {proj['description'][:100]}\n"
-                text += "\n"
-            await call.message.edit_text(text, reply_markup=portfolio_kb())
+                    desc = proj['description'][:150]
+                    text += f"│ 📝 {desc}{'...' if len(proj['description']) > 150 else ''}\n"
+                if proj.get('features'):
+                    text += f"│ ⭐ الميزات: {proj['features']}\n"
+                if proj.get('preview_link'):
+                    text += f"│ 🔗 <a href='{proj['preview_link']}'>معاينة</a>\n"
+                text += f"└────────────────\n\n"
+            await call.message.edit_text(text, reply_markup=portfolio_kb(), parse_mode="HTML")
         else:
-            await call.message.edit_text("🛒 **مشاريع المتاجر:**\n\n📌 قريباً...", reply_markup=portfolio_kb())
+            await call.message.edit_text("🛒 <b>مشاريع المتاجر:</b>\n\n📌 قريباً...", reply_markup=portfolio_kb(), parse_mode="HTML")
     
     elif data == "port_all":
         projects = await db.get_portfolio()
         if projects:
-            text = "📚 **جميع المشاريع:**\n\n"
-            for proj in projects[:5]:
-                text += f"• **{proj['title']}** ({proj['type']})\n"
+            text = "📚 <b>جميع المشاريع:</b>\n\n"
+            for proj in projects[:10]:
+                type_emoji = {"bot": "🤖", "app": "📱", "web": "💻", "store": "🛒"}.get(proj['type'], "📁")
+                text += f"{type_emoji} <b>{proj['title']}</b> ({proj['type']})\n"
+                if proj.get('price'):
+                    text += f"   💰 {proj['price']}\n"
                 if proj.get('description'):
-                    text += f"  {proj['description'][:100]}\n"
+                    text += f"   📝 {proj['description'][:100]}...\n"
                 text += "\n"
-            await call.message.edit_text(text, reply_markup=portfolio_kb())
+            await call.message.edit_text(text, reply_markup=portfolio_kb(), parse_mode="HTML")
         else:
-            await call.message.edit_text("📚 **جميع المشاريع:**\n\n📌 قريباً...", reply_markup=portfolio_kb())
+            await call.message.edit_text("📚 <b>جميع المشاريع:</b>\n\n📌 قريباً...", reply_markup=portfolio_kb(), parse_mode="HTML")
     
     await call.answer()
 
@@ -888,9 +911,10 @@ async def handle_order_details(message: types.Message, state: FSMContext):
         await state.update_data(details=message.text)
         await state.set_state(OrderState.budget)
         await message.answer(
-            "💰 **اختر الميزانية المتوقعة:**\n\n"
-            "💡 **نصيحة:** اختر الميزانية الأقرب لمشروعك",
-            reply_markup=budget_kb()
+            "💰 <b>اختر الميزانية المتوقعة:</b>\n\n"
+            "💡 نصيحة: اختر الميزانية الأقرب لمشروعك",
+            reply_markup=budget_kb(),
+            parse_mode="HTML"
         )
     
     elif current_state == SupportState.message:
@@ -898,23 +922,25 @@ async def handle_order_details(message: types.Message, state: FSMContext):
         await state.clear()
         
         await message.answer(
-            f"✅ **تم فتح تذكرة الدعم!**\n\n"
+            f"✅ <b>تم فتح تذكرة الدعم!</b>\n\n"
             f"🎫 رقم التذكرة: #{ticket_id}\n"
             f"📝 رسالتك: {message.text[:100]}...\n\n"
-            f"⏱ **سنرد عليك خلال 24 ساعة**\n"
-            f"💬 **للتواصل السريع:** {SUPPORT_USERNAME}\n"
-            f"👨‍💼 **المدير:** {ADMIN_USERNAME}",
-            reply_markup=main_keyboard()
+            f"⏱ <b>سنرد عليك خلال 24 ساعة</b>\n"
+            f"💬 <b>للتواصل السريع:</b> {SUPPORT_USERNAME}\n"
+            f"👨‍💼 <b>المدير:</b> {ADMIN_USERNAME}",
+            reply_markup=main_keyboard(),
+            parse_mode="HTML"
         )
         
         try:
             await message.bot.send_message(
                 config.ADMIN_ID,
-                f"🎫 **تذكرة دعم جديدة!**\n\n"
+                f"🎫 <b>تذكرة دعم جديدة!</b>\n\n"
                 f"👤 المستخدم: {message.from_user.username or message.from_user.first_name}\n"
                 f"🆔 ID: {message.from_user.id}\n"
                 f"🎫 الرقم: #{ticket_id}\n"
-                f"📝 الرسالة: {message.text}"
+                f"📝 الرسالة: {message.text}",
+                parse_mode="HTML"
             )
         except:
             pass

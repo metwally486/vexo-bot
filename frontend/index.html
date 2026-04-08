@@ -1,671 +1,254 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Vexo Admin | لوحة تحكم متولي الوصابي</title>
-    <!-- Google Fonts + Tajawal -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Vexo Admin | لوحة التحكم الشاملة</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-    <!-- Font Awesome 6 (free) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- ApexCharts (أفضل من Chart.js) -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Tajawal', sans-serif;
-        }
-
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Tajawal',sans-serif; }
         :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #8b5cf6;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --dark: #0f172a;
-            --gray-dark: #1e293b;
-            --gray: #64748b;
-            --light: #f1f5f9;
-            --white: #ffffff;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --primary: #6366f1; --primary-dark: #4f46e5; --secondary: #8b5cf6;
+            --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
+            --dark: #0f172a; --gray-dark: #1e293b; --gray: #64748b;
+            --light: #f1f5f9; --white: #ffffff;
+            --shadow: 0 10px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.05);
             --transition: all 0.2s ease;
         }
-
-        body {
-            background: linear-gradient(145deg, #f8fafc 0%, #eef2ff 100%);
-            min-height: 100vh;
+        body { background: linear-gradient(145deg, #f8fafc 0%, #eef2ff 100%); min-height: 100vh; }
+        body.dark-mode { background: linear-gradient(145deg, #0f172a 0%, #1e1b4b 100%); color: #e2e8f0; }
+        body.dark-mode .stat-card, body.dark-mode .chart-card, body.dark-mode .table-card,
+        body.dark-mode .sidebar, body.dark-mode .header, body.dark-mode .modal-content {
+            background: #1e293b; color: #f1f5f9; border-color: #334155;
         }
-
-        /* Dark Mode (يتم تفعيله لاحقاً) */
-        body.dark-mode {
-            background: linear-gradient(145deg, #0f172a 0%, #1e1b4b 100%);
-            color: #e2e8f0;
+        body.dark-mode .stat-label, body.dark-mode .table-title { color: #cbd5e1; }
+        body.dark-mode td, body.dark-mode th { border-bottom-color: #334155; }
+        body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
+            background: #0f172a; color: #f1f5f9; border-color: #475569;
         }
-        body.dark-mode .stat-card,
-        body.dark-mode .chart-card,
-        body.dark-mode .table-card,
-        body.dark-mode .sidebar,
-        body.dark-mode .header,
-        body.dark-mode .modal-content {
-            background: #1e293b;
-            color: #f1f5f9;
-            border-color: #334155;
-        }
-        body.dark-mode .stat-label,
-        body.dark-mode .chart-title,
-        body.dark-mode .table-title {
-            color: #cbd5e1;
-        }
-        body.dark-mode td {
-            border-bottom-color: #334155;
-        }
-        body.dark-mode input,
-        body.dark-mode select,
-        body.dark-mode textarea {
-            background: #0f172a;
-            color: #f1f5f9;
-            border-color: #475569;
-        }
-
-        /* تخطيط رئيسي مع سايد بار */
-        .app-wrapper {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* ========== سايد بار ========== */
+        .app-wrapper { display: flex; min-height: 100vh; }
+        /* سايد بار محسن */
         .sidebar {
-            width: 280px;
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(8px);
-            box-shadow: 2px 0 12px rgba(0,0,0,0.05);
-            transition: var(--transition);
-            position: fixed;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            z-index: 100;
-            overflow-y: auto;
-            border-left: 1px solid rgba(0,0,0,0.05);
+            width: 280px; background: rgba(255,255,255,0.98); backdrop-filter: blur(12px);
+            box-shadow: 2px 0 20px rgba(0,0,0,0.08); position: fixed; right: 0; top: 0; bottom: 0;
+            z-index: 1000; overflow-y: auto; border-left: 1px solid rgba(0,0,0,0.05);
+            transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
         }
-        body.dark-mode .sidebar {
-            background: rgba(30,41,59,0.98);
-            border-left-color: #334155;
-        }
-        .sidebar-header {
-            padding: 1.5rem;
-            text-align: center;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        .sidebar-logo {
-            width: 70px;
-            margin: 0 auto 0.75rem;
-        }
-        .sidebar-logo svg {
-            width: 100%;
-        }
-        .sidebar-title {
-            font-size: 1.3rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .ceo-name {
-            font-size: 0.85rem;
-            color: var(--gray);
-            margin-top: 0.3rem;
-        }
-        .nav-menu {
-            padding: 1.5rem 1rem;
-            list-style: none;
-        }
-        .nav-item {
-            margin-bottom: 0.5rem;
-        }
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.8rem 1rem;
-            border-radius: 12px;
-            color: var(--gray-dark);
-            text-decoration: none;
-            font-weight: 500;
-            transition: var(--transition);
-        }
-        .nav-link i {
-            width: 24px;
-            font-size: 1.2rem;
-        }
-        .nav-link.active, .nav-link:hover {
-            background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.1));
-            color: var(--primary);
-        }
-        body.dark-mode .nav-link {
-            color: #cbd5e1;
-        }
-        /* زر الوضع المظلم */
-        .dark-mode-toggle {
-            margin-top: 2rem;
-            padding: 1rem;
-            text-align: center;
-            border-top: 1px solid #e2e8f0;
-        }
-        .toggle-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 1.2rem;
-            color: var(--gray);
-        }
-
+        body.dark-mode .sidebar { background: rgba(30,41,59,0.98); border-left-color: #334155; }
+        .sidebar-header { padding: 1.5rem; text-align: center; border-bottom: 1px solid #e2e8f0; }
+        .sidebar-logo { width: 80px; margin: 0 auto 0.75rem; }
+        .sidebar-logo svg { width: 100%; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
+        .sidebar-title { font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg,var(--primary),var(--secondary)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+        .ceo-name { font-size: 0.85rem; color: var(--gray); margin-top: 0.3rem; }
+        .nav-menu { padding: 1.5rem 1rem; list-style: none; }
+        .nav-item { margin-bottom: 0.5rem; }
+        .nav-link { display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1rem; border-radius: 12px; color: var(--gray-dark); text-decoration: none; font-weight: 500; transition: var(--transition); }
+        .nav-link i { width: 24px; font-size: 1.2rem; }
+        .nav-link.active, .nav-link:hover { background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.1)); color: var(--primary); }
+        .dark-mode-toggle { margin-top: 2rem; padding: 1rem; text-align: center; border-top: 1px solid #e2e8f0; }
+        .toggle-btn { background: none; border: none; cursor: pointer; font-size: 1.2rem; color: var(--gray); }
         /* المحتوى الرئيسي */
-        .main-content {
-            flex: 1;
-            margin-right: 280px;
-            padding: 1rem 2rem 2rem;
-        }
-
-        /* الهيدر */
+        .main-content { flex: 1; margin-right: 280px; padding: 1rem 1.5rem 2rem; }
+        /* الهيدر الجديد */
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-            gap: 1rem;
+            background: white; border-radius: 28px; padding: 1rem 1.8rem; margin-bottom: 2rem;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+            box-shadow: var(--shadow);
         }
-        .page-title h1 {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: var(--dark);
-        }
-        .page-title p {
-            color: var(--gray);
-            font-size: 0.9rem;
-        }
-        .user-area {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            background: white;
-            padding: 0.4rem 1.2rem;
-            border-radius: 60px;
-            box-shadow: var(--shadow-sm);
-        }
-        body.dark-mode .user-area {
-            background: #1e293b;
-        }
-        .user-avatar {
-            width: 42px;
-            height: 42px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-        }
+        .brand h1 { font-size: 1.8rem; background: linear-gradient(135deg,var(--primary),var(--secondary)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+        .brand p { color: var(--gray); font-size: 0.85rem; }
+        .user-area { display: flex; align-items: center; gap: 1rem; background: var(--light); padding: 0.4rem 1.2rem; border-radius: 60px; }
+        .user-avatar { width: 42px; height: 42px; background: linear-gradient(135deg,var(--primary),var(--secondary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
         /* كروت الإحصائيات */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        .stat-card {
-            background: white;
-            border-radius: 24px;
-            padding: 1.2rem;
-            box-shadow: var(--shadow-md);
-            transition: transform 0.2s, box-shadow 0.2s;
-            border: 1px solid rgba(0,0,0,0.03);
-        }
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
-        }
-        .stat-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 800;
-        }
-        /* الرسوم البيانية */
-        .charts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        .chart-card {
-            background: white;
-            border-radius: 24px;
-            padding: 1rem;
-            box-shadow: var(--shadow-md);
-        }
-        /* جدول الطلبات + التذاكر */
-        .table-card {
-            background: white;
-            border-radius: 24px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            box-shadow: var(--shadow-md);
-        }
-        .table-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            margin-bottom: 1rem;
-            gap: 1rem;
-        }
-        .search-box input {
-            padding: 0.6rem 1rem 0.6rem 2.5rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 40px;
-            width: 260px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 1rem 0.75rem;
-            text-align: right;
-            border-bottom: 1px solid #f1f5f9;
-        }
-        .status-badge {
-            padding: 0.3rem 0.8rem;
-            border-radius: 30px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        .btn-sm {
-            padding: 0.4rem 0.8rem;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-            font-size: 0.8rem;
-            margin: 0 2px;
-        }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: white; border-radius: 24px; padding: 1.2rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); transition: 0.2s; }
+        .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+        .stat-icon { width: 48px; height: 48px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1rem; }
+        .stat-value { font-size: 2rem; font-weight: 800; }
+        .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .chart-card { background: white; border-radius: 24px; padding: 1rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); }
+        .table-card { background: white; border-radius: 24px; padding: 1.5rem; margin-bottom: 2rem; overflow-x: auto; }
+        .table-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 1rem; gap: 1rem; }
+        .search-box input { padding: 0.6rem 1rem 0.6rem 2.5rem; border: 1px solid #e2e8f0; border-radius: 40px; width: 260px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 1rem 0.75rem; text-align: right; border-bottom: 1px solid #f1f5f9; }
+        th { background: var(--light); font-weight: 700; }
+        .status-badge { padding: 0.3rem 0.8rem; border-radius: 30px; font-size: 0.8rem; font-weight: 600; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-processing { background: #dbeafe; color: #1e40af; }
+        .status-completed { background: #d1fae5; color: #065f46; }
+        .status-rejected { background: #fee2e2; color: #991b1b; }
+        .btn-sm { padding: 0.4rem 0.8rem; border-radius: 10px; border: none; cursor: pointer; font-size: 0.8rem; margin: 0 2px; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-primary { background: var(--primary); color: white; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: white; border-radius: 28px; padding: 2rem; width: 90%; max-width: 550px; max-height: 80vh; overflow-y: auto; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.3rem; font-weight: 600; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.6rem; border: 1px solid #e2e8f0; border-radius: 12px; }
+        .notification { position: fixed; bottom: 20px; left: 20px; background: white; padding: 0.8rem 1.5rem; border-radius: 40px; box-shadow: var(--shadow); z-index: 300; transition: 0.3s; transform: translateY(100px); opacity: 0; }
+        .notification.show { transform: translateY(0); opacity: 1; }
         /* تبويبات */
-        .tabs {
-            display: flex;
-            gap: 1rem;
-            border-bottom: 2px solid #e2e8f0;
-            margin-bottom: 1.5rem;
-        }
-        .tab {
-            padding: 0.5rem 1rem;
-            cursor: pointer;
-            font-weight: 600;
-            color: var(--gray);
-            transition: 0.2s;
-        }
-        .tab.active {
-            color: var(--primary);
-            border-bottom: 2px solid var(--primary);
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        /* للهواتف */
         @media (max-width: 900px) {
             .sidebar { transform: translateX(100%); width: 260px; }
             .main-content { margin-right: 0; }
             .sidebar.open { transform: translateX(0); }
-            .menu-toggle {
-                display: block;
-                position: fixed;
-                top: 1rem;
-                right: 1rem;
-                z-index: 200;
-                background: white;
-                border-radius: 50%;
-                width: 45px;
-                height: 45px;
-                text-align: center;
-                line-height: 45px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            }
+            .menu-toggle { display: block; position: fixed; top: 1rem; right: 1rem; z-index: 1100; background: white; border-radius: 50%; width: 45px; height: 45px; text-align: center; line-height: 45px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); cursor: pointer; }
+            .header { flex-direction: column; text-align: center; }
+            .stats-grid { grid-template-columns: 1fr; }
         }
         .menu-toggle { display: none; }
-        .notification {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: white;
-            padding: 0.8rem 1.5rem;
-            border-radius: 40px;
-            box-shadow: var(--shadow-lg);
-            z-index: 300;
-            transition: 0.3s;
-            transform: translateY(100px);
-            opacity: 0;
-        }
-        .notification.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            background: white;
-            border-radius: 28px;
-            padding: 2rem;
-            width: 90%;
-            max-width: 500px;
-        }
     </style>
 </head>
 <body>
 <div class="app-wrapper">
-    <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="sidebar-logo">
-                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#8b5cf6"/></linearGradient></defs>
-                    <circle cx="50" cy="50" r="45" fill="url(#grad)" opacity="0.15"/>
-                    <path d="M50 15 L55 35 L75 35 L60 50 L65 70 L50 55 L35 70 L40 50 L25 35 L45 35 Z" fill="url(#grad)"/>
-                    <circle cx="50" cy="50" r="7" fill="white"/>
-                </svg>
-            </div>
+            <div class="sidebar-logo"><svg viewBox="0 0 100 100"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#8b5cf6"/></linearGradient></defs><circle cx="50" cy="50" r="45" fill="url(#grad)" opacity="0.15"/><path d="M50 15 L55 35 L75 35 L60 50 L65 70 L50 55 L35 70 L40 50 L25 35 L45 35 Z" fill="url(#grad)"/><circle cx="50" cy="50" r="7" fill="white"/></svg></div>
             <div class="sidebar-title">Vexo Admin</div>
             <div class="ceo-name">المدير التنفيذي: متولي الوصابي</div>
         </div>
         <ul class="nav-menu">
             <li class="nav-item"><a href="#" class="nav-link active" data-tab="dashboard"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</a></li>
-            <li class="nav-item"><a href="#" class="nav-link" data-tab="orders-tab"><i class="fas fa-shopping-cart"></i> الطلبات</a></li>
-            <li class="nav-item"><a href="#" class="nav-link" data-tab="tickets-tab"><i class="fas fa-ticket-alt"></i> التذاكر</a></li>
-            <li class="nav-item"><a href="#" class="nav-link" data-tab="users-tab"><i class="fas fa-users"></i> المستخدمين</a></li>
-            <li class="nav-item"><a href="#" class="nav-link" data-tab="services-tab"><i class="fas fa-cogs"></i> الخدمات</a></li>
+            <li class="nav-item"><a href="#" class="nav-link" data-tab="orders"><i class="fas fa-shopping-cart"></i> الطلبات</a></li>
+            <li class="nav-item"><a href="#" class="nav-link" data-tab="tickets"><i class="fas fa-ticket-alt"></i> التذاكر</a></li>
+            <li class="nav-item"><a href="#" class="nav-link" data-tab="users"><i class="fas fa-users"></i> المستخدمين</a></li>
+            <li class="nav-item"><a href="#" class="nav-link" data-tab="portfolio"><i class="fas fa-briefcase"></i> معرض الأعمال</a></li>
+            <li class="nav-item"><a href="#" class="nav-link" data-tab="services"><i class="fas fa-cogs"></i> الخدمات</a></li>
+            <li class="nav-item"><a href="#" class="nav-link" data-tab="settings"><i class="fas fa-sliders-h"></i> الإعدادات</a></li>
         </ul>
-        <div class="dark-mode-toggle">
-            <button class="toggle-btn" id="darkModeToggle"><i class="fas fa-moon"></i> الوضع المظلم</button>
-        </div>
+        <div class="dark-mode-toggle"><button class="toggle-btn" id="darkModeToggle"><i class="fas fa-moon"></i> الوضع المظلم</button></div>
     </aside>
-
     <main class="main-content">
         <div class="header">
-            <div class="page-title">
-                <h1>مرحباً، متولي الوصابي</h1>
-                <p>نظام إدارة Vexo التقنية – إحصائيات وتحكم كامل</p>
-            </div>
-            <div class="user-area">
-                <i class="fas fa-bell" style="color:var(--primary); cursor:pointer;"></i>
-                <div class="user-avatar">م</div>
-                <span>مدير النظام</span>
-            </div>
+            <div class="brand"><h1>Vexo للخدمات التقنية</h1><p>نظام إدارة متكامل | متولي الوصابي</p></div>
+            <div class="user-area"><i class="fas fa-bell"></i><div class="user-avatar">م</div><span>مدير النظام</span></div>
         </div>
 
-        <!-- المحتوى الديناميكي (Dashboard) -->
-        <div id="dashboardContent">
-            <div class="stats-grid" id="statsGrid">
-                <!-- تملأ بالجافاسكريبت -->
-            </div>
-            <div class="charts-grid">
-                <div class="chart-card"><div id="donutChart"></div></div>
-                <div class="chart-card"><div id="weeklyChart"></div></div>
-            </div>
-            <div class="table-card">
-                <div class="table-header"><div class="table-title">📦 أحدث الطلبات</div><div class="search-box"><i class="fas fa-search"></i><input type="text" id="quickSearch" placeholder="بحث"></div></div>
-                <div style="overflow-x:auto"><table id="recentOrdersTable"><thead><tr><th>#</th><th>المستخدم</th><th>الخدمة</th><th>الميزانية</th><th>الحالة</th><th>الإجراء</th></tr></thead><tbody></tbody></table></div>
-            </div>
+        <!-- dashboard -->
+        <div id="dashboardTab" class="tab-content active">
+            <div class="stats-grid" id="statsGrid"></div>
+            <div class="charts-grid"><div class="chart-card"><div id="donutChart"></div></div><div class="chart-card"><div id="weeklyChart"></div></div></div>
+            <div class="table-card"><div class="table-header"><div class="table-title">📦 أحدث الطلبات</div><div class="search-box"><i class="fas fa-search"></i><input type="text" id="quickSearch" placeholder="بحث"></div></div>
+            <table id="recentOrdersTable"><thead><tr><th>#</th><th>المستخدم</th><th>الخدمة</th><th>الميزانية</th><th>الحالة</th><th>الإجراء</th></tr></thead><tbody></tbody></table></div>
         </div>
 
-        <!-- تبويب الطلبات الكامل -->
-        <div id="ordersTabContent" class="tab-content">
-            <div class="table-card">
-                <div class="table-header"><div class="table-title">📋 كل الطلبات</div><div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchOrdersFull" placeholder="بحث بالرقم أو الخدمة"></div></div>
-                <div style="overflow-x:auto"><table id="allOrdersTable"><thead><tr><th>#</th><th>المستخدم</th><th>الخدمة</th><th>الميزانية</th><th>الحالة</th><th>التاريخ</th><th>الإجراءات</th></tr></thead><tbody></tbody></table></div>
-            </div>
-        </div>
-        <!-- تبويب التذاكر -->
-        <div id="ticketsTabContent" class="tab-content">
-            <div class="table-card"><div class="table-title">🎫 تذاكر الدعم</div><div style="overflow-x:auto"><table id="ticketsTable"><thead><tr><th>#</th><th>المستخدم</th><th>الرسالة</th><th>الحالة</th><th>التاريخ</th><th>إجراء</th></tr></thead><tbody></tbody></table></div></div>
-        </div>
-        <!-- تبويب المستخدمين -->
-        <div id="usersTabContent" class="tab-content"><div class="table-card"><div class="table-title">👥 قائمة المستخدمين</div><div style="overflow-x:auto"><table id="usersTable"><thead><tr><th>المعرف</th><th>اسم المستخدم</th><th>النقاط</th><th>تاريخ الانضمام</th></tr></thead><tbody></tbody></table></div></div></div>
-        <!-- تبويب الخدمات -->
-        <div id="servicesTabContent" class="tab-content"><div class="table-card"><div class="table-title">⭐ الخدمات المتاحة</div><div style="overflow-x:auto"><table id="servicesTable"><thead><tr><th>الخدمة</th><th>السعر التقريبي</th></tr></thead><tbody><tr><td>🤖 إنشاء بوت تلجرام</td><td>100$+</td></tr><tr><td>📱 تطبيق أندرويد</td><td>500$+</td></tr><tr><td>💻 موقع إلكتروني</td><td>200$+</td></tr><tr><td>🛒 متجر إلكتروني</td><td>400$+</td></tr></tbody></table></div></div></div>
+        <!-- orders -->
+        <div id="ordersTab" class="tab-content"><div class="table-card"><div class="table-header"><div class="table-title">📋 كل الطلبات</div><div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchOrdersFull" placeholder="بحث بالرقم أو الخدمة"></div></div>
+        <table id="allOrdersTable"><thead><tr><th>#</th><th>المستخدم</th><th>الخدمة</th><th>الميزانية</th><th>الحالة</th><th>التاريخ</th><th>الإجراءات</th></tr></thead><tbody></tbody></table></div></div>
+
+        <!-- tickets -->
+        <div id="ticketsTab" class="tab-content"><div class="table-card"><div class="table-title">🎫 تذاكر الدعم</div><table id="ticketsTable"><thead><tr><th>#</th><th>المستخدم</th><th>الرسالة</th><th>الحالة</th><th>التاريخ</th><th>إجراء</th></tr></thead><tbody></tbody></table></div></div>
+
+        <!-- users -->
+        <div id="usersTab" class="tab-content"><div class="table-card"><div class="table-header"><div class="table-title">👥 المستخدمين</div><button class="btn-sm btn-primary" onclick="openAddPointsModal()"><i class="fas fa-plus"></i> إضافة نقاط</button></div>
+        <table id="usersTable"><thead><tr><th>المعرف</th><th>الاسم</th><th>النقاط</th><th>تاريخ الانضمام</th><th>إجراءات</th></tr></thead><tbody></tbody></table></div></div>
+
+        <!-- portfolio -->
+        <div id="portfolioTab" class="tab-content"><div class="table-card"><div class="table-header"><div class="table-title">🖼️ معرض الأعمال</div><button class="btn-sm btn-primary" onclick="openPortfolioModal()">➕ إضافة مشروع</button></div>
+        <table id="portfolioTable"><thead><tr><th>#</th><th>العنوان</th><th>النوع</th><th>الوصف</th><th>رابط المعاينة</th><th>إجراءات</th></tr></thead><tbody></tbody></table></div></div>
+
+        <!-- services -->
+        <div id="servicesTab" class="tab-content"><div class="table-card"><div class="table-header"><div class="table-title">⭐ الخدمات</div><button class="btn-sm btn-primary" onclick="openServiceModal()">➕ إضافة خدمة</button></div>
+        <table id="servicesTable"><thead><tr><th>#</th><th>الخدمة</th><th>السعر التقريبي</th><th>الوصف</th><th>إجراءات</th></tr></thead><tbody></tbody></table></div></div>
+
+        <!-- settings -->
+        <div id="settingsTab" class="tab-content"><div class="table-card"><div class="table-title">⚙️ إعدادات النظام</div>
+        <form id="settingsForm"><div class="form-group"><label>اسم الشركة</label><input type="text" id="companyName" value="Vexo للخدمات التقنية"></div>
+        <div class="form-group"><label>المدير التنفيذي</label><input type="text" id="ceoName" value="متولي الوصابي"></div>
+        <div class="form-group"><label>رابط القناة</label><input type="text" id="channelLink" value="https://t.me/abod_IT"></div>
+        <div class="form-group"><label>مفتاح API</label><input type="text" id="apiKey" value="VexoSecret2024!@#"></div>
+        <div class="form-group"><label>عنوان API</label><input type="text" id="apiUrl" value="https://vexo-backend-7tk4.onrender.com"></div>
+        <button type="button" class="btn-sm btn-primary" onclick="saveSettings()">حفظ الإعدادات</button></form></div></div>
     </main>
 </div>
 <div id="notification" class="notification"></div>
 
 <script>
     // تكوين API
-    const API_URL = "https://vexo-backend-7tk4.onrender.com";
-    const API_KEY = "VexoSecret2024!@#";
-    let allOrders = [];
-    let allTickets = [];
-    let allUsers = [];
+    let API_URL = "https://vexo-backend-7tk4.onrender.com";
+    let API_KEY = "VexoSecret2024!@#";
+    let allOrders = [], allTickets = [], allUsers = [], allPortfolio = [], allServices = [];
 
-    // دوال مساعدة
-    function showNotification(msg, type='success'){
-        const notif = document.getElementById('notification');
-        notif.textContent = msg;
-        notif.classList.add('show');
-        setTimeout(()=> notif.classList.remove('show'), 3000);
-    }
+    function showNotification(msg, type='success'){ let n=document.getElementById('notification'); n.textContent=msg; n.classList.add('show'); setTimeout(()=>n.classList.remove('show'),3000); }
 
-    async function fetchOrders(){
-        try{
-            const res = await fetch(`${API_URL}/api/orders`, { headers: { 'X-API-Key': API_KEY } });
-            if(!res.ok) throw new Error();
-            return await res.json();
-        }catch(e){
-            // بيانات تجريبية بديلة لعرض جميل
-            return [
-                { id:101, user_id:1001, service_type:"بوت تلجرام", budget:"150$", status:"completed", created_at:new Date().toISOString() },
-                { id:102, user_id:1002, service_type:"موقع إلكتروني", budget:"300$", status:"pending", created_at:new Date().toISOString() },
-                { id:103, user_id:1003, service_type:"تطبيق أندرويد", budget:"800$", status:"processing", created_at:new Date().toISOString() },
-                { id:104, user_id:1001, service_type:"متجر", budget:"550$", status:"completed", created_at:new Date().toISOString() },
-            ];
-        }
-    }
-    async function fetchTickets(){
-        try{
-            const res = await fetch(`${API_URL}/api/tickets`, { headers: { 'X-API-Key': API_KEY } });
-            if(!res.ok) throw new Error();
-            return await res.json();
-        }catch(e){
-            return [
-                { id:1, user_id:1001, message:"مشكلة في الدفع", status:"open", created_at:new Date().toISOString() },
-                { id:2, user_id:1002, message:"تعديل على البوت", status:"closed", created_at:new Date().toISOString() }
-            ];
-        }
-    }
-    async function fetchUsers(){
-        try{
-            const res = await fetch(`${API_URL}/api/users`, { headers: { 'X-API-Key': API_KEY } });
-            if(!res.ok) throw new Error();
-            return await res.json();
-        }catch(e){
-            return [
-                { id:1001, username:"user1", full_name:"أحمد", loyalty_points:120, joined_at:new Date().toISOString() },
-                { id:1002, username:"user2", full_name:"سارة", loyalty_points:45, joined_at:new Date().toISOString() }
-            ];
-        }
-    }
+    async function fetchOrders(){ try{ const res=await fetch(`${API_URL}/api/orders`,{headers:{'X-API-Key':API_KEY}}); if(!res.ok)throw new Error(); return await res.json(); }catch(e){ return [ {id:101,user_id:1001,service_type:"بوت تلجرام",budget:"150$",status:"completed",created_at:new Date().toISOString()}, {id:102,user_id:1002,service_type:"موقع",budget:"300$",status:"pending",created_at:new Date().toISOString()} ]; } }
+    async function fetchTickets(){ try{ const res=await fetch(`${API_URL}/api/tickets`,{headers:{'X-API-Key':API_KEY}}); if(!res.ok)throw new Error(); return await res.json(); }catch(e){ return [ {id:1,user_id:1001,message:"مشكلة في الدفع",status:"open",created_at:new Date().toISOString()} ]; } }
+    async function fetchUsers(){ try{ const res=await fetch(`${API_URL}/api/users`,{headers:{'X-API-Key':API_KEY}}); if(!res.ok)throw new Error(); return await res.json(); }catch(e){ return [ {id:1001,username:"user1",full_name:"أحمد",loyalty_points:120,joined_at:new Date().toISOString()} ]; } }
+    async function fetchPortfolio(){ try{ const res=await fetch(`${API_URL}/api/portfolio`,{headers:{'X-API-Key':API_KEY}}); if(!res.ok)throw new Error(); return await res.json(); }catch(e){ return [ {id:1,title:"بوت متجر",type:"bot",description:"بوت متجر كامل",preview_link:"https://t.me/example"} ]; } }
+    async function fetchServices(){ try{ const res=await fetch(`${API_URL}/api/services`,{headers:{'X-API-Key':API_KEY}}); if(!res.ok)throw new Error(); return await res.json(); }catch(e){ return [ {id:1,name:"إنشاء بوت",price:"100$",description:"بوت تلجرام احترافي"} ]; } }
 
     async function loadAllData(){
-        allOrders = await fetchOrders();
-        allTickets = await fetchTickets();
-        allUsers = await fetchUsers();
-        renderDashboard();
-        renderOrdersTable();
-        renderTicketsTable();
-        renderUsersTable();
+        allOrders=await fetchOrders(); allTickets=await fetchTickets(); allUsers=await fetchUsers(); allPortfolio=await fetchPortfolio(); allServices=await fetchServices();
+        renderDashboard(); renderOrdersTable(); renderTicketsTable(); renderUsersTable(); renderPortfolioTable(); renderServicesTable();
     }
-
     function renderDashboard(){
-        const totalOrders = allOrders.length;
-        const completed = allOrders.filter(o=>o.status==='completed').length;
-        const pending = allOrders.filter(o=>o.status==='pending').length;
-        const totalPoints = allUsers.reduce((sum,u)=> sum + (u.loyalty_points||0),0);
-        const openTickets = allTickets.filter(t=>t.status==='open').length;
-        const statsHtml = `
-            <div class="stat-card"><div class="stat-icon blue"><i class="fas fa-shopping-cart"></i></div><div class="stat-value">${totalOrders}</div><div class="stat-label">إجمالي الطلبات</div><div class="stat-change positive"><i class="fas fa-chart-line"></i> +12%</div></div>
-            <div class="stat-card"><div class="stat-icon green"><i class="fas fa-check-circle"></i></div><div class="stat-value">${completed}</div><div class="stat-label">مكتملة</div></div>
-            <div class="stat-card"><div class="stat-icon yellow"><i class="fas fa-clock"></i></div><div class="stat-value">${pending}</div><div class="stat-label">قيد الانتظار</div></div>
-            <div class="stat-card"><div class="stat-icon purple"><i class="fas fa-coins"></i></div><div class="stat-value">${totalPoints}</div><div class="stat-label">نقاط الولاء</div></div>
-            <div class="stat-card"><div class="stat-icon purple"><i class="fas fa-ticket-alt"></i></div><div class="stat-value">${openTickets}</div><div class="stat-label">تذاكر مفتوحة</div></div>
-            <div class="stat-card"><div class="stat-icon purple"><i class="fas fa-users"></i></div><div class="stat-value">${allUsers.length}</div><div class="stat-label">مستخدمين نشطين</div></div>
-        `;
-        document.getElementById('statsGrid').innerHTML = statsHtml;
-        // رسم بياني
-        const pendingCount = allOrders.filter(o=>o.status==='pending').length;
-        const processingCount = allOrders.filter(o=>o.status==='processing').length;
-        const completedCount = completed;
-        const rejectedCount = allOrders.filter(o=>o.status==='rejected').length;
-        var donutOptions = { series: [pendingCount, processingCount, completedCount, rejectedCount], chart: { type: 'donut', width: '100%' }, labels: ['قيد الانتظار','قيد التنفيذ','مكتمل','مرفوض'], colors: ['#f59e0b','#3b82f6','#10b981','#ef4444'], legend: { position: 'bottom' } };
+        const total=allOrders.length, completed=allOrders.filter(o=>o.status==='completed').length, pending=allOrders.filter(o=>o.status==='pending').length;
+        const totalPoints=allUsers.reduce((s,u)=>s+(u.loyalty_points||0),0), openTickets=allTickets.filter(t=>t.status==='open').length;
+        document.getElementById('statsGrid').innerHTML=`<div class="stat-card"><div class="stat-icon" style="background:#dbeafe;color:#3b82f6"><i class="fas fa-shopping-cart"></i></div><div class="stat-value">${total}</div><div class="stat-label">إجمالي الطلبات</div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:#d1fae5;color:#10b981"><i class="fas fa-check-circle"></i></div><div class="stat-value">${completed}</div><div class="stat-label">مكتملة</div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:#fef3c7;color:#f59e0b"><i class="fas fa-clock"></i></div><div class="stat-value">${pending}</div><div class="stat-label">قيد الانتظار</div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:#e0e7ff;color:#6366f1"><i class="fas fa-coins"></i></div><div class="stat-value">${totalPoints}</div><div class="stat-label">نقاط الولاء</div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:#fce7f3;color:#ec4899"><i class="fas fa-ticket-alt"></i></div><div class="stat-value">${openTickets}</div><div class="stat-label">تذاكر مفتوحة</div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:#cffafe;color:#06b6d4"><i class="fas fa-users"></i></div><div class="stat-value">${allUsers.length}</div><div class="stat-label">مستخدمين</div></div>`;
+        // Charts
+        const pendingC=allOrders.filter(o=>o.status==='pending').length, processingC=allOrders.filter(o=>o.status==='processing').length, completedC=completed, rejectedC=allOrders.filter(o=>o.status==='rejected').length;
         if(window.donutChart) window.donutChart.destroy();
-        window.donutChart = new ApexCharts(document.querySelector("#donutChart"), donutOptions);
+        window.donutChart=new ApexCharts(document.querySelector("#donutChart"),{series:[pendingC,processingC,completedC,rejectedC],chart:{type:'donut',width:'100%'},labels:['قيد الانتظار','قيد التنفيذ','مكتمل','مرفوض'],colors:['#f59e0b','#3b82f6','#10b981','#ef4444'],legend:{position:'bottom'}});
         window.donutChart.render();
-
-        // رسم بياني أسبوعي (محاكاة)
-        var weeklyOptions = { series: [{ name: 'الطلبات', data: [5, 7, 4, 9, 12, 8, 6] }], chart: { type: 'line', height: 280, toolbar: { show: false } }, xaxis: { categories: ['سبت','أحد','اثنين','ثلاثاء','أربعاء','خميس','جمعة'] }, stroke: { curve: 'smooth', width: 3 }, colors: ['#6366f1'] };
         if(window.weeklyChart) window.weeklyChart.destroy();
-        window.weeklyChart = new ApexCharts(document.querySelector("#weeklyChart"), weeklyOptions);
+        window.weeklyChart=new ApexCharts(document.querySelector("#weeklyChart"),{series:[{name:'الطلبات',data:[5,7,4,9,12,8,6]}],chart:{type:'line',height:280,toolbar:{show:false}},xaxis:{categories:['سبت','أحد','اثنين','ثلاثاء','أربعاء','خميس','جمعة']},stroke:{curve:'smooth',width:3},colors:['#6366f1']});
         window.weeklyChart.render();
-
-        // أحدث الطلبات
-        const recent = allOrders.slice(0,5);
-        const tbody = document.querySelector('#recentOrdersTable tbody');
-        tbody.innerHTML = '';
-        recent.forEach(order=>{
-            tbody.innerHTML += `<tr><td>#${order.id}</td><td>${order.user_id}</td><td>${order.service_type}</td><td>${order.budget}</td><td><span class="status-badge status-${order.status}">${order.status}</span></td><td><button class="btn-sm btn-success" onclick="quickUpdate(${order.id},'completed')"><i class="fas fa-check"></i></button></td></tr>`;
-        });
+        const recent=allOrders.slice(0,5); let tbody=document.querySelector('#recentOrdersTable tbody'); tbody.innerHTML='';
+        recent.forEach(o=>{ tbody.innerHTML+=`<tr><td>#${o.id}</td><td>${o.user_id}</td><td>${o.service_type}</td><td>${o.budget}</td><td><span class="status-badge status-${o.status}">${o.status}</span></td><td><button class="btn-sm btn-success" onclick="updateOrderStatus(${o.id},'completed')"><i class="fas fa-check"></i></button></td></tr>`; });
+    }
+    function renderOrdersTable(){ let tbody=document.querySelector('#allOrdersTable tbody'); tbody.innerHTML='';
+        allOrders.forEach(o=>{ let date=o.created_at?new Date(o.created_at).toLocaleDateString('ar'):'-'; tbody.innerHTML+=`<tr><td>#${o.id}</td><td>${o.user_id}</td><td>${o.service_type}</td><td>${o.budget}</td><td><span class="status-badge status-${o.status}">${o.status}</span></td><td>${date}</td><td><button class="btn-sm btn-success" onclick="updateOrderStatus(${o.id},'completed')"><i class="fas fa-check"></i></button> <button class="btn-sm btn-warning" onclick="updateOrderStatus(${o.id},'processing')"><i class="fas fa-spinner"></i></button> <button class="btn-sm btn-danger" onclick="updateOrderStatus(${o.id},'rejected')"><i class="fas fa-times"></i></button></td></tr>`; });
+    }
+    function renderTicketsTable(){ let tbody=document.querySelector('#ticketsTable tbody'); tbody.innerHTML='';
+        allTickets.forEach(t=>{ tbody.innerHTML+=`<tr><td>#${t.id}</td><td>${t.user_id}</td><td>${t.message.substring(0,50)}</td><td><span class="status-badge ${t.status==='open'?'status-pending':'status-completed'}">${t.status}</span></td><td>${new Date(t.created_at).toLocaleDateString()}</td><td><button class="btn-sm btn-primary" onclick="closeTicket(${t.id})">إغلاق</button></td></tr>`; });
+    }
+    function renderUsersTable(){ let tbody=document.querySelector('#usersTable tbody'); tbody.innerHTML='';
+        allUsers.forEach(u=>{ tbody.innerHTML+=`<tr><td>${u.id}</td><td>${u.full_name||u.username}</td><td>${u.loyalty_points||0}</td><td>${u.joined_at?new Date(u.joined_at).toLocaleDateString():'-'}</td><td><button class="btn-sm btn-warning" onclick="openPointsModal(${u.id},${u.loyalty_points||0})"><i class="fas fa-coins"></i> تعديل النقاط</button></td></tr>`; });
+    }
+    function renderPortfolioTable(){ let tbody=document.querySelector('#portfolioTable tbody'); tbody.innerHTML='';
+        allPortfolio.forEach(p=>{ tbody.innerHTML+=`<tr><td>#${p.id}</td><td>${p.title}</td><td>${p.type}</td><td>${p.description?.substring(0,50)||'-'}</td><td><a href="${p.preview_link}" target="_blank">معاينة</a></td><td><button class="btn-sm btn-danger" onclick="deletePortfolioItem(${p.id})">حذف</button></td></tr>`; });
+    }
+    function renderServicesTable(){ let tbody=document.querySelector('#servicesTable tbody'); tbody.innerHTML='';
+        allServices.forEach(s=>{ tbody.innerHTML+=`<tr><td>#${s.id}</td><td>${s.name}</td><td>${s.price}</td><td>${s.description||'-'}</td><td><button class="btn-sm btn-danger" onclick="deleteService(${s.id})">حذف</button></td></tr>`; });
     }
 
-    function renderOrdersTable(){
-        const tbody = document.querySelector('#allOrdersTable tbody');
-        tbody.innerHTML = '';
-        allOrders.forEach(order=>{
-            const date = order.created_at ? new Date(order.created_at).toLocaleDateString('ar') : '-';
-            tbody.innerHTML += `<tr>
-                <td>#${order.id}</td><td>${order.user_id}</td><td>${order.service_type}</td><td>${order.budget}</td>
-                <td><span class="status-badge status-${order.status}">${order.status}</span></td><td>${date}</td>
-                <td><div class="action-buttons"><button class="btn-sm btn-success" onclick="updateOrderStatus(${order.id},'completed')"><i class="fas fa-check"></i></button>
-                <button class="btn-sm btn-warning" onclick="updateOrderStatus(${order.id},'processing')"><i class="fas fa-spinner"></i></button>
-                <button class="btn-sm btn-danger" onclick="updateOrderStatus(${order.id},'rejected')"><i class="fas fa-times"></i></button></div></td>
-            </tr>`;
-        });
-    }
-    function renderTicketsTable(){
-        const tbody = document.querySelector('#ticketsTable tbody');
-        tbody.innerHTML = '';
-        allTickets.forEach(t=>{
-            tbody.innerHTML += `<tr><td>#${t.id}</td><td>${t.user_id}</td><td>${t.message.substring(0,50)}</td><td><span class="status-badge ${t.status==='open'?'status-pending':'status-completed'}">${t.status}</span></td><td>${new Date(t.created_at).toLocaleDateString()}</td><td><button class="btn-sm btn-primary" onclick="closeTicket(${t.id})">إغلاق</button></td></tr>`;
-        });
-    }
-    function renderUsersTable(){
-        const tbody = document.querySelector('#usersTable tbody');
-        tbody.innerHTML = '';
-        allUsers.forEach(u=>{
-            tbody.innerHTML += `<tr><td>${u.id}</td><td>${u.full_name || u.username}</td><td>${u.loyalty_points||0}</td><td>${u.joined_at ? new Date(u.joined_at).toLocaleDateString() : '-'}</td></tr>`;
-        });
-    }
-    window.updateOrderStatus = async (orderId, status)=>{
-        try{
-            await fetch(`${API_URL}/api/orders/${orderId}/status?status=${status}`, { method:'POST', headers:{'X-API-Key':API_KEY} });
-            showNotification(`تم تحديث الطلب #${orderId} إلى ${status}`);
-            loadAllData();
-        }catch(e){
-            showNotification('خطأ في الاتصال', 'error');
-            // تحديث محلي وهمي
-            const idx = allOrders.findIndex(o=>o.id===orderId);
-            if(idx!==-1) allOrders[idx].status = status;
-            renderOrdersTable(); renderDashboard();
-        }
-    };
-    window.quickUpdate = updateOrderStatus;
+    window.updateOrderStatus = async (orderId, status)=>{ try{ await fetch(`${API_URL}/api/orders/${orderId}/status?status=${status}`,{method:'POST',headers:{'X-API-Key':API_KEY}}); showNotification(`تم تحديث الطلب #${orderId} إلى ${status}`); loadAllData(); }catch(e){ showNotification('خطأ في الاتصال','error'); } };
     window.closeTicket = (id)=>{ showNotification(`تم إغلاق التذكرة #${id}`); };
-    // التبويبات والتنقل
-    const tabs = document.querySelectorAll('.nav-link');
-    const contents = { dashboard: document.getElementById('dashboardContent'), 'orders-tab': document.getElementById('ordersTabContent'), 'tickets-tab': document.getElementById('ticketsTabContent'), 'users-tab': document.getElementById('usersTabContent'), 'services-tab': document.getElementById('servicesTabContent') };
-    tabs.forEach(link=>{
-        link.addEventListener('click', (e)=>{
-            e.preventDefault();
-            const tabId = link.getAttribute('data-tab');
-            for(let key in contents) contents[key].style.display = 'none';
-            contents[tabId].style.display = 'block';
-            tabs.forEach(l=>l.classList.remove('active'));
-            link.classList.add('active');
-            if(tabId === 'dashboard') renderDashboard();
-            else if(tabId === 'orders-tab') renderOrdersTable();
-            else if(tabId === 'tickets-tab') renderTicketsTable();
-            else if(tabId === 'users-tab') renderUsersTable();
-        });
-    });
-    // بدء العرض
-    document.getElementById('dashboardContent').style.display = 'block';
-    document.getElementById('ordersTabContent').style.display = 'none';
-    document.getElementById('ticketsTabContent').style.display = 'none';
-    document.getElementById('usersTabContent').style.display = 'none';
-    document.getElementById('servicesTabContent').style.display = 'none';
-    loadAllData();
+    window.openPointsModal = (userId, currentPoints)=>{ let newPoints = prompt(`أدخل عدد النقاط الجديد للمستخدم ${userId} (الحالي: ${currentPoints})`, currentPoints); if(newPoints !== null) updateUserPoints(userId, parseInt(newPoints)); };
+    async function updateUserPoints(userId, points){ try{ await fetch(`${API_URL}/api/users/${userId}/points?points=${points}`,{method:'POST',headers:{'X-API-Key':API_KEY}}); showNotification(`تم تحديث نقاط المستخدم ${userId}`); loadAllData(); }catch(e){ showNotification('خطأ','error'); } }
+    window.deletePortfolioItem = async (id)=>{ if(confirm('حذف المشروع؟')){ await fetch(`${API_URL}/api/portfolio/${id}`,{method:'DELETE',headers:{'X-API-Key':API_KEY}}); showNotification('تم الحذف'); loadAllData(); } };
+    window.deleteService = async (id)=>{ if(confirm('حذف الخدمة؟')){ await fetch(`${API_URL}/api/services/${id}`,{method:'DELETE',headers:{'X-API-Key':API_KEY}}); showNotification('تم الحذف'); loadAllData(); } };
+    function saveSettings(){ let newApiUrl=document.getElementById('apiUrl').value; let newApiKey=document.getElementById('apiKey').value; API_URL=newApiUrl; API_KEY=newApiKey; localStorage.setItem('apiUrl',API_URL); localStorage.setItem('apiKey',API_KEY); showNotification('تم حفظ الإعدادات، سيتم إعادة التحميل'); setTimeout(()=>location.reload(),1500); }
 
-    // بحث سريع
-    document.getElementById('quickSearch')?.addEventListener('keyup', function(){
-        const val = this.value.toLowerCase();
-        const rows = document.querySelectorAll('#recentOrdersTable tbody tr');
-        rows.forEach(row=>{
-            const text = row.innerText.toLowerCase();
-            row.style.display = text.includes(val) ? '' : 'none';
-        });
-    });
-    document.getElementById('searchOrdersFull')?.addEventListener('keyup', function(){
-        const val = this.value.toLowerCase();
-        const rows = document.querySelectorAll('#allOrdersTable tbody tr');
-        rows.forEach(row=>{
-            const text = row.innerText.toLowerCase();
-            row.style.display = text.includes(val) ? '' : 'none';
-        });
-    });
+    // التبويبات
+    const tabs=document.querySelectorAll('.nav-link'); const tabContents={ dashboard:document.getElementById('dashboardTab'), orders:document.getElementById('ordersTab'), tickets:document.getElementById('ticketsTab'), users:document.getElementById('usersTab'), portfolio:document.getElementById('portfolioTab'), services:document.getElementById('servicesTab'), settings:document.getElementById('settingsTab') };
+    tabs.forEach(link=>{ link.addEventListener('click',(e)=>{ e.preventDefault(); let tabId=link.getAttribute('data-tab'); for(let key in tabContents) tabContents[key].classList.remove('active'); tabContents[tabId].classList.add('active'); tabs.forEach(l=>l.classList.remove('active')); link.classList.add('active'); if(tabId==='dashboard') renderDashboard(); else if(tabId==='orders') renderOrdersTable(); else if(tabId==='tickets') renderTicketsTable(); else if(tabId==='users') renderUsersTable(); else if(tabId==='portfolio') renderPortfolioTable(); else if(tabId==='services') renderServicesTable(); }); });
     // وضع مظلم
-    const darkToggle = document.getElementById('darkModeToggle');
-    darkToggle.addEventListener('click', ()=>{
-        document.body.classList.toggle('dark-mode');
-        localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-    });
-    if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
+    const darkToggle=document.getElementById('darkModeToggle'); darkToggle.addEventListener('click',()=>{ document.body.classList.toggle('dark-mode'); localStorage.setItem('darkMode',document.body.classList.contains('dark-mode')); });
+    if(localStorage.getItem('darkMode')==='true') document.body.classList.add('dark-mode');
+    // جلب الإعدادات المخزنة
+    if(localStorage.getItem('apiUrl')) API_URL=localStorage.getItem('apiUrl'); if(localStorage.getItem('apiKey')) API_KEY=localStorage.getItem('apiKey');
+    document.getElementById('apiUrl').value=API_URL; document.getElementById('apiKey').value=API_KEY;
+    loadAllData();
     // زر القائمة للجوال
-    const menuToggle = document.createElement('div');
-    menuToggle.className = 'menu-toggle';
-    menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-    document.body.prepend(menuToggle);
-    menuToggle.addEventListener('click', ()=> document.getElementById('sidebar').classList.toggle('open'));
+    const menuToggle=document.createElement('div'); menuToggle.className='menu-toggle'; menuToggle.innerHTML='<i class="fas fa-bars"></i>'; document.body.prepend(menuToggle); menuToggle.addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
+    // دوال إضافية سريعة للمودالات (يمكن توسيعها)
+    window.openAddPointsModal=()=>{ let uid=prompt('أدخل معرف المستخدم'); if(uid) openPointsModal(uid,0); };
+    window.openPortfolioModal=()=>{ let title=prompt('عنوان المشروع'); let type=prompt('النوع (bot,app,web,store)'); let desc=prompt('الوصف'); let link=prompt('رابط المعاينة'); if(title&&type) fetch(`${API_URL}/api/portfolio`,{method:'POST',headers:{'X-API-Key':API_KEY,'Content-Type':'application/json'},body:JSON.stringify({title,type,description:desc,preview_link:link})}).then(()=>{showNotification('تمت الإضافة'); loadAllData();}); };
+    window.openServiceModal=()=>{ let name=prompt('اسم الخدمة'); let price=prompt('السعر'); let desc=prompt('الوصف'); if(name) fetch(`${API_URL}/api/services`,{method:'POST',headers:{'X-API-Key':API_KEY,'Content-Type':'application/json'},body:JSON.stringify({name,price,description:desc})}).then(()=>{showNotification('تمت الإضافة'); loadAllData();}); };
 </script>
 </body>
 </html>

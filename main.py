@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Header, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+from typing import Optional
 import asyncio
 import config
 import database as db
@@ -55,11 +56,14 @@ async def update_order_status(order_id: int, status: str, api_key: str = Depends
     await db.update_order_status(order_id, status)
     return {"message": "Status updated successfully"}
 
-# ==================== نقاط API لمعرض الأعمال (Portfolio) ====================
+# ==================== Portfolio API ====================
 @app.get("/api/portfolio")
-async def get_portfolio(api_key: str = Depends(verify_token)):
-    """الحصول على جميع مشاريع معرض الأعمال"""
-    items = await db.get_portfolio()
+async def get_portfolio_items(
+    project_type: Optional[str] = None,
+    api_key: str = Depends(verify_token)
+):
+    """جلب مشاريع المعرض (جميعها أو حسب النوع)"""
+    items = await db.get_portfolio(project_type)
     return items
 
 @app.post("/api/portfolio")
@@ -89,11 +93,74 @@ async def create_portfolio_item(
 
 @app.delete("/api/portfolio/{item_id}")
 async def delete_portfolio_item(item_id: int, api_key: str = Depends(verify_token)):
-    """حذف مشروع من معرض الأعمال"""
+    """حذف مشروع من المعرض"""
     success = await db.delete_portfolio_item(item_id)
     if success:
         return {"message": "Portfolio item deleted"}
     raise HTTPException(status_code=404, detail="Item not found")
+
+# ==================== Users API ====================
+@app.get("/api/users")
+async def get_all_users(api_key: str = Depends(verify_token)):
+    """جلب جميع المستخدمين"""
+    users = await db.get_all_users()
+    return users
+
+@app.get("/api/users/{user_id}")
+async def get_user(user_id: int, api_key: str = Depends(verify_token)):
+    """جلب مستخدم محدد"""
+    user = await db.get_user(user_id)
+    if user:
+        return user
+    raise HTTPException(status_code=404, detail="User not found")
+
+@app.post("/api/users/{user_id}/points")
+async def update_user_points(
+    user_id: int,
+    points: int,
+    api_key: str = Depends(verify_token)
+):
+    """تحديث نقاط المستخدم (تعيين القيمة المطلقة)"""
+    user = await db.get_user(user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    current_points = user.get('loyalty_points', 0)
+    diff = points - current_points
+    
+    if diff > 0:
+        await db.add_points(user_id, diff)
+    elif diff < 0:
+        await db.deduct_points(user_id, abs(diff))
+    
+    return {"message": "Points updated", "user_id": user_id, "new_points": points}
+
+# ==================== Tickets API ====================
+@app.get("/api/tickets")
+async def get_all_tickets(api_key: str = Depends(verify_token)):
+    """جلب جميع التذاكر المفتوحة (يمكن تعديلها لجلب الكل)"""
+    # للحصول على الكل، يمكن تعديل الدالة أو إضافة معلمة
+    tickets = await db.get_all_open_tickets()
+    return tickets
+
+@app.post("/api/tickets/{ticket_id}/status")
+async def update_ticket_status(
+    ticket_id: int,
+    status: str,
+    api_key: str = Depends(verify_token)
+):
+    """تحديث حالة التذكرة (open/closed)"""
+    success = await db.update_ticket_status(ticket_id, status)
+    if success:
+        return {"message": "Ticket status updated", "ticket_id": ticket_id}
+    raise HTTPException(status_code=404, detail="Ticket not found")
+
+# ==================== Stats API ====================
+@app.get("/api/stats")
+async def get_stats(api_key: str = Depends(verify_token)):
+    """جلب إحصائيات لوحة التحكم"""
+    stats = await db.get_dashboard_stats()
+    return stats
 
 # ==================== تشغيل الخادم ====================
 if __name__ == "__main__":

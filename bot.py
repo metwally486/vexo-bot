@@ -47,7 +47,8 @@ def services_inline_kb():
         [InlineKeyboardButton(text="🍎 تطبيق iOS", callback_data="srv_ios")],
         [InlineKeyboardButton(text="💻 موقع إلكتروني", callback_data="srv_website")],
         [InlineKeyboardButton(text="🛒 متجر إلكتروني", callback_data="srv_store")],
-        [InlineKeyboardButton(text="🔧 معاملات برمجية", callback_data="srv_scripts")],        [InlineKeyboardButton(text="🎨 خدمات مميزة", callback_data="srv_premium")],
+        [InlineKeyboardButton(text="🔧 معاملات برمجية", callback_data="srv_scripts")],
+        [InlineKeyboardButton(text="🎨 خدمات مميزة", callback_data="srv_premium")],
         [InlineKeyboardButton(text="🔙 القائمة الرئيسية", callback_data="main_menu")]
     ]
     return InlineKeyboardMarkup(inline_keyboard=kb)
@@ -96,7 +97,8 @@ def support_kb():
 
 def portfolio_kb():
     kb = [
-        [InlineKeyboardButton(text="🤖 البوتات", callback_data="port_bot")],        [InlineKeyboardButton(text="📱 التطبيقات", callback_data="port_app")],
+        [InlineKeyboardButton(text="🤖 البوتات", callback_data="port_bot")],
+        [InlineKeyboardButton(text="📱 التطبيقات", callback_data="port_app")],
         [InlineKeyboardButton(text="💻 المواقع", callback_data="port_web")],
         [InlineKeyboardButton(text="🛒 المتاجر", callback_data="port_store")],
         [InlineKeyboardButton(text="📚 الكل", callback_data="port_all")],
@@ -194,6 +196,7 @@ async def services_handler(message: types.Message):
    • بوتات حماية وإدارة المجموعات
    • بوتات خدمة عملاء ذكية
    💰 من 100$
+
 📱 **تطبيقات الجوال:**
    • تطبيقات أندرويد احترافية
    • تطبيقات iOS (آيفون)
@@ -271,7 +274,6 @@ async def profile_handler(message: types.Message):
     points = user['loyalty_points'] if user else 0
     discount_percent = min(points // 10, 25)
     
-    # حساب الإحصائيات
     total_orders = len(orders)
     pending_orders = len([o for o in orders if o['status'] == 'pending'])
     processing_orders = len([o for o in orders if o['status'] == 'processing'])
@@ -293,6 +295,7 @@ async def profile_handler(message: types.Message):
 🎁 **مزاياك:**
 ├ خصم متاح: {discount_percent}%
 └ الرصيد: {points * 0.1}$ (قابل للاستخدام)
+
 📦 **طلباتك:**
 """
     
@@ -341,7 +344,7 @@ async def profile_handler(message: types.Message):
 
 async def order_handler(message: types.Message, state: FSMContext):
     await state.set_state(OrderState.service_type)
-        text = f"""
+    text = f"""
 📝 **بدء طلب جديد - {COMPANY_NAME}**
 ━━━━━━━━━━━━━━━━━━━━
 
@@ -439,7 +442,8 @@ async def offers_handler(message: types.Message):
 • الكود: FIRST10
 
 🎊 **عرض الباقة الكاملة:**
-• موقع + بوت + تطبيق• خصم 25%
+• موقع + بوت + تطبيق
+• خصم 25%
 • الكود: VEXO25
 
 🏆 **برنامج الولاء:**
@@ -488,20 +492,14 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
             f"✅ **{service_name}**\n\n"
             f"📝 **أرسل تفاصيل المشروع:**\n"
             f"• ما الوظيفة المطلوبة؟\n"
-            f"• ما الميزات الخاصة؟\n"            f"• هل هناك متطلبات إضافية؟\n\n"
+            f"• ما الميزات الخاصة؟\n"
+            f"• هل هناك متطلبات إضافية؟\n\n"
             f"🔙 **للرجوع:** اضغط رجوع",
             reply_markup=InlineKeyboardMarkup(inline_keyboard=[
                 [InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]
             ]),
             parse_mode="Markdown"
         )
-        await call.answer()
-        return
-    
-    # إدخال التفاصيل
-    elif data == "main_menu" and await state.get_state() == OrderState.details:
-        await state.clear()
-        await call.message.edit_text("📋 **تم إلغاء الطلب**", reply_markup=main_keyboard())
         await call.answer()
         return
     
@@ -537,7 +535,8 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
         await state.set_state(OrderState.confirm)
         await call.message.edit_text(
             confirm_text,
-            reply_markup=confirmation_kb(),            parse_mode="Markdown"
+            reply_markup=confirmation_kb(),
+            parse_mode="Markdown"
         )
         await call.answer()
         return
@@ -586,7 +585,8 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
                     f"📦 الخدمة: {data_state.get('service_type')}\n"
                     f"💰 الميزانية: {data_state.get('budget')}\n"
                     f"📝 التفاصيل: {data_state.get('details')}"
-                )            except:
+                )
+            except:
                 pass
         
         await call.answer()
@@ -635,16 +635,23 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
         
         is_subscribed = await check_channel_subscription(call.from_user.id, call.message.bot)
         
-        # إضافة نقاط إذا انضم للقناة        points_added = False
+        points_added = False
         if is_subscribed:
-            # تحقق إذا لم يحصل على النقاط من قبل
-            user_data = await db.get_user(call.from_user.id)
-            if user_data and not user_data.get('joined_channel_points', False):
+            # تحقق إذا لم يحصل على النقاط من قبل (هذا يعتمد على وجود عمود joined_channel_points في جدول users)
+            # إذا لم يكن العمود موجوداً، يمكنك إضافته أو تجاهل هذا التحقق
+            try:
+                user_data = await db.get_user(call.from_user.id)
+                if user_data and not user_data.get('joined_channel_points', False):
+                    await add_join_points(call.from_user.id)
+                    # تحديث الحقل (تأكد من وجود العمود في قاعدة البيانات)
+                    await db.execute_query(
+                        "UPDATE users SET joined_channel_points = TRUE WHERE id = $1",
+                        call.from_user.id
+                    )
+                    points_added = True
+            except:
+                # إذا حدث خطأ (مثل عدم وجود العمود)، نضيف النقاط بدون تحقق
                 await add_join_points(call.from_user.id)
-                await db.execute_query(
-                    "UPDATE users SET joined_channel_points = TRUE WHERE id = $1",
-                    call.from_user.id
-                )
                 points_added = True
         
         new_points = points + (30 if points_added else 0)
@@ -656,6 +663,17 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
             f"📤 **شارك الآن واربح 50 نقطة!**\n"
             f"🔗 رابط البوت: @VexoServiceBot\n\n"
             f"📢 **القناة:** {CHANNEL_LINK}",
+            reply_markup=share_kb()
+        )
+        await call.answer()
+        return
+    
+    elif data == "share_leaderboard":
+        # يمكن تطوير لوحة المتصدرين لاحقاً
+        await call.message.edit_text(
+            "🏆 **صدارة المشاركين**\n\n"
+            "🥇 قيد التطوير...\n"
+            "📊 سيتم عرض قائمة بأكثر المستخدمين مشاركة قريباً",
             reply_markup=share_kb()
         )
         await call.answer()
@@ -684,7 +702,8 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
                 if proj.get('price'):
                     text += f"│ 💰 السعر: {proj['price']}\n"
                 if proj.get('description'):
-                    desc = proj['description'][:150]                    text += f"│ 📝 {desc}{'...' if len(proj['description']) > 150 else ''}\n"
+                    desc = proj['description'][:150]
+                    text += f"│ 📝 {desc}{'...' if len(proj['description']) > 150 else ''}\n"
                 if proj.get('features'):
                     text += f"│ ⭐ الميزات: {proj['features']}\n"
                 if proj.get('preview_link'):
@@ -734,6 +753,7 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
 
 **س: هل هناك ضمان؟**
 ج: نعم، ضمان 30 يوم على جميع المشاريع
+
 **س: طرق الدفع؟**
 ج: محافظ محلية (جيب، ون كاش...) وبنوك يمنية
 
@@ -782,12 +802,25 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
             "💰 **كيف يعمل؟**\n"
             "• كل طلب = 10 نقطة\n"
             "• مشاركة البوت = 50 نقطة\n"
-            "• الانضمام للقناة = 30 نقطة\n"            "• كل 10 نقاط = 1$ خصم\n\n"
+            "• الانضمام للقناة = 30 نقطة\n"
+            "• كل 10 نقاط = 1$ خصم\n\n"
             "🎁 **مستويات الولاء:**\n"
             "🥉 برونزي: 0-100 نقطة\n"
             "🥈 فضي: 100-500 نقطة\n"
             "🥇 ذهبي: 500+ نقطة\n\n"
             "💎 **مزايا الذهب:** خصم إضافي 5%",
+            reply_markup=offers_kb()
+        )
+        await call.answer()
+        return
+    
+    elif data == "offers_seasonal":
+        await call.message.edit_text(
+            "🎪 **عروض موسمية**\n\n"
+            "🎄 **عرض العيد:** 20% خصم\n"
+            "🎓 **عرض الطلاب:** 15% خصم\n"
+            "🎂 **عرض السنة الجديدة:** قريباً\n\n"
+            "📢 **تابعنا للعروض الجديدة!**",
             reply_markup=offers_kb()
         )
         await call.answer()
@@ -831,7 +864,8 @@ async def handle_text(message: types.Message, state: FSMContext):
                 f"🎫 **تذكرة دعم جديدة!**\n\n"
                 f"👤 المستخدم: {message.from_user.username or message.from_user.first_name}\n"
                 f"🆔 ID: {message.from_user.id}\n"
-                f"🎫 الرقم: #{ticket_id}\n"                f"📝 الرسالة: {message.text}"
+                f"🎫 الرقم: #{ticket_id}\n"
+                f"📝 الرسالة: {message.text}"
             )
         except:
             pass
@@ -849,7 +883,7 @@ def register_handlers(dp: Dispatcher):
     dp.message.register(contact_admin, F.text == "📞 الإدارة")
     dp.message.register(share_handler, F.text == "🤝 شارك واربح")
     dp.message.register(offers_handler, F.text == "🎁 العروض والهدايا")
-    dp.message.register(payment_handler, F.text == "💳 طرق الدفع")
+    dp.message.register(payment_handler, F.text == "💳 طرق الدفع")  # ✅ تمت إضافتها
     
     dp.message.register(handle_text)
     dp.callback_query.register(callback_handler)

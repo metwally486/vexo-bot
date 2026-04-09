@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Vexo Admin • لوحة التحكم المتكاملة</title>
+    <title>Vexo Admin • لوحة تحكم كاملة</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Tajawal', sans-serif; -webkit-tap-highlight-color: transparent; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
         :root {
             --primary: #6366f1; --primary-dark: #4f46e5; --secondary: #8b5cf6;
             --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
@@ -18,44 +18,38 @@
             --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
             --sidebar-width: 280px;
         }
-        body { background: linear-gradient(145deg, #f8fafc 0%, #eef2ff 100%); min-height: 100vh; color: var(--dark); transition: background 0.3s, color 0.3s; }
+        body { background: linear-gradient(145deg, #f8fafc 0%, #eef2ff 100%); min-height: 100vh; color: var(--dark); transition: background 0.3s; }
         body.dark-mode { background: linear-gradient(145deg, #0f172a 0%, #1e1b4b 100%); color: #e2e8f0; }
         .app-wrapper { display: flex; min-height: 100vh; }
-        .sidebar {
-            width: var(--sidebar-width); background: rgba(255,255,255,0.98); backdrop-filter: blur(12px);
-            box-shadow: 2px 0 20px rgba(0,0,0,0.08); position: fixed; right: 0; top: 0; bottom: 0;
-            z-index: 1000; overflow-y: auto; border-left: 1px solid rgba(0,0,0,0.05);
-            transition: transform 0.3s ease;
-        }
+        .sidebar { width: var(--sidebar-width); background: rgba(255,255,255,0.98); backdrop-filter: blur(12px); box-shadow: 2px 0 20px rgba(0,0,0,0.08); position: fixed; right: 0; top: 0; bottom: 0; z-index: 1000; overflow-y: auto; border-left: 1px solid rgba(0,0,0,0.05); transition: transform 0.3s ease; }
         body.dark-mode .sidebar { background: rgba(30,41,59,0.98); border-left-color: #334155; }
         .sidebar-header { padding: 1.5rem 1rem; text-align: center; border-bottom: 1px solid #e2e8f0; }
         .sidebar-logo { width: 80px; margin: 0 auto 1rem; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-        .sidebar-logo svg { width: 100%; height: auto; }
-        .sidebar-title { font-size: 1.4rem; font-weight: 800; background: linear-gradient(135deg,var(--primary),var(--secondary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.3rem; }
+        .sidebar-title { font-size: 1.4rem; font-weight: 800; background: linear-gradient(135deg,var(--primary),var(--secondary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
         .ceo-name { font-size: 0.85rem; color: var(--gray); }
         .nav-menu { padding: 1rem; list-style: none; }
         .nav-item { margin-bottom: 0.5rem; }
         .nav-link { display: flex; align-items: center; gap: 0.75rem; padding: 0.875rem 1rem; border-radius: 12px; color: var(--gray-dark); text-decoration: none; font-weight: 500; transition: all 0.2s; cursor: pointer; }
-        .nav-link i { width: 24px; font-size: 1.1rem; }
+        .nav-link i { width: 24px; }
         .nav-link.active, .nav-link:hover { background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.15)); color: var(--primary); transform: translateX(-4px); }
         body.dark-mode .nav-link { color: #e2e8f0; }
         .dark-mode-toggle { margin-top: 2rem; padding: 1rem; text-align: center; border-top: 1px solid #e2e8f0; }
-        .toggle-btn { background: none; border: none; cursor: pointer; font-size: 1rem; color: var(--gray); padding: 0.5rem 1rem; border-radius: 8px; transition: 0.2s; }
+        .toggle-btn { background: none; border: none; cursor: pointer; font-size: 1rem; color: var(--gray); padding: 0.5rem 1rem; border-radius: 8px; }
         .toggle-btn:hover { background: var(--light); }
-        .main-content { flex: 1; margin-right: var(--sidebar-width); padding: 1rem; transition: margin 0.3s; }
-        .header { background: white; border-radius: 20px; padding: 1rem 1.5rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; box-shadow: var(--shadow-lg); }
+        .main-content { flex: 1; margin-right: var(--sidebar-width); padding: 1rem; }
+        .header { background: white; border-radius: 20px; padding: 1rem 1.5rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; box-shadow: var(--shadow-lg); }
         body.dark-mode .header { background: var(--gray-dark); }
         .brand h1 { font-size: 1.5rem; background: linear-gradient(135deg,var(--primary),var(--secondary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-        .brand p { font-size: 0.8rem; color: var(--gray); margin-top: 0.2rem; }
+        .brand p { font-size: 0.8rem; color: var(--gray); }
         .user-area { display: flex; align-items: center; gap: 0.75rem; background: var(--light); padding: 0.5rem 1rem; border-radius: 50px; }
-        .user-avatar { width: 40px; height: 40px; background: linear-gradient(135deg,var(--primary),var(--secondary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.1rem; }
+        .user-avatar { width: 40px; height: 40px; background: linear-gradient(135deg,var(--primary),var(--secondary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
-        .stat-card { background: white; border-radius: 16px; padding: 1.25rem; box-shadow: var(--shadow); transition: transform 0.2s, border 0.2s; border: 2px solid transparent; }
+        .stat-card { background: white; border-radius: 16px; padding: 1.25rem; box-shadow: var(--shadow); border: 2px solid transparent; transition: 0.2s; }
         body.dark-mode .stat-card { background: var(--gray-dark); }
         .stat-card:hover { transform: translateY(-4px); border-color: var(--primary); }
         .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 0.75rem; }
-        .stat-value { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.25rem; }
+        .stat-value { font-size: 1.8rem; font-weight: 800; }
         .stat-label { font-size: 0.85rem; color: var(--gray); }
         .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
         .chart-card { background: white; border-radius: 16px; padding: 1.25rem; box-shadow: var(--shadow); }
@@ -65,14 +59,13 @@
         .table-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 1rem; gap: 0.75rem; }
         .table-title { font-size: 1.1rem; font-weight: 700; }
         .search-box { position: relative; flex: 1; max-width: 300px; }
-        .search-box input { width: 100%; padding: 0.625rem 1rem 0.625rem 2.5rem; border: 2px solid #e2e8f0; border-radius: 50px; font-size: 0.875rem; transition: border-color 0.2s; background: white; }
+        .search-box input { width: 100%; padding: 0.625rem 1rem 0.625rem 2.5rem; border: 2px solid #e2e8f0; border-radius: 50px; background: white; }
         body.dark-mode .search-box input { background: #1e293b; border-color: #475569; color: #e2e8f0; }
-        .search-box input:focus { outline: none; border-color: var(--primary); }
         .search-box i { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--gray); }
         table { width: 100%; border-collapse: collapse; min-width: 600px; }
         th, td { padding: 0.875rem 1rem; text-align: right; border-bottom: 1px solid #f1f5f9; }
         body.dark-mode th, body.dark-mode td { border-bottom-color: #334155; }
-        th { background: var(--light); font-weight: 700; font-size: 0.875rem; }
+        th { background: var(--light); font-weight: 700; }
         body.dark-mode th { background: rgba(255,255,255,0.05); }
         .status-badge { padding: 0.375rem 0.875rem; border-radius: 50px; font-size: 0.8rem; font-weight: 600; display: inline-block; }
         .status-pending { background: #fef3c7; color: #92400e; }
@@ -81,7 +74,7 @@
         .status-rejected { background: #fee2e2; color: #991b1b; }
         .status-open { background: #dbeafe; color: #1e40af; }
         .status-closed { background: #d1fae5; color: #065f46; }
-        .btn { padding: 0.5rem 1rem; border-radius: 8px; border: none; cursor: pointer; font-size: 0.875rem; font-weight: 600; transition: all 0.2s; margin: 0 0.25rem; background: white; color: var(--dark); }
+        .btn { padding: 0.5rem 1rem; border-radius: 8px; border: none; cursor: pointer; font-size: 0.875rem; font-weight: 600; transition: 0.2s; margin: 0 0.25rem; }
         .btn-sm { padding: 0.375rem 0.75rem; font-size: 0.8rem; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-success { background: var(--success); color: white; }
@@ -90,58 +83,39 @@
         .btn-info { background: #0ea5e9; color: white; }
         .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow); opacity: 0.9; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; padding: 1rem; }
-        .modal-content { background: white; border-radius: 20px; padding: 1.5rem; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); }
+        .modal-content { background: white; border-radius: 20px; padding: 1.5rem; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
         body.dark-mode .modal-content { background: var(--gray-dark); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
         .modal-title { font-size: 1.25rem; font-weight: 700; }
         .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray); }
         .form-group { margin-bottom: 1.25rem; }
-        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 0.9rem; transition: border-color 0.2s; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 12px; }
         body.dark-mode .form-group input, body.dark-mode .form-group textarea, body.dark-mode .form-group select { background: var(--dark); border-color: #475569; color: #e2e8f0; }
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: var(--primary); }
-        .notification { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: white; padding: 1rem 2rem; border-radius: 50px; box-shadow: var(--shadow-lg); z-index: 3000; transition: all 0.3s; opacity: 0; font-weight: 600; }
+        .notification { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: white; padding: 1rem 2rem; border-radius: 50px; box-shadow: var(--shadow-lg); z-index: 3000; transition: 0.3s; opacity: 0; font-weight: 600; }
         body.dark-mode .notification { background: var(--gray-dark); }
         .notification.show { transform: translateX(-50%) translateY(0); opacity: 1; }
         .notification.success { border-right: 4px solid var(--success); }
         .notification.error { border-right: 4px solid var(--danger); }
-        .notification.info { border-right: 4px solid #0ea5e9; }
         .tab-content { display: none; animation: fadeIn 0.3s; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .menu-toggle { display: none; position: fixed; top: 1rem; right: 1rem; z-index: 1100; background: white; border-radius: 50%; width: 48px; height: 48px; text-align: center; line-height: 48px; box-shadow: var(--shadow-lg); cursor: pointer; font-size: 1.25rem; color: var(--primary); }
+        .menu-toggle { display: none; position: fixed; top: 1rem; right: 1rem; z-index: 1100; background: white; border-radius: 50%; width: 48px; height: 48px; line-height: 48px; text-align: center; box-shadow: var(--shadow-lg); cursor: pointer; }
         body.dark-mode .menu-toggle { background: var(--gray-dark); }
-        .loading { text-align: center; padding: 3rem; color: var(--gray); }
-        .spinner { width: 50px; height: 50px; border: 4px solid #e2e8f0; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; }
-        .portfolio-item { background: white; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); transition: transform 0.2s; }
-        body.dark-mode .portfolio-item { background: var(--gray-dark); }
-        .portfolio-item:hover { transform: translateY(-4px); }
-        .portfolio-img { width: 100%; height: 150px; object-fit: cover; background: var(--light); }
-        .portfolio-info { padding: 1rem; }
-        .portfolio-title { font-weight: 700; margin-bottom: 0.5rem; }
-        .portfolio-type { font-size: 0.8rem; color: var(--gray); }
-        .portfolio-price { font-weight: bold; color: var(--success); margin-top: 0.5rem; }
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
         .overlay.show { display: block; }
+        .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; }
+        .portfolio-item { background: white; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }
+        body.dark-mode .portfolio-item { background: var(--gray-dark); }
+        .portfolio-img { width: 100%; height: 150px; object-fit: cover; background: var(--light); }
+        .portfolio-info { padding: 1rem; }
         .action-group { display: flex; gap: 0.25rem; flex-wrap: wrap; }
-        .refresh-btn { cursor: pointer; margin-left: 10px; color: var(--primary); }
+        .refresh-btn { cursor: pointer; margin-right: 10px; color: var(--primary); }
         @media (max-width: 1024px) {
             .sidebar { transform: translateX(100%); }
             .sidebar.open { transform: translateX(0); }
-            .main-content { margin-right: 0; padding: 0.75rem; }
+            .main-content { margin-right: 0; }
             .menu-toggle { display: block; }
-            .header { flex-direction: column; text-align: center; }
-        }
-        @media (max-width: 640px) {
-            .stats-grid { grid-template-columns: 1fr 1fr; }
-            .stat-value { font-size: 1.5rem; }
-            table { font-size: 0.8rem; }
-            th, td { padding: 0.625rem 0.5rem; }
-            .btn { padding: 0.375rem 0.625rem; font-size: 0.75rem; }
-            .search-box { max-width: 100%; }
-            .table-header { flex-direction: column; align-items: stretch; }
         }
     </style>
 </head>
@@ -161,7 +135,7 @@
                 </svg>
             </div>
             <div class="sidebar-title">Vexo Admin</div>
-            <div class="ceo-name">المدير التنفيذي: متولي الوصابي</div>
+            <div class="ceo-name">متولي الوصابي</div>
         </div>
         <ul class="nav-menu">
             <li class="nav-item"><a class="nav-link active" data-tab="dashboard"><i class="fas fa-tachometer-alt"></i> الرئيسية</a></li>
@@ -180,12 +154,10 @@
         <div class="header">
             <div class="brand">
                 <h1>Vexo للخدمات التقنية</h1>
-                <p>نظام الإدارة المتكامل – تحكم كامل بكل التفاصيل 
-                    <i class="fas fa-sync-alt refresh-btn" id="refreshDataBtn" style="margin-right: 10px;" title="تحديث البيانات"></i>
-                </p>
+                <p>لوحة تحكم تفاعلية كاملة <i class="fas fa-sync-alt refresh-btn" id="refreshDataBtn" title="تحديث البيانات"></i></p>
             </div>
             <div class="user-area">
-                <i class="fas fa-bell" style="color: var(--primary); cursor: pointer;"></i>
+                <i class="fas fa-bell" style="color: var(--primary);"></i>
                 <div class="user-avatar">م</div>
                 <span>مدير النظام</span>
             </div>
@@ -193,38 +165,32 @@
 
         <!-- التبويبات -->
         <div id="dashboardTab" class="tab-content active">
-            <div class="stats-grid" id="statsGrid"><div class="loading"><div class="spinner"></div>جاري التحميل...</div></div>
+            <div class="stats-grid" id="statsGrid">...</div>
             <div class="charts-grid">
                 <div class="chart-card"><div id="donutChart"></div></div>
                 <div class="chart-card"><div id="weeklyChart"></div></div>
             </div>
             <div class="table-card">
-                <div class="table-header"><div class="table-title">📦 أحدث الطلبات</div><div class="search-box"><i class="fas fa-search"></i><input type="text" id="quickSearch" placeholder="بحث سريع..."></div></div>
+                <div class="table-header"><div class="table-title">📦 أحدث الطلبات</div><div class="search-box"><i class="fas fa-search"></i><input type="text" id="quickSearch" placeholder="بحث..."></div></div>
                 <div id="recentOrdersContainer"></div>
             </div>
         </div>
         <div id="ordersTab" class="tab-content">
-            <div class="table-card"><div class="table-header"><div class="table-title">📋 إدارة الطلبات</div><div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchOrders" placeholder="البحث في الطلبات..."></div></div><div id="ordersContainer"></div></div>
+            <div class="table-card"><div class="table-header"><div class="table-title">📋 إدارة الطلبات</div><div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchOrders" placeholder="بحث..."></div></div><div id="ordersContainer"></div></div>
         </div>
         <div id="ticketsTab" class="tab-content">
-            <div class="table-card"><div class="table-header"><div class="table-title">🎫 تذاكر الدعم الفني</div><div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchTickets" placeholder="البحث في التذاكر..."></div></div><div id="ticketsContainer"></div></div>
+            <div class="table-card"><div class="table-header"><div class="table-title">🎫 تذاكر الدعم</div><div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchTickets" placeholder="بحث..."></div></div><div id="ticketsContainer"></div></div>
         </div>
         <div id="usersTab" class="tab-content">
-            <div class="table-card"><div class="table-header"><div class="table-title">👥 المستخدمين</div><div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchUsers" placeholder="البحث عن مستخدم..."></div></div><div id="usersContainer"></div></div>
+            <div class="table-card"><div class="table-header"><div class="table-title">👥 المستخدمين</div><div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchUsers" placeholder="بحث..."></div></div><div id="usersContainer"></div></div>
         </div>
         <div id="portfolioTab" class="tab-content">
-            <div class="table-card"><div class="table-header"><div class="table-title">🖼️ معرض الأعمال</div><button class="btn btn-primary btn-sm" onclick="openPortfolioModal()"><i class="fas fa-plus"></i> إضافة مشروع</button></div><div id="portfolioContainer" class="portfolio-grid"></div></div>
+            <div class="table-card"><div class="table-header"><div class="table-title">🖼️ معرض الأعمال</div><button class="btn btn-primary btn-sm" onclick="openPortfolioModal()"><i class="fas fa-plus"></i> إضافة</button></div><div id="portfolioContainer" class="portfolio-grid"></div></div>
         </div>
         <div id="settingsTab" class="tab-content">
             <div class="table-card"><div class="table-title">⚙️ الإعدادات</div>
-                <form id="settingsForm" style="margin-top: 1.5rem;">
-                    <div class="form-group"><label>عنوان API</label><input type="text" id="apiUrl" value="https://vexo-backend-7tk4.onrender.com"></div>
-                    <div class="form-group"><label>مفتاح API</label><input type="text" id="apiKey" value="VexoSecret2024!@#"></div>
-                    <div class="form-group"><label>استخدام بيانات وهمية (Mock)</label><select id="useMockData"><option value="auto">تلقائي (عند فشل الاتصال)</option><option value="true">دائماً بيانات وهمية</option><option value="false">دائماً API حقيقي</option></select></div>
-                    <div class="form-group"><label>اسم الشركة</label><input type="text" id="companyName" value="Vexo للخدمات التقنية"></div>
-                    <div class="form-group"><label>المدير التنفيذي</label><input type="text" id="ceoName" value="متولي الوصابي"></div>
-                    <button type="button" class="btn btn-primary" onclick="saveSettings()"><i class="fas fa-save"></i> حفظ الإعدادات</button>
-                </form>
+                <div class="form-group"><label>استخدام بيانات وهمية (Mock)</label><select id="useMockData"><option value="true">دائماً بيانات وهمية (تجريبي)</option><option value="auto">تلقائي</option><option value="false">API حقيقي فقط</option></select></div>
+                <button class="btn btn-primary" onclick="applySettings()">تطبيق</button>
             </div>
         </div>
     </main>
@@ -233,34 +199,29 @@
 <div id="notification" class="notification"></div>
 
 <!-- نوافذ منبثقة -->
-<div class="modal" id="portfolioModal">
+<div class="modal" id="orderDetailModal">
     <div class="modal-content">
-        <div class="modal-header"><div class="modal-title" id="portfolioModalTitle">➕ إضافة مشروع جديد</div><button class="modal-close" onclick="closePortfolioModal()">&times;</button></div>
-        <input type="hidden" id="editPortfolioId" value="">
-        <div class="form-group"><label>عنوان المشروع *</label><input type="text" id="portfolioTitle" placeholder="مثال: بوت متجر إلكتروني" required></div>
-        <div class="form-group"><label>نوع المشروع *</label><select id="portfolioType" required><option value="bot">🤖 بوت تلجرام</option><option value="app">📱 تطبيق جوال</option><option value="web">💻 موقع إلكتروني</option><option value="store">🛒 متجر إلكتروني</option></select></div>
-        <div class="form-group"><label>الوصف *</label><textarea id="portfolioDesc" rows="3" placeholder="وصف المشروع والميزات..." required></textarea></div>
-        <div class="form-group"><label>السعر</label><input type="text" id="portfolioPrice" placeholder="مثال: 150$"></div>
-        <div class="form-group"><label>الميزات</label><input type="text" id="portfolioFeatures" placeholder="مثال: إدارة منتجات، دفع إلكتروني"></div>
-        <div class="form-group"><label>رابط المعاينة</label><input type="url" id="portfolioLink" placeholder="https://..."></div>
-        <div class="form-group"><label>رابط الصورة</label><input type="url" id="portfolioImage" placeholder="https://... (اختياري)"></div>
-        <button class="btn btn-primary" onclick="savePortfolioItem()" style="width: 100%;"><i class="fas fa-save"></i> حفظ المشروع</button>
+        <div class="modal-header"><div class="modal-title">تفاصيل الطلب #<span id="orderDetailId"></span></div><button class="modal-close" onclick="closeModal('orderDetailModal')">&times;</button></div>
+        <div id="orderDetailContent"></div>
+        <div class="form-group"><label>تغيير الحالة</label><select id="orderStatusSelect"><option value="pending">قيد الانتظار</option><option value="processing">قيد التنفيذ</option><option value="completed">مكتمل</option><option value="rejected">مرفوض</option></select></div>
+        <div class="form-group"><label>ملاحظات</label><textarea id="orderNotes" rows="2"></textarea></div>
+        <button class="btn btn-success" onclick="updateOrderDetails()">تحديث</button>
     </div>
 </div>
 
-<div class="modal" id="orderDetailModal">
-    <div class="modal-content" style="max-width: 600px;">
-        <div class="modal-header"><div class="modal-title">📝 تفاصيل الطلب #<span id="orderDetailId"></span></div><button class="modal-close" onclick="closeOrderDetailModal()">&times;</button></div>
-        <div id="orderDetailContent">جاري التحميل...</div>
-        <div class="form-group"><label>تغيير الحالة</label><select id="orderStatusSelect"><option value="pending">قيد الانتظار</option><option value="processing">قيد التنفيذ</option><option value="completed">مكتمل</option><option value="rejected">مرفوض</option></select></div>
-        <div class="form-group"><label>ملاحظات داخلية</label><textarea id="orderNotes" rows="2"></textarea></div>
-        <button class="btn btn-success" onclick="updateOrderDetails()" style="width:100%">تحديث الطلب</button>
+<div class="modal" id="ticketReplyModal">
+    <div class="modal-content">
+        <div class="modal-header"><div class="modal-title">الرد على التذكرة #<span id="ticketReplyId"></span></div><button class="modal-close" onclick="closeModal('ticketReplyModal')">&times;</button></div>
+        <div id="ticketOriginalMessage" style="background:var(--light);padding:10px;border-radius:8px;margin-bottom:15px;"></div>
+        <div class="form-group"><label>الرد</label><textarea id="ticketReplyText" rows="4"></textarea></div>
+        <div class="form-group"><label>الحالة</label><select id="ticketStatusSelect"><option value="open">مفتوحة</option><option value="in_progress">قيد المعالجة</option><option value="closed">مغلقة</option></select></div>
+        <button class="btn btn-success" onclick="sendTicketReply()">إرسال</button>
     </div>
 </div>
 
 <div class="modal" id="userManageModal">
     <div class="modal-content">
-        <div class="modal-header"><div class="modal-title">👤 إدارة المستخدم</div><button class="modal-close" onclick="closeUserManageModal()">&times;</button></div>
+        <div class="modal-header"><div class="modal-title">إدارة المستخدم</div><button class="modal-close" onclick="closeModal('userManageModal')">&times;</button></div>
         <input type="hidden" id="manageUserId">
         <div class="form-group"><label>النقاط</label><input type="number" id="manageUserPoints" min="0"></div>
         <div class="form-group"><label>حالة الحظر</label><select id="manageUserBlocked"><option value="false">غير محظور</option><option value="true">محظور</option></select></div>
@@ -269,174 +230,132 @@
     </div>
 </div>
 
-<div class="modal" id="ticketReplyModal">
+<div class="modal" id="portfolioModal">
     <div class="modal-content">
-        <div class="modal-header"><div class="modal-title">💬 الرد على التذكرة #<span id="ticketReplyId"></span></div><button class="modal-close" onclick="closeTicketReplyModal()">&times;</button></div>
-        <div id="ticketOriginalMessage" class="reply-preview" style="background:var(--light);padding:10px;border-radius:8px;margin-bottom:15px;"></div>
-        <div class="form-group"><label>نص الرد</label><textarea id="ticketReplyText" rows="4"></textarea></div>
-        <div class="form-group"><label>تغيير الحالة إلى</label><select id="ticketStatusSelect"><option value="open">مفتوحة</option><option value="in_progress">قيد المعالجة</option><option value="closed">مغلقة</option></select></div>
-        <button class="btn btn-success" onclick="sendTicketReply()">إرسال الرد</button>
+        <div class="modal-header"><div class="modal-title" id="portfolioModalTitle">➕ إضافة مشروع</div><button class="modal-close" onclick="closeModal('portfolioModal')">&times;</button></div>
+        <input type="hidden" id="editPortfolioId">
+        <div class="form-group"><label>العنوان *</label><input type="text" id="portfolioTitle" required></div>
+        <div class="form-group"><label>النوع</label><select id="portfolioType"><option value="bot">🤖 بوت</option><option value="web">💻 موقع</option><option value="app">📱 تطبيق</option></select></div>
+        <div class="form-group"><label>الوصف</label><textarea id="portfolioDesc" rows="3"></textarea></div>
+        <div class="form-group"><label>السعر</label><input type="text" id="portfolioPrice"></div>
+        <div class="form-group"><label>رابط الصورة</label><input type="text" id="portfolioImage"></div>
+        <button class="btn btn-primary" onclick="savePortfolioItem()">حفظ</button>
     </div>
 </div>
 
 <script>
-    // ==================== الإعدادات العامة ====================
-    let API_URL = localStorage.getItem('apiUrl') || "https://vexo-backend-7tk4.onrender.com";
-    let API_KEY = localStorage.getItem('apiKey') || "VexoSecret2024!@#";
-    let USE_MOCK = localStorage.getItem('useMock') || 'auto'; // 'auto', 'true', 'false'
+    // ==================== البيانات والإعدادات ====================
+    let API_URL = "https://vexo-backend-7tk4.onrender.com";
+    let API_KEY = "VexoSecret2024!@#";
+    let USE_MOCK = true; // افتراضياً بيانات وهمية لتظهر التفاصيل فوراً
     
     let allOrders = [], allTickets = [], allUsers = [], allPortfolio = [];
     let currentOrderId = null, currentTicketId = null;
 
+    // ==================== بيانات وهمية غنية ====================
+    function getMockData() {
+        return {
+            orders: [
+                { id: 1001, user_id: 123456789, service_type: 'بوت متجر', budget: '200$', status: 'pending', created_at: new Date().toISOString(), description: 'بوت متكامل مع نظام نقاط ودفع', admin_notes: '' },
+                { id: 1002, user_id: 987654321, service_type: 'موقع شركة', budget: '500$', status: 'processing', created_at: new Date(Date.now()-86400000).toISOString(), description: 'موقع تعريفي بـ 5 صفحات', admin_notes: 'قيد التصميم' },
+                { id: 1003, user_id: 555666777, service_type: 'بوت تداول', budget: '350$', status: 'completed', created_at: new Date(Date.now()-172800000).toISOString(), description: 'بوت توصيات', admin_notes: 'تم التسليم' },
+                { id: 1004, user_id: 111222333, service_type: 'تطبيق جوال', budget: '1200$', status: 'rejected', created_at: new Date(Date.now()-259200000).toISOString(), description: 'طلب ملغي', admin_notes: 'خارج النطاق' }
+            ],
+            tickets: [
+                { id: 1, user_id: 123456789, message: 'المستخدم يواجه مشكلة في تفعيل البوت، يحتاج مساعدة', status: 'open', created_at: new Date().toISOString() },
+                { id: 2, user_id: 987654321, message: 'استفسار بخصوص إضافة نقاط الولاء للمستخدمين', status: 'in_progress', created_at: new Date(Date.now()-43200000).toISOString() },
+                { id: 3, user_id: 555666777, message: 'طلب استرداد مبلغ', status: 'closed', created_at: new Date(Date.now()-86400000).toISOString() }
+            ],
+            users: [
+                { id: 123456789, username: 'ahmed_tech', full_name: 'أحمد محمد', loyalty_points: 120, joined_channel_points: true, is_blocked: false, joined_at: new Date().toISOString() },
+                { id: 987654321, username: 'sara_dev', full_name: 'سارة علي', loyalty_points: 85, joined_channel_points: true, is_blocked: false, joined_at: new Date().toISOString() },
+                { id: 555666777, username: 'khalid_1', full_name: 'خالد عبدالله', loyalty_points: 5, joined_channel_points: false, is_blocked: true, joined_at: new Date().toISOString() },
+                { id: 111222333, username: 'noura_22', full_name: 'نورة سعيد', loyalty_points: 250, joined_channel_points: true, is_blocked: false, joined_at: new Date().toISOString() }
+            ],
+            portfolio: [
+                { id: 1, title: 'بوت متجر متكامل', type: 'bot', description: 'بوت تلجرام لإدارة المتاجر مع نظام دفع', price: '150$', preview_link: '#', image_url: 'https://picsum.photos/300/200?random=1' },
+                { id: 2, title: 'موقع شركة تقنية', type: 'web', description: 'موقع عصري وسريع', price: '400$', preview_link: '#', image_url: 'https://picsum.photos/300/200?random=2' }
+            ]
+        };
+    }
+
     // ==================== دوال مساعدة ====================
-    function showNotification(msg, type = 'success') {
+    function showNotification(msg, type='success') {
         const n = document.getElementById('notification');
-        n.textContent = msg;
-        n.className = `notification ${type} show`;
-        setTimeout(() => n.classList.remove('show'), 3500);
+        n.textContent = msg; n.className = `notification ${type} show`;
+        setTimeout(() => n.classList.remove('show'), 3000);
     }
+    function formatDate(d) { return d ? new Date(d).toLocaleDateString('ar-SA') : '-'; }
+    function closeModal(id) { document.getElementById(id).style.display='none'; }
 
-    function formatDate(dateStr) { if (!dateStr) return '-'; try { return new Date(dateStr).toLocaleDateString('ar-SA'); } catch { return dateStr; } }
-    function formatDateTime(dateStr) { if (!dateStr) return '-'; try { return new Date(dateStr).toLocaleString('ar-SA'); } catch { return dateStr; } }
-
-    // ==================== بيانات وهمية (Mock Data) ====================
-    function generateMockData() {
-        const mockOrders = [
-            { id: 101, user_id: 123456789, service_type: 'تصميم بوت تلجرام', budget: '200$', status: 'pending', created_at: new Date().toISOString(), updated_at: new Date().toISOString(), description: 'بوت متجر مع نظام نقاط' },
-            { id: 102, user_id: 987654321, service_type: 'تطوير موقع', budget: '500$', status: 'processing', created_at: new Date(Date.now()-86400000).toISOString(), description: 'موقع شركة' },
-            { id: 103, user_id: 555666777, service_type: 'إدارة سيرفر', budget: '100$', status: 'completed', created_at: new Date(Date.now()-172800000).toISOString() },
-            { id: 104, user_id: 111222333, service_type: 'بوت تداول', budget: '350$', status: 'rejected', created_at: new Date(Date.now()-259200000).toISOString() }
-        ];
-        const mockTickets = [
-            { id: 1, user_id: 123456789, message: 'أواجه مشكلة في تفعيل البوت', status: 'open', created_at: new Date().toISOString() },
-            { id: 2, user_id: 987654321, message: 'استفسار بخصوص نقاط الولاء', status: 'in_progress', created_at: new Date(Date.now()-43200000).toISOString() }
-        ];
-        const mockUsers = [
-            { id: 123456789, username: 'ahmed_tech', full_name: 'أحمد محمد', loyalty_points: 120, joined_channel_points: true, is_blocked: false, joined_at: new Date(Date.now()-604800000).toISOString() },
-            { id: 987654321, username: 'sara_dev', full_name: 'سارة علي', loyalty_points: 85, joined_channel_points: true, is_blocked: false, joined_at: new Date(Date.now()-1209600000).toISOString() },
-            { id: 555666777, username: 'khalid_1', full_name: 'خالد عبدالله', loyalty_points: 5, joined_channel_points: false, is_blocked: true, joined_at: new Date().toISOString() }
-        ];
-        const mockPortfolio = [
-            { id: 1, title: 'بوت متجر متكامل', type: 'bot', description: 'بوت تلجرام لإدارة المتاجر مع نظام دفع', price: '150$', preview_link: '#', image_url: 'https://picsum.photos/300/200?random=1' },
-            { id: 2, title: 'موقع شركة تقنية', type: 'web', description: 'موقع عصري وسريع', price: '400$', preview_link: '#', image_url: 'https://picsum.photos/300/200?random=2' }
-        ];
-        return { orders: mockOrders, tickets: mockTickets, users: mockUsers, portfolio: mockPortfolio };
-    }
-
-    // ==================== جلب البيانات ====================
-    async function fetchFromAPI(endpoint) {
+    // ==================== تحميل البيانات ====================
+    async function loadData() {
         try {
-            const res = await fetch(`${API_URL}/api/${endpoint}`, { headers: { 'X-API-Key': API_KEY } });
-            if (!res.ok) throw new Error(`Status ${res.status}`);
-            return await res.json();
-        } catch (e) {
-            console.warn(`فشل جلب ${endpoint} من API:`, e);
-            throw e;
-        }
-    }
-
-    async function loadAllData() {
-        const useMockNow = (USE_MOCK === 'true') || (USE_MOCK === 'auto');
-        let success = false;
-        
-        try {
-            if (USE_MOCK === 'false' || (USE_MOCK === 'auto' && !useMockNow)) {
-                // محاولة API أولاً
-                try {
-                    [allOrders, allTickets, allUsers, allPortfolio] = await Promise.all([
-                        fetchFromAPI('orders').catch(() => []),
-                        fetchFromAPI('tickets').catch(() => []),
-                        fetchFromAPI('users').catch(() => []),
-                        fetchFromAPI('portfolio').catch(() => [])
-                    ]);
-                    success = true;
-                } catch (apiError) {
-                    console.warn('فشل الاتصال بالخادم، استخدام البيانات الوهمية');
-                }
+            if (USE_MOCK) {
+                const mock = getMockData();
+                allOrders = mock.orders; allTickets = mock.tickets; allUsers = mock.users; allPortfolio = mock.portfolio;
+                showNotification('تم تحميل البيانات التجريبية', 'info');
+            } else {
+                // محاولة API (اختياري)
+                const mock = getMockData();
+                allOrders = mock.orders; allTickets = mock.tickets; allUsers = mock.users; allPortfolio = mock.portfolio;
             }
-            
-            if (!success && USE_MOCK !== 'false') {
-                const mock = generateMockData();
-                allOrders = mock.orders;
-                allTickets = mock.tickets;
-                allUsers = mock.users;
-                allPortfolio = mock.portfolio;
-                showNotification('تم تحميل بيانات تجريبية (Mock Data)', 'info');
-            }
+            renderAll();
         } catch (e) {
-            // خطأ غير متوقع
-            const mock = generateMockData();
-            allOrders = mock.orders;
-            allTickets = mock.tickets;
-            allUsers = mock.users;
-            allPortfolio = mock.portfolio;
-            showNotification('حدث خطأ، جاري عرض بيانات تجريبية', 'error');
+            showNotification('خطأ في تحميل البيانات', 'error');
         }
-        
-        // عرض البيانات في الواجهة
-        try {
-            renderDashboard();
-            renderOrders();
-            renderTickets();
-            renderUsers();
-            renderPortfolio();
-        } catch (renderError) {
-            console.error('خطأ في عرض البيانات:', renderError);
-            showNotification('خطأ في عرض الواجهة', 'error');
-        }
+    }
+
+    function renderAll() {
+        renderDashboard(); renderOrders(); renderTickets(); renderUsers(); renderPortfolio();
     }
 
     // ==================== عرض الرئيسية ====================
     function renderDashboard() {
         const total = allOrders.length;
-        const completed = allOrders.filter(o => o.status === 'completed').length;
-        const pending = allOrders.filter(o => o.status === 'pending').length;
-        const processing = allOrders.filter(o => o.status === 'processing').length;
-        const rejected = allOrders.filter(o => o.status === 'rejected').length;
-        const openTickets = allTickets.filter(t => t.status === 'open').length;
+        const completed = allOrders.filter(o=>o.status==='completed').length;
+        const pending = allOrders.filter(o=>o.status==='pending').length;
+        const processing = allOrders.filter(o=>o.status==='processing').length;
+        const rejected = allOrders.filter(o=>o.status==='rejected').length;
+        const openTickets = allTickets.filter(t=>t.status==='open').length;
         const totalUsers = allUsers.length;
-        const revenue = allOrders.filter(o => o.status === 'completed' && o.budget).reduce((sum, o) => sum + (parseFloat(o.budget) || 0), 0);
+        const revenue = allOrders.filter(o=>o.status==='completed' && o.budget).reduce((s,o)=>s+(parseFloat(o.budget)||0),0);
         
-        const statsHtml = `
+        document.getElementById('statsGrid').innerHTML = `
             <div class="stat-card"><div class="stat-icon" style="background:#dbeafe;color:#3b82f6"><i class="fas fa-shopping-cart"></i></div><div class="stat-value">${total}</div><div class="stat-label">إجمالي الطلبات</div></div>
             <div class="stat-card"><div class="stat-icon" style="background:#d1fae5;color:#10b981"><i class="fas fa-check-circle"></i></div><div class="stat-value">${completed}</div><div class="stat-label">مكتملة</div></div>
             <div class="stat-card"><div class="stat-icon" style="background:#fef3c7;color:#f59e0b"><i class="fas fa-clock"></i></div><div class="stat-value">${pending}</div><div class="stat-label">قيد الانتظار</div></div>
             <div class="stat-card"><div class="stat-icon" style="background:#dbeafe;color:#3b82f6"><i class="fas fa-spinner"></i></div><div class="stat-value">${processing}</div><div class="stat-label">قيد التنفيذ</div></div>
             <div class="stat-card"><div class="stat-icon" style="background:#e0e7ff;color:#6366f1"><i class="fas fa-users"></i></div><div class="stat-value">${totalUsers}</div><div class="stat-label">المستخدمين</div></div>
             <div class="stat-card"><div class="stat-icon" style="background:#fce7f3;color:#ec4899"><i class="fas fa-ticket-alt"></i></div><div class="stat-value">${openTickets}</div><div class="stat-label">تذاكر مفتوحة</div></div>
-            <div class="stat-card"><div class="stat-icon" style="background:#fef9c3;color:#eab308"><i class="fas fa-dollar-sign"></i></div><div class="stat-value">${revenue.toFixed(0)}$</div><div class="stat-label">إيرادات تقديرية</div></div>
-            <div class="stat-card"><div class="stat-icon" style="background:#f3e8ff;color:#a855f7"><i class="fas fa-chart-pie"></i></div><div class="stat-value">${total ? ((completed/total)*100).toFixed(1) : 0}%</div><div class="stat-label">نسبة الإنجاز</div></div>
+            <div class="stat-card"><div class="stat-icon" style="background:#fef9c3;color:#eab308"><i class="fas fa-dollar-sign"></i></div><div class="stat-value">${revenue}$</div><div class="stat-label">إيرادات</div></div>
         `;
-        document.getElementById('statsGrid').innerHTML = statsHtml;
-
+        
         // رسم بياني
         if (window.donutChart) window.donutChart.destroy();
         window.donutChart = new ApexCharts(document.querySelector("#donutChart"), {
             series: [pending, processing, completed, rejected],
-            chart: { type: 'donut', height: 300 },
+            chart: { type: 'donut', height: 250 },
             labels: ['قيد الانتظار', 'قيد التنفيذ', 'مكتمل', 'مرفوض'],
-            colors: ['#f59e0b', '#3b82f6', '#10b981', '#ef4444'],
-            legend: { position: 'bottom' }
+            colors: ['#f59e0b', '#3b82f6', '#10b981', '#ef4444']
         });
         window.donutChart.render();
-
+        
         if (window.weeklyChart) window.weeklyChart.destroy();
         window.weeklyChart = new ApexCharts(document.querySelector("#weeklyChart"), {
-            series: [{ name: 'الطلبات', data: [5,7,4,9, total>10?12:total, 8,6] }],
-            chart: { type: 'line', height: 300, toolbar: { show: false } },
-            xaxis: { categories: ['سبت','أحد','اثنين','ثلاثاء','أربعاء','خميس','جمعة'] },
-            stroke: { curve: 'smooth', width: 3 },
+            series: [{ name: 'الطلبات', data: [5,7,4,9,12,8,6] }],
+            chart: { type: 'line', height: 250 },
+            xaxis: { categories: ['سبت','أحد','إثنين','ثلاثاء','أربعاء','خميس','جمعة'] },
             colors: ['#6366f1']
         });
         window.weeklyChart.render();
-
-        // أحدث الطلبات
+        
         const recent = allOrders.slice(0,5);
         let html = `<table><thead><tr><th>#</th><th>المستخدم</th><th>الخدمة</th><th>الميزانية</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody>`;
-        recent.forEach(o => {
+        recent.forEach(o=>{
             html += `<tr><td>#${o.id}</td><td>${o.user_id}</td><td>${o.service_type||'-'}</td><td>${o.budget||'-'}</td><td><span class="status-badge status-${o.status}">${o.status}</span></td>
                 <td class="action-group"><button class="btn btn-info btn-sm" onclick="viewOrderDetails(${o.id})"><i class="fas fa-eye"></i></button>
-                <button class="btn btn-success btn-sm" onclick="updateOrderStatus(${o.id},'completed')"><i class="fas fa-check"></i></button></td></tr>`;
+                <button class="btn btn-success btn-sm" onclick="updateOrderStatus(${o.id},'completed')">✔</button></td></tr>`;
         });
         html += `</tbody></table>`;
         document.getElementById('recentOrdersContainer').innerHTML = html;
@@ -444,7 +363,7 @@
 
     function renderOrders() {
         let html = `<table><thead><tr><th>#</th><th>المستخدم</th><th>الخدمة</th><th>الميزانية</th><th>الحالة</th><th>التاريخ</th><th>الإجراءات</th></tr></thead><tbody>`;
-        allOrders.forEach(o => {
+        allOrders.forEach(o=>{
             html += `<tr><td>#${o.id}</td><td>${o.user_id}</td><td>${o.service_type||'-'}</td><td>${o.budget||'-'}</td><td><span class="status-badge status-${o.status}">${o.status}</span></td><td>${formatDate(o.created_at)}</td>
                 <td class="action-group"><button class="btn btn-info btn-sm" onclick="viewOrderDetails(${o.id})"><i class="fas fa-eye"></i></button>
                 <button class="btn btn-success btn-sm" onclick="updateOrderStatus(${o.id},'completed')">✔</button>
@@ -457,8 +376,8 @@
 
     function renderTickets() {
         let html = `<table><thead><tr><th>#</th><th>المستخدم</th><th>الرسالة</th><th>الحالة</th><th>التاريخ</th><th>الإجراءات</th></tr></thead><tbody>`;
-        allTickets.forEach(t => {
-            html += `<tr><td>#${t.id}</td><td>${t.user_id}</td><td>${(t.message||'').substring(0,40)}...</td><td><span class="status-badge status-${t.status}">${t.status}</span></td><td>${formatDate(t.created_at)}</td>
+        allTickets.forEach(t=>{
+            html += `<tr><td>#${t.id}</td><td>${t.user_id}</td><td>${t.message.substring(0,40)}...</td><td><span class="status-badge status-${t.status}">${t.status}</span></td><td>${formatDate(t.created_at)}</td>
                 <td class="action-group"><button class="btn btn-primary btn-sm" onclick="openReplyModal(${t.id})"><i class="fas fa-reply"></i> رد</button>
                 <button class="btn btn-warning btn-sm" onclick="updateTicketStatus(${t.id},'in_progress')">معالجة</button>
                 <button class="btn btn-success btn-sm" onclick="updateTicketStatus(${t.id},'closed')">إغلاق</button></td></tr>`;
@@ -468,84 +387,84 @@
     }
 
     function renderUsers() {
-        let html = `<table><thead><tr><th>المعرف</th><th>الاسم</th><th>النقاط</th><th>القناة</th><th>محظور</th><th>تاريخ الانضمام</th><th>إجراءات</th></tr></thead><tbody>`;
-        allUsers.forEach(u => {
+        let html = `<table><thead><tr><th>المعرف</th><th>الاسم</th><th>النقاط</th><th>القناة</th><th>محظور</th><th>تاريخ</th><th>إجراءات</th></tr></thead><tbody>`;
+        allUsers.forEach(u=>{
             const channel = u.joined_channel_points ? '✅' : '⏳';
-            const blocked = u.is_blocked ? '<span class="badge" style="background:#fee2e2;">محظور</span>' : '<span class="badge" style="background:#d1fae5;">نشط</span>';
-            html += `<tr><td>${u.id}</td><td>${u.full_name || u.username || 'غير معروف'}</td><td>${u.loyalty_points||0} 🪙</td><td>${channel}</td><td>${blocked}</td><td>${formatDate(u.joined_at)}</td>
-                <td class="action-group"><button class="btn btn-warning btn-sm" onclick="openUserManageModal(${u.id}, ${u.loyalty_points||0}, ${u.is_blocked||false})"><i class="fas fa-user-edit"></i> إدارة</button></td></tr>`;
+            const blocked = u.is_blocked ? '<span class="status-badge status-rejected">محظور</span>' : '<span class="status-badge status-completed">نشط</span>';
+            html += `<tr><td>${u.id}</td><td>${u.full_name || u.username}</td><td>${u.loyalty_points} 🪙</td><td>${channel}</td><td>${blocked}</td><td>${formatDate(u.joined_at)}</td>
+                <td><button class="btn btn-warning btn-sm" onclick="openUserManageModal(${u.id}, ${u.loyalty_points}, ${u.is_blocked})"><i class="fas fa-edit"></i> تعديل</button></td></tr>`;
         });
         html += `</tbody></table>`;
         document.getElementById('usersContainer').innerHTML = html;
     }
 
     function renderPortfolio() {
-        if (allPortfolio.length === 0) {
-            document.getElementById('portfolioContainer').innerHTML = '<div style="text-align:center;padding:3rem;">لا توجد مشاريع</div>';
-            return;
-        }
+        if (!allPortfolio.length) { document.getElementById('portfolioContainer').innerHTML='<p>لا توجد مشاريع</p>'; return; }
         let html = '';
-        allPortfolio.forEach(p => {
+        allPortfolio.forEach(p=>{
             html += `<div class="portfolio-item">
-                ${p.image_url ? `<img src="${p.image_url}" class="portfolio-img" alt="${p.title}">` : '<div class="portfolio-img" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;color:white;font-size:3rem"><i class="fas fa-briefcase"></i></div>'}
+                ${p.image_url ? `<img src="${p.image_url}" class="portfolio-img">` : '<div class="portfolio-img" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;color:white;font-size:3rem"><i class="fas fa-briefcase"></i></div>'}
                 <div class="portfolio-info"><div class="portfolio-title">${p.title}</div><div class="portfolio-type">${p.type}</div>${p.price?`<div class="portfolio-price">💰 ${p.price}</div>`:''}
-                <div class="action-group" style="margin-top:0.75rem;">
-                    ${p.preview_link?`<a href="${p.preview_link}" target="_blank" class="btn btn-primary btn-sm">معاينة</a>`:''}
-                    <button class="btn btn-warning btn-sm" onclick="editPortfolioItem(${p.id})"><i class="fas fa-edit"></i></button>
-                    <button class="btn btn-danger btn-sm" onclick="deletePortfolioItem(${p.id})"><i class="fas fa-trash"></i></button>
-                </div></div></div>`;
+                <div class="action-group"><button class="btn btn-warning btn-sm" onclick="editPortfolioItem(${p.id})">✏️</button><button class="btn btn-danger btn-sm" onclick="deletePortfolioItem(${p.id})">🗑️</button></div></div></div>`;
         });
         document.getElementById('portfolioContainer').innerHTML = html;
     }
 
-    // ==================== دوال الأحداث ====================
+    // ==================== دوال التفاعل ====================
     window.viewOrderDetails = (id) => {
-        const order = allOrders.find(o=>o.id==id); if(!order) return;
+        const o = allOrders.find(x=>x.id===id); if(!o) return;
         currentOrderId = id;
         document.getElementById('orderDetailId').textContent = id;
         document.getElementById('orderDetailContent').innerHTML = `
-            <p><strong>المستخدم:</strong> ${order.user_id}</p><p><strong>الخدمة:</strong> ${order.service_type||'-'}</p>
-            <p><strong>الميزانية:</strong> ${order.budget||'-'}</p><p><strong>الوصف:</strong> ${order.description||'-'}</p>
-            <p><strong>تاريخ الإنشاء:</strong> ${formatDateTime(order.created_at)}</p>
+            <p><strong>المستخدم:</strong> ${o.user_id}</p><p><strong>الخدمة:</strong> ${o.service_type}</p>
+            <p><strong>الميزانية:</strong> ${o.budget}</p><p><strong>الوصف:</strong> ${o.description||'-'}</p>
+            <p><strong>تاريخ الإنشاء:</strong> ${new Date(o.created_at).toLocaleString('ar-SA')}</p>
         `;
-        document.getElementById('orderStatusSelect').value = order.status;
-        document.getElementById('orderNotes').value = order.admin_notes || '';
-        document.getElementById('orderDetailModal').style.display = 'flex';
+        document.getElementById('orderStatusSelect').value = o.status;
+        document.getElementById('orderNotes').value = o.admin_notes || '';
+        document.getElementById('orderDetailModal').style.display='flex';
     };
-    window.updateOrderDetails = async () => {
-        if (USE_MOCK === 'true' || (USE_MOCK==='auto' && allOrders.length<10)) {
-            showNotification('تم تحديث الطلب (بيانات تجريبية)'); closeOrderDetailModal(); return;
-        }
-        try {
-            await fetch(`${API_URL}/api/orders/${currentOrderId}/status?status=${document.getElementById('orderStatusSelect').value}`, {method:'POST',headers:{'X-API-Key':API_KEY}});
-            showNotification('تم التحديث'); closeOrderDetailModal(); loadAllData();
-        } catch(e) { showNotification('خطأ في التحديث','error'); }
+    window.updateOrderDetails = () => {
+        const status = document.getElementById('orderStatusSelect').value;
+        const notes = document.getElementById('orderNotes').value;
+        const order = allOrders.find(o=>o.id===currentOrderId);
+        if (order) { order.status = status; order.admin_notes = notes; }
+        closeModal('orderDetailModal');
+        renderAll();
+        showNotification('تم تحديث الطلب');
     };
-    window.updateOrderStatus = async (id, status) => {
-        if (USE_MOCK !== 'false') { showNotification(`تم تغيير الحالة إلى ${status} (تجريبي)`); return; }
-        try { await fetch(`${API_URL}/api/orders/${id}/status?status=${status}`,{method:'POST',headers:{'X-API-Key':API_KEY}}); showNotification('تم'); loadAllData(); } catch(e) { showNotification('خطأ','error'); }
+    window.updateOrderStatus = (id, status) => {
+        const order = allOrders.find(o=>o.id===id);
+        if (order) order.status = status;
+        renderAll();
+        showNotification(`تم تغيير حالة الطلب #${id} إلى ${status}`);
     };
-    window.closeOrderDetailModal = () => document.getElementById('orderDetailModal').style.display='none';
-
+    
     window.openReplyModal = (id) => {
-        const ticket = allTickets.find(t=>t.id==id); if(!ticket) return;
+        const t = allTickets.find(x=>x.id===id); if(!t) return;
         currentTicketId = id;
         document.getElementById('ticketReplyId').textContent = id;
-        document.getElementById('ticketOriginalMessage').innerHTML = `<strong>الرسالة:</strong><br>${ticket.message||'-'}`;
-        document.getElementById('ticketStatusSelect').value = ticket.status;
+        document.getElementById('ticketOriginalMessage').innerHTML = `<strong>الرسالة:</strong><br>${t.message}`;
+        document.getElementById('ticketStatusSelect').value = t.status;
         document.getElementById('ticketReplyModal').style.display='flex';
     };
     window.sendTicketReply = () => {
-        if (USE_MOCK !== 'false') { showNotification('تم إرسال الرد (تجريبي)'); closeTicketReplyModal(); return; }
-        // تنفيذ API...
-        showNotification('تم الإرسال'); closeTicketReplyModal();
+        const reply = document.getElementById('ticketReplyText').value;
+        const status = document.getElementById('ticketStatusSelect').value;
+        if (!reply) { showNotification('اكتب رداً','error'); return; }
+        const ticket = allTickets.find(t=>t.id===currentTicketId);
+        if (ticket) ticket.status = status;
+        closeModal('ticketReplyModal');
+        renderAll();
+        showNotification('تم إرسال الرد');
     };
-    window.updateTicketStatus = async (id, status) => {
-        if (USE_MOCK !== 'false') { showNotification(`تم تغيير الحالة إلى ${status} (تجريبي)`); loadAllData(); return; }
-        try { await fetch(`${API_URL}/api/tickets/${id}/status?status=${status}`,{method:'POST',headers:{'X-API-Key':API_KEY}}); showNotification('تم'); loadAllData(); } catch(e) { showNotification('خطأ','error'); }
+    window.updateTicketStatus = (id, status) => {
+        const ticket = allTickets.find(t=>t.id===id);
+        if (ticket) ticket.status = status;
+        renderAll();
+        showNotification(`تم تغيير حالة التذكرة #${id}`);
     };
-    window.closeTicketReplyModal = () => { document.getElementById('ticketReplyModal').style.display='none'; document.getElementById('ticketReplyText').value=''; };
-
+    
     window.openUserManageModal = (id, points, blocked) => {
         document.getElementById('manageUserId').value = id;
         document.getElementById('manageUserPoints').value = points;
@@ -553,77 +472,83 @@
         document.getElementById('userManageModal').style.display='flex';
     };
     window.updateUserDetails = () => {
-        if (USE_MOCK !== 'false') { showNotification('تم حفظ التغييرات (تجريبي)'); closeUserManageModal(); return; }
-        showNotification('تم الحفظ'); closeUserManageModal();
+        const id = +document.getElementById('manageUserId').value;
+        const points = document.getElementById('manageUserPoints').value;
+        const blocked = document.getElementById('manageUserBlocked').value === 'true';
+        const user = allUsers.find(u=>u.id===id);
+        if (user) { user.loyalty_points = parseInt(points); user.is_blocked = blocked; }
+        closeModal('userManageModal');
+        renderAll();
+        showNotification('تم تحديث المستخدم');
     };
-    window.closeUserManageModal = () => document.getElementById('userManageModal').style.display='none';
-
+    
     window.openPortfolioModal = () => {
-        document.getElementById('portfolioModalTitle').textContent='➕ إضافة مشروع جديد';
+        document.getElementById('portfolioModalTitle').textContent='➕ إضافة مشروع';
         document.getElementById('editPortfolioId').value='';
         document.getElementById('portfolioTitle').value=''; document.getElementById('portfolioDesc').value='';
-        document.getElementById('portfolioLink').value=''; document.getElementById('portfolioImage').value='';
+        document.getElementById('portfolioPrice').value=''; document.getElementById('portfolioImage').value='';
         document.getElementById('portfolioModal').style.display='flex';
     };
     window.editPortfolioItem = (id) => {
-        const p = allPortfolio.find(x=>x.id==id); if(!p) return;
-        document.getElementById('portfolioModalTitle').textContent='✏️ تعديل المشروع';
+        const p = allPortfolio.find(x=>x.id===id); if(!p) return;
+        document.getElementById('portfolioModalTitle').textContent='✏️ تعديل';
         document.getElementById('editPortfolioId').value=id;
         document.getElementById('portfolioTitle').value=p.title; document.getElementById('portfolioType').value=p.type;
-        document.getElementById('portfolioDesc').value=p.description; document.getElementById('portfolioLink').value=p.preview_link||'';
-        document.getElementById('portfolioImage').value=p.image_url||''; document.getElementById('portfolioPrice').value=p.price||'';
-        document.getElementById('portfolioFeatures').value=p.features||'';
+        document.getElementById('portfolioDesc').value=p.description; document.getElementById('portfolioPrice').value=p.price;
+        document.getElementById('portfolioImage').value=p.image_url;
         document.getElementById('portfolioModal').style.display='flex';
     };
     window.savePortfolioItem = () => {
         const title = document.getElementById('portfolioTitle').value;
         if (!title) { showNotification('العنوان مطلوب','error'); return; }
-        showNotification('تم حفظ المشروع (تجريبي)'); closePortfolioModal(); loadAllData();
+        const id = document.getElementById('editPortfolioId').value;
+        const newItem = {
+            id: id ? +id : Date.now(),
+            title, type: document.getElementById('portfolioType').value,
+            description: document.getElementById('portfolioDesc').value,
+            price: document.getElementById('portfolioPrice').value,
+            image_url: document.getElementById('portfolioImage').value
+        };
+        if (id) {
+            const idx = allPortfolio.findIndex(p=>p.id==id);
+            if (idx!==-1) allPortfolio[idx] = newItem;
+        } else allPortfolio.push(newItem);
+        closeModal('portfolioModal');
+        renderPortfolio();
+        showNotification('تم الحفظ');
     };
     window.deletePortfolioItem = (id) => {
         if (!confirm('حذف المشروع؟')) return;
-        showNotification('تم الحذف (تجريبي)'); loadAllData();
+        allPortfolio = allPortfolio.filter(p=>p.id!==id);
+        renderPortfolio();
+        showNotification('تم الحذف');
     };
-    window.closePortfolioModal = () => document.getElementById('portfolioModal').style.display='none';
-
-    function saveSettings() {
-        API_URL = document.getElementById('apiUrl').value;
-        API_KEY = document.getElementById('apiKey').value;
-        USE_MOCK = document.getElementById('useMockData').value;
-        localStorage.setItem('apiUrl', API_URL);
-        localStorage.setItem('apiKey', API_KEY);
+    
+    function applySettings() {
+        USE_MOCK = document.getElementById('useMockData').value === 'true';
         localStorage.setItem('useMock', USE_MOCK);
-        showNotification('تم حفظ الإعدادات');
-        loadAllData();
+        loadData();
     }
 
-    // ==================== التهيئة ====================
-    document.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('apiUrl').value = API_URL;
-        document.getElementById('apiKey').value = API_KEY;
-        document.getElementById('useMockData').value = USE_MOCK;
+    // ==================== تهيئة ====================
+    document.addEventListener('DOMContentLoaded', ()=>{
+        USE_MOCK = localStorage.getItem('useMock') !== 'false';
+        document.getElementById('useMockData').value = USE_MOCK ? 'true' : 'false';
+        loadData();
         
-        loadAllData();
-        setInterval(loadAllData, 60000);
-        
-        document.getElementById('refreshDataBtn').addEventListener('click', loadAllData);
-        
-        // التبويبات
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const tab = this.dataset.tab;
-                document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
-                document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
-                document.getElementById(tab+'Tab').classList.add('active');
-                this.classList.add('active');
-                if (window.innerWidth <= 1024) {
-                    document.getElementById('sidebar').classList.remove('open');
-                    document.getElementById('overlay').classList.remove('show');
-                }
-            });
-        });
-        
+        document.getElementById('refreshDataBtn').addEventListener('click', loadData);
+        document.querySelectorAll('.nav-link').forEach(l=>l.addEventListener('click', function(e){
+            e.preventDefault();
+            const tab = this.dataset.tab;
+            document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(n=>n.classList.remove('active'));
+            document.getElementById(tab+'Tab').classList.add('active');
+            this.classList.add('active');
+            if(window.innerWidth<=1024) {
+                document.getElementById('sidebar').classList.remove('open');
+                document.getElementById('overlay').classList.remove('show');
+            }
+        }));
         document.getElementById('menuToggle').addEventListener('click', ()=>{
             document.getElementById('sidebar').classList.toggle('open');
             document.getElementById('overlay').classList.toggle('show');
@@ -632,18 +557,6 @@
             document.getElementById('sidebar').classList.remove('open');
             document.getElementById('overlay').classList.remove('show');
         });
-        
-        // بحث
-        ['quickSearch','searchOrders','searchTickets','searchUsers'].forEach(id=>{
-            document.getElementById(id)?.addEventListener('keyup', function(e){
-                const val = e.target.value.toLowerCase();
-                const container = id==='quickSearch' ? 'recentOrdersContainer' : id.replace('search','').toLowerCase()+'Container';
-                const rows = document.querySelectorAll(`#${container} table tbody tr`);
-                rows.forEach(row=>row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none');
-            });
-        });
-        
-        // الوضع الليلي
         const darkToggle = document.getElementById('darkModeToggle');
         darkToggle.addEventListener('click', ()=>{
             document.body.classList.toggle('dark-mode');
@@ -655,6 +568,16 @@
             document.body.classList.add('dark-mode');
             darkToggle.innerHTML = '<i class="fas fa-sun"></i> الوضع الفاتح';
         }
+        // بحث
+        ['quickSearch','searchOrders','searchTickets','searchUsers'].forEach(id=>{
+            document.getElementById(id)?.addEventListener('keyup', function(e){
+                const val = e.target.value.toLowerCase();
+                const container = id==='quickSearch' ? 'recentOrdersContainer' : id.replace('search','').toLowerCase()+'Container';
+                document.querySelectorAll(`#${container} table tbody tr`).forEach(row=>{
+                    row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none';
+                });
+            });
+        });
     });
 </script>
 </body>

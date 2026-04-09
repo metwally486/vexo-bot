@@ -19,10 +19,7 @@
         }
         body { background: linear-gradient(145deg, #f8fafc 0%, #eef2ff 100%); min-height: 100vh; color: var(--dark); }
         body.dark-mode { background: linear-gradient(145deg, #0f172a 0%, #1e1b4b 100%); color: #e2e8f0; }
-        
         .app-wrapper { display: flex; min-height: 100vh; }
-        
-        /* Sidebar */
         .sidebar {
             width: 280px; background: rgba(255,255,255,0.98); backdrop-filter: blur(12px);
             box-shadow: 2px 0 20px rgba(0,0,0,0.08); position: fixed; right: 0; top: 0; bottom: 0;
@@ -45,18 +42,13 @@
         .dark-mode-toggle { margin-top: 2rem; padding: 1rem; text-align: center; border-top: 1px solid #e2e8f0; }
         .toggle-btn { background: none; border: none; cursor: pointer; font-size: 1rem; color: var(--gray); padding: 0.5rem 1rem; border-radius: 8px; transition: 0.2s; }
         .toggle-btn:hover { background: var(--light); }
-        
         .main-content { flex: 1; margin-right: 280px; padding: 1rem; }
-        
-        /* Header */
         .header { background: white; border-radius: 20px; padding: 1rem 1.5rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; box-shadow: var(--shadow-lg); }
         body.dark-mode .header { background: var(--gray-dark); }
         .brand h1 { font-size: 1.5rem; background: linear-gradient(135deg,var(--primary),var(--secondary)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
         .brand p { font-size: 0.8rem; color: var(--gray); margin-top: 0.2rem; }
         .user-area { display: flex; align-items: center; gap: 0.75rem; background: var(--light); padding: 0.5rem 1rem; border-radius: 50px; }
         .user-avatar { width: 40px; height: 40px; background: linear-gradient(135deg,var(--primary),var(--secondary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.1rem; }
-        
-        /* Stats Grid */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
         .stat-card { background: white; border-radius: 16px; padding: 1.25rem; box-shadow: var(--shadow); transition: transform 0.2s; border: 2px solid transparent; }
         body.dark-mode .stat-card { background: var(--gray-dark); }
@@ -64,13 +56,9 @@
         .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 0.75rem; }
         .stat-value { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.25rem; }
         .stat-label { font-size: 0.85rem; color: var(--gray); }
-        
-        /* Charts */
         .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
         .chart-card { background: white; border-radius: 16px; padding: 1.25rem; box-shadow: var(--shadow); }
         body.dark-mode .chart-card { background: var(--gray-dark); }
-        
-        /* Tables */
         .table-card { background: white; border-radius: 16px; padding: 1rem; margin-bottom: 1.5rem; box-shadow: var(--shadow); overflow-x: auto; }
         body.dark-mode .table-card { background: var(--gray-dark); }
         .table-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 1rem; gap: 0.75rem; }
@@ -79,13 +67,11 @@
         .search-box input { width: 100%; padding: 0.625rem 1rem 0.625rem 2.5rem; border: 2px solid #e2e8f0; border-radius: 50px; font-size: 0.875rem; transition: border-color 0.2s; }
         .search-box input:focus { outline: none; border-color: var(--primary); }
         .search-box i { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--gray); }
-        
         table { width: 100%; border-collapse: collapse; min-width: 600px; }
         th, td { padding: 0.875rem 1rem; text-align: right; border-bottom: 1px solid #f1f5f9; }
         body.dark-mode th, body.dark-mode td { border-bottom-color: #334155; }
         th { background: var(--light); font-weight: 700; font-size: 0.875rem; }
         body.dark-mode th { background: rgba(255,255,255,0.05); }
-        
         .status-badge { padding: 0.375rem 0.875rem; border-radius: 50px; font-size: 0.8rem; font-weight: 600; display: inline-block; }
         .status-pending { background: #fef3c7; color: #92400e; }
         .status-processing { background: #dbeafe; color: #1e40af; }
@@ -93,7 +79,6 @@
         .status-rejected { background: #fee2e2; color: #991b1b; }
         .status-open { background: #dbeafe; color: #1e40af; }
         .status-closed { background: #d1fae5; color: #065f46; }
-        
         .btn { padding: 0.5rem 1rem; border-radius: 8px; border: none; cursor: pointer; font-size: 0.875rem; font-weight: 600; transition: all 0.2s; margin: 0 0.25rem; }
         .btn-sm { padding: 0.375rem 0.75rem; font-size: 0.8rem; }
         .btn-primary { background: var(--primary); color: white; }
@@ -101,43 +86,30 @@
         .btn-warning { background: var(--warning); color: white; }
         .btn-danger { background: var(--danger); color: white; }
         .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow); opacity: 0.9; }
-        
-        /* Modal */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; padding: 1rem; }
         .modal-content { background: white; border-radius: 20px; padding: 1.5rem; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); }
         body.dark-mode .modal-content { background: var(--gray-dark); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
         .modal-title { font-size: 1.25rem; font-weight: 700; }
         .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray); }
-        
         .form-group { margin-bottom: 1.25rem; }
         .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; }
         .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 0.9rem; transition: border-color 0.2s; }
         body.dark-mode .form-group input, body.dark-mode .form-group textarea, body.dark-mode .form-group select { background: var(--dark); border-color: #475569; color: #e2e8f0; }
         .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: var(--primary); }
-        
-        /* Notification */
         .notification { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: white; padding: 1rem 2rem; border-radius: 50px; box-shadow: var(--shadow-lg); z-index: 3000; transition: all 0.3s; opacity: 0; font-weight: 600; }
         body.dark-mode .notification { background: var(--gray-dark); }
         .notification.show { transform: translateX(-50%) translateY(0); opacity: 1; }
         .notification.success { border-right: 4px solid var(--success); }
         .notification.error { border-right: 4px solid var(--danger); }
-        
-        /* Tabs */
         .tab-content { display: none; animation: fadeIn 0.3s; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* Mobile Menu */
         .menu-toggle { display: none; position: fixed; top: 1rem; right: 1rem; z-index: 1100; background: white; border-radius: 50%; width: 48px; height: 48px; text-align: center; line-height: 48px; box-shadow: var(--shadow-lg); cursor: pointer; font-size: 1.25rem; color: var(--primary); }
         body.dark-mode .menu-toggle { background: var(--gray-dark); }
-        
-        /* Loading */
         .loading { text-align: center; padding: 3rem; color: var(--gray); }
         .spinner { width: 50px; height: 50px; border: 4px solid #e2e8f0; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        
-        /* Portfolio Grid */
         .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; }
         .portfolio-item { background: white; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); transition: transform 0.2s; }
         body.dark-mode .portfolio-item { background: var(--gray-dark); }
@@ -147,12 +119,8 @@
         .portfolio-title { font-weight: 700; margin-bottom: 0.5rem; }
         .portfolio-type { font-size: 0.8rem; color: var(--gray); }
         .portfolio-price { font-weight: bold; color: var(--success); margin-top: 0.5rem; }
-        
-        /* Overlay */
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
         .overlay.show { display: block; }
-        
-        /* Responsive */
         @media (max-width: 1024px) {
             .sidebar { transform: translateX(100%); width: 280px; }
             .sidebar.open { transform: translateX(0); }
@@ -176,7 +144,6 @@
 <body>
 <div class="overlay" id="overlay"></div>
 <div class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></div>
-
 <div class="app-wrapper">
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -203,66 +170,30 @@
             <button class="toggle-btn" id="darkModeToggle"><i class="fas fa-moon"></i> الوضع المظلم</button>
         </div>
     </aside>
-
     <main class="main-content">
         <div class="header">
-            <div class="brand">
-                <h1>Vexo للخدمات التقنية</h1>
-                <p>نظام الإدارة المتكامل – متولي الوصابي</p>
-            </div>
-            <div class="user-area">
-                <i class="fas fa-bell" style="color: var(--primary); cursor: pointer;"></i>
-                <div class="user-avatar">م</div>
-                <span>مدير النظام</span>
-            </div>
+            <div class="brand"><h1>Vexo للخدمات التقنية</h1><p>نظام الإدارة المتكامل – متولي الوصابي</p></div>
+            <div class="user-area"><i class="fas fa-bell" style="color: var(--primary); cursor: pointer;"></i><div class="user-avatar">م</div><span>مدير النظام</span></div>
         </div>
-
-        <!-- Dashboard Tab -->
         <div id="dashboardTab" class="tab-content active">
             <div class="stats-grid" id="statsGrid"><div class="loading"><div class="spinner"></div>جاري التحميل...</div></div>
             <div class="charts-grid"><div class="chart-card"><div id="donutChart"></div></div><div class="chart-card"><div id="weeklyChart"></div></div></div>
-            <div class="table-card">
-                <div class="table-header"><div class="table-title">📦 أحدث الطلبات</div><div class="search-box"><i class="fas fa-search"></i><input type="text" id="quickSearch" placeholder="بحث سريع..."></div></div>
-                <div id="recentOrdersContainer"></div>
-            </div>
+            <div class="table-card"><div class="table-header"><div class="table-title">📦 أحدث الطلبات</div><div class="search-box"><i class="fas fa-search"></i><input type="text" id="quickSearch" placeholder="بحث سريع..."></div></div><div id="recentOrdersContainer"></div></div>
         </div>
-
-        <!-- Orders Tab -->
         <div id="ordersTab" class="tab-content">
-            <div class="table-card">
-                <div class="table-header"><div class="table-title">📋 إدارة الطلبات</div><div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchOrders" placeholder="البحث في الطلبات..."></div></div>
-                <div id="ordersContainer"></div>
-            </div>
+            <div class="table-card"><div class="table-header"><div class="table-title">📋 إدارة الطلبات</div><div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchOrders" placeholder="البحث في الطلبات..."></div></div><div id="ordersContainer"></div></div>
         </div>
-
-        <!-- Tickets Tab -->
         <div id="ticketsTab" class="tab-content">
-            <div class="table-card">
-                <div class="table-header"><div class="table-title">🎫 تذاكر الدعم الفني</div><div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchTickets" placeholder="البحث في التذاكر..."></div></div>
-                <div id="ticketsContainer"></div>
-            </div>
+            <div class="table-card"><div class="table-header"><div class="table-title">🎫 تذاكر الدعم الفني</div><div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchTickets" placeholder="البحث في التذاكر..."></div></div><div id="ticketsContainer"></div></div>
         </div>
-
-        <!-- Users Tab -->
         <div id="usersTab" class="tab-content">
-            <div class="table-card">
-                <div class="table-header"><div class="table-title">👥 المستخدمين</div><div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchUsers" placeholder="البحث عن مستخدم..."></div></div>
-                <div id="usersContainer"></div>
-            </div>
+            <div class="table-card"><div class="table-header"><div class="table-title">👥 المستخدمين</div><div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchUsers" placeholder="البحث عن مستخدم..."></div></div><div id="usersContainer"></div></div>
         </div>
-
-        <!-- Portfolio Tab -->
         <div id="portfolioTab" class="tab-content">
-            <div class="table-card">
-                <div class="table-header"><div class="table-title">🖼️ معرض الأعمال</div><button class="btn btn-primary btn-sm" onclick="openPortfolioModal()"><i class="fas fa-plus"></i> إضافة مشروع</button></div>
-                <div id="portfolioContainer" class="portfolio-grid"></div>
-            </div>
+            <div class="table-card"><div class="table-header"><div class="table-title">🖼️ معرض الأعمال</div><button class="btn btn-primary btn-sm" onclick="openPortfolioModal()"><i class="fas fa-plus"></i> إضافة مشروع</button></div><div id="portfolioContainer" class="portfolio-grid"></div></div>
         </div>
-
-        <!-- Settings Tab -->
         <div id="settingsTab" class="tab-content">
-            <div class="table-card">
-                <div class="table-title">⚙️ الإعدادات</div>
+            <div class="table-card"><div class="table-title">⚙️ الإعدادات</div>
                 <form id="settingsForm" style="margin-top: 1.5rem;">
                     <div class="form-group"><label>عنوان API</label><input type="text" id="apiUrl" value="https://vexo-backend-7tk4.onrender.com"></div>
                     <div class="form-group"><label>مفتاح API</label><input type="text" id="apiKey" value="VexoSecret2024!@#"></div>
@@ -275,10 +206,7 @@
         </div>
     </main>
 </div>
-
 <div id="notification" class="notification"></div>
-
-<!-- Portfolio Modal -->
 <div class="modal" id="portfolioModal">
     <div class="modal-content">
         <div class="modal-header"><div class="modal-title">➕ إضافة مشروع جديد</div><button class="modal-close" onclick="closePortfolioModal()">&times;</button></div>
@@ -292,9 +220,7 @@
         <button class="btn btn-primary" onclick="addPortfolioItem()" style="width: 100%;"><i class="fas fa-plus"></i> إضافة المشروع</button>
     </div>
 </div>
-
 <script>
-// ==================== الإعدادات ====================
 let API_URL = localStorage.getItem('apiUrl') || "https://vexo-backend-7tk4.onrender.com";
 let API_KEY = localStorage.getItem('apiKey') || "VexoSecret2024!@#";
 let allOrders = [], allTickets = [], allUsers = [], allPortfolio = [];
@@ -305,61 +231,30 @@ function showNotification(msg, type='success') {
     n.className = `notification ${type} show`;
     setTimeout(() => n.classList.remove('show'), 3000);
 }
+function formatDate(dateStr) { if (!dateStr) return '-'; try { return new Date(dateStr).toLocaleDateString('ar-SA'); } catch { return dateStr; } }
 
-function formatDate(dateStr) {
-    if (!dateStr) return '-';
-    try { return new Date(dateStr).toLocaleDateString('ar-SA'); } catch { return dateStr; }
-}
-
-// ==================== جلب البيانات ====================
 async function fetchOrders() {
-    try {
-        const res = await fetch(`${API_URL}/api/orders`, { headers: { 'X-API-Key': API_KEY } });
-        if (!res.ok) throw new Error();
-        return await res.json();
-    } catch (e) { console.error(e); return []; }
+    try { const res = await fetch(`${API_URL}/api/orders`, { headers: { 'X-API-Key': API_KEY } }); if (!res.ok) throw new Error(); return await res.json(); } catch(e) { console.error(e); return []; }
 }
 async function fetchTickets() {
-    try {
-        const res = await fetch(`${API_URL}/api/tickets`, { headers: { 'X-API-Key': API_KEY } });
-        if (!res.ok) throw new Error();
-        return await res.json();
-    } catch (e) { return []; }
+    try { const res = await fetch(`${API_URL}/api/tickets`, { headers: { 'X-API-Key': API_KEY } }); if (!res.ok) throw new Error(); return await res.json(); } catch(e) { return []; }
 }
 async function fetchUsers() {
-    try {
-        const res = await fetch(`${API_URL}/api/users`, { headers: { 'X-API-Key': API_KEY } });
-        if (!res.ok) throw new Error();
-        return await res.json();
-    } catch (e) { return []; }
+    try { const res = await fetch(`${API_URL}/api/users`, { headers: { 'X-API-Key': API_KEY } }); if (!res.ok) throw new Error(); return await res.json(); } catch(e) { return []; }
 }
 async function fetchPortfolio() {
-    try {
-        const res = await fetch(`${API_URL}/api/portfolio`, { headers: { 'X-API-Key': API_KEY } });
-        if (!res.ok) throw new Error();
-        return await res.json();
-    } catch (e) { return []; }
+    try { const res = await fetch(`${API_URL}/api/portfolio`, { headers: { 'X-API-Key': API_KEY } }); if (!res.ok) throw new Error(); return await res.json(); } catch(e) { return []; }
 }
 
-// ==================== العرض ====================
 async function loadAllData() {
     allOrders = await fetchOrders();
     allTickets = await fetchTickets();
     allUsers = await fetchUsers();
     allPortfolio = await fetchPortfolio();
-    renderDashboard();
-    renderOrders();
-    renderTickets();
-    renderUsers();
-    renderPortfolio();
+    renderDashboard(); renderOrders(); renderTickets(); renderUsers(); renderPortfolio();
 }
-
 function renderDashboard() {
-    const total = allOrders.length;
-    const completed = allOrders.filter(o => o.status === 'completed').length;
-    const pending = allOrders.filter(o => o.status === 'pending').length;
-    const processing = allOrders.filter(o => o.status === 'processing').length;
-    const openTickets = allTickets.filter(t => t.status === 'open').length;
+    const total = allOrders.length, completed = allOrders.filter(o => o.status === 'completed').length, pending = allOrders.filter(o => o.status === 'pending').length, processing = allOrders.filter(o => o.status === 'processing').length, openTickets = allTickets.filter(t => t.status === 'open').length;
     document.getElementById('statsGrid').innerHTML = `
         <div class="stat-card"><div class="stat-icon" style="background:#dbeafe;color:#3b82f6"><i class="fas fa-shopping-cart"></i></div><div class="stat-value">${total}</div><div class="stat-label">إجمالي الطلبات</div></div>
         <div class="stat-card"><div class="stat-icon" style="background:#d1fae5;color:#10b981"><i class="fas fa-check-circle"></i></div><div class="stat-value">${completed}</div><div class="stat-label">مكتملة</div></div>
@@ -368,215 +263,62 @@ function renderDashboard() {
         <div class="stat-card"><div class="stat-icon" style="background:#e0e7ff;color:#6366f1"><i class="fas fa-users"></i></div><div class="stat-value">${allUsers.length}</div><div class="stat-label">المستخدمين</div></div>
         <div class="stat-card"><div class="stat-icon" style="background:#fce7f3;color:#ec4899"><i class="fas fa-ticket-alt"></i></div><div class="stat-value">${openTickets}</div><div class="stat-label">تذاكر مفتوحة</div></div>
     `;
-    // Donut Chart
     const donutOptions = { series: [pending, processing, completed, allOrders.filter(o=>o.status==='rejected').length], chart: { type: 'donut', height: 300 }, labels: ['قيد الانتظار','قيد التنفيذ','مكتمل','مرفوض'], colors: ['#f59e0b','#3b82f6','#10b981','#ef4444'], legend: { position: 'bottom' } };
     if (window.donutChart) window.donutChart.destroy();
-    window.donutChart = new ApexCharts(document.querySelector("#donutChart"), donutOptions);
-    window.donutChart.render();
-    // Weekly Chart
+    window.donutChart = new ApexCharts(document.querySelector("#donutChart"), donutOptions); window.donutChart.render();
     const weeklyOptions = { series: [{ name: 'الطلبات', data: [5,7,4,9,total>10?12:total,8,6] }], chart: { type: 'line', height: 300, toolbar: { show: false } }, xaxis: { categories: ['سبت','أحد','اثنين','ثلاثاء','أربعاء','خميس','جمعة'] }, stroke: { curve: 'smooth', width: 3 }, colors: ['#6366f1'] };
     if (window.weeklyChart) window.weeklyChart.destroy();
-    window.weeklyChart = new ApexCharts(document.querySelector("#weeklyChart"), weeklyOptions);
-    window.weeklyChart.render();
-    // Recent Orders
+    window.weeklyChart = new ApexCharts(document.querySelector("#weeklyChart"), weeklyOptions); window.weeklyChart.render();
     const recent = allOrders.slice(0,5);
-    let html = '</table><thead><tr><th>#</th><th>المستخدم</th><th>الخدمة</th><th>الميزانية</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody>';
+    let html = '<table><thead><tr><th>#</th><th>المستخدم</th><th>الخدمة</th><th>الميزانية</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody>';
     recent.forEach(o => { html += `<tr><td>#${o.id}</td><td>${o.user_id}</td><td>${o.service_type||'-'}</td><td>${o.budget||'-'}</td><td><span class="status-badge status-${o.status}">${o.status}</span></td><td><button class="btn btn-success btn-sm" onclick="updateOrderStatus(${o.id},'completed')"><i class="fas fa-check"></i></button></td></tr>`; });
     html += '</tbody></table>';
     document.getElementById('recentOrdersContainer').innerHTML = html;
 }
-
 function renderOrders() {
     let html = '<table><thead><tr><th>#</th><th>المستخدم</th><th>الخدمة</th><th>الميزانية</th><th>الحالة</th><th>التاريخ</th><th>الإجراءات</th></tr></thead><tbody>';
-    allOrders.forEach(o => {
-        html += `<tr><td>#${o.id}</td><td>${o.user_id}</td><td>${o.service_type||'-'}</td><td>${o.budget||'-'}</td><td><span class="status-badge status-${o.status}">${o.status}</span></td><td>${formatDate(o.created_at)}</td>
-        <td><button class="btn btn-success btn-sm" onclick="updateOrderStatus(${o.id},'completed')"><i class="fas fa-check"></i></button> <button class="btn btn-warning btn-sm" onclick="updateOrderStatus(${o.id},'processing')"><i class="fas fa-spinner"></i></button> <button class="btn btn-danger btn-sm" onclick="updateOrderStatus(${o.id},'rejected')"><i class="fas fa-times"></i></button></td></tr>`;
-    });
-    html += '</tbody></tr>';
+    allOrders.forEach(o => { html += `<tr><td>#${o.id}</td><td>${o.user_id}</td><td>${o.service_type||'-'}</td><td>${o.budget||'-'}</td><td><span class="status-badge status-${o.status}">${o.status}</span></td><td>${formatDate(o.created_at)}</td><td><button class="btn btn-success btn-sm" onclick="updateOrderStatus(${o.id},'completed')"><i class="fas fa-check"></i></button> <button class="btn btn-warning btn-sm" onclick="updateOrderStatus(${o.id},'processing')"><i class="fas fa-spinner"></i></button> <button class="btn btn-danger btn-sm" onclick="updateOrderStatus(${o.id},'rejected')"><i class="fas fa-times"></i></button></td></tr>`; });
+    html += '</tbody></table>';
     document.getElementById('ordersContainer').innerHTML = html;
 }
-
 function renderTickets() {
     let html = '<table><thead><tr><th>#</th><th>المستخدم</th><th>الرسالة</th><th>الحالة</th><th>التاريخ</th><th>إجراء</th></tr></thead><tbody>';
-    allTickets.forEach(t => {
-        html += `<tr><td>#${t.id}</td><td>${t.user_id}</td><td>${(t.message||'').substring(0,50)}...</td><td><span class="status-badge status-${t.status}">${t.status}</span></td><td>${formatDate(t.created_at)}</td><td><button class="btn btn-primary btn-sm" onclick="closeTicket(${t.id})">إغلاق</button></td></tr>`;
-    });
+    allTickets.forEach(t => { html += `<tr><td>#${t.id}</td><td>${t.user_id}</td><td>${(t.message||'').substring(0,50)}...</td><td><span class="status-badge status-${t.status}">${t.status}</span></td><td>${formatDate(t.created_at)}</td><td><button class="btn btn-primary btn-sm" onclick="closeTicket(${t.id})">إغلاق</button></td></tr>`; });
     html += '</tbody></table>';
     document.getElementById('ticketsContainer').innerHTML = html;
 }
-
 function renderUsers() {
-    let html = '<table><thead><tr><th>المعرف</th><th>الاسم</th><th>النقاط</th><th>القناة</th><th>تاريخ الانضمام</th><th>إجراءات</th></tr></thead><tbody>';
-    allUsers.forEach(u => {
-        const channelStatus = u.joined_channel_points ? '✅ مشترك' : '⏳ غير مشترك';
-        html += `<tr><td>${u.id}</td><td>${u.full_name || u.username || 'غير معروف'}</td><td>${u.loyalty_points||0} 🪙</td><td>${channelStatus}</td><td>${formatDate(u.joined_at)}</td><td><button class="btn btn-warning btn-sm" onclick="openPointsModal(${u.id}, ${u.loyalty_points||0})"><i class="fas fa-coins"></i> تعديل</button></td></tr>`;
-    });
+    let html = '</table><thead><tr><th>المعرف</th><th>الاسم</th><th>النقاط</th><th>القناة</th><th>تاريخ الانضمام</th><th>إجراءات</th></tr></thead><tbody>';
+    allUsers.forEach(u => { const channelStatus = u.joined_channel_points ? '✅ مشترك' : '⏳ غير مشترك'; html += `<tr><td>${u.id}</td><td>${u.full_name || u.username || 'غير معروف'}</td><td>${u.loyalty_points||0} 🪙</td><td>${channelStatus}</td><td>${formatDate(u.joined_at)}</td><td><button class="btn btn-warning btn-sm" onclick="openPointsModal(${u.id}, ${u.loyalty_points||0})"><i class="fas fa-coins"></i> تعديل</button></td></tr>`; });
     html += '</tbody></table>';
     document.getElementById('usersContainer').innerHTML = html;
 }
-
 function renderPortfolio() {
     if (allPortfolio.length === 0) { document.getElementById('portfolioContainer').innerHTML = '<div style="text-align:center;padding:3rem;color:var(--gray)">لا توجد مشاريع بعد</div>'; return; }
     let html = '';
-    allPortfolio.forEach(p => {
-        html += `<div class="portfolio-item">
-            ${p.image_url ? `<img src="${p.image_url}" class="portfolio-img" alt="${p.title}">` : '<div class="portfolio-img" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;color:white;font-size:3rem"><i class="fas fa-briefcase"></i></div>'}
-            <div class="portfolio-info">
-                <div class="portfolio-title">${p.title}</div>
-                <div class="portfolio-type">${p.type}</div>
-                ${p.price ? `<div class="portfolio-price">💰 ${p.price}</div>` : ''}
-                ${p.description ? `<p style="margin-top:0.5rem;font-size:0.85rem;color:var(--gray)">${p.description.substring(0,100)}...</p>` : ''}
-                ${p.preview_link ? `<a href="${p.preview_link}" target="_blank" class="btn btn-primary btn-sm" style="margin-top:0.5rem;display:inline-block"><i class="fas fa-external-link-alt"></i> معاينة</a>` : ''}
-                <button class="btn btn-danger btn-sm" onclick="deletePortfolioItem(${p.id})" style="margin-top:0.5rem;display:inline-block"><i class="fas fa-trash"></i> حذف</button>
-            </div>
-        </div>`;
-    });
+    allPortfolio.forEach(p => { html += `<div class="portfolio-item">${p.image_url ? `<img src="${p.image_url}" class="portfolio-img" alt="${p.title}">` : '<div class="portfolio-img" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;color:white;font-size:3rem"><i class="fas fa-briefcase"></i></div>'}<div class="portfolio-info"><div class="portfolio-title">${p.title}</div><div class="portfolio-type">${p.type}</div>${p.price ? `<div class="portfolio-price">💰 ${p.price}</div>` : ''}${p.description ? `<p style="margin-top:0.5rem;font-size:0.85rem;color:var(--gray)">${p.description.substring(0,100)}...</p>` : ''}${p.preview_link ? `<a href="${p.preview_link}" target="_blank" class="btn btn-primary btn-sm" style="margin-top:0.5rem;display:inline-block"><i class="fas fa-external-link-alt"></i> معاينة</a>` : ''}<button class="btn btn-danger btn-sm" onclick="deletePortfolioItem(${p.id})" style="margin-top:0.5rem;display:inline-block"><i class="fas fa-trash"></i> حذف</button></div></div>`; });
     document.getElementById('portfolioContainer').innerHTML = html;
 }
-
-// ==================== العمليات ====================
-window.updateOrderStatus = async (orderId, status) => {
-    try {
-        await fetch(`${API_URL}/api/orders/${orderId}/status?status=${status}`, { method: 'POST', headers: { 'X-API-Key': API_KEY } });
-        showNotification(`تم تحديث الطلب #${orderId} إلى ${status}`);
-        loadAllData();
-    } catch(e) { showNotification('خطأ في التحديث', 'error'); }
-};
-
-window.closeTicket = async (ticketId) => {
-    try {
-        await fetch(`${API_URL}/api/tickets/${ticketId}/status?status=closed`, { method: 'POST', headers: { 'X-API-Key': API_KEY } });
-        showNotification(`تم إغلاق التذكرة #${ticketId}`);
-        loadAllData();
-    } catch(e) { showNotification('خطأ في الإغلاق', 'error'); }
-};
-
+window.updateOrderStatus = async (orderId, status) => { try { await fetch(`${API_URL}/api/orders/${orderId}/status?status=${status}`, { method: 'POST', headers: { 'X-API-Key': API_KEY } }); showNotification(`تم تحديث الطلب #${orderId}`); loadAllData(); } catch(e) { showNotification('خطأ في التحديث', 'error'); } };
+window.closeTicket = async (ticketId) => { try { await fetch(`${API_URL}/api/tickets/${ticketId}/status?status=closed`, { method: 'POST', headers: { 'X-API-Key': API_KEY } }); showNotification(`تم إغلاق التذكرة #${ticketId}`); loadAllData(); } catch(e) { showNotification('خطأ في الإغلاق', 'error'); } };
 window.openPortfolioModal = () => { document.getElementById('portfolioModal').style.display = 'flex'; };
-window.closePortfolioModal = () => {
-    document.getElementById('portfolioModal').style.display = 'none';
-    document.getElementById('portfolioTitle').value = '';
-    document.getElementById('portfolioType').value = 'bot';
-    document.getElementById('portfolioDesc').value = '';
-    document.getElementById('portfolioLink').value = '';
-    document.getElementById('portfolioImage').value = '';
-    document.getElementById('portfolioPrice').value = '';
-    document.getElementById('portfolioFeatures').value = '';
-};
-
-window.addPortfolioItem = async () => {
-    const title = document.getElementById('portfolioTitle').value;
-    const type = document.getElementById('portfolioType').value;
-    const description = document.getElementById('portfolioDesc').value;
-    const preview_link = document.getElementById('portfolioLink').value;
-    const image_url = document.getElementById('portfolioImage').value;
-    const price = document.getElementById('portfolioPrice').value;
-    const features = document.getElementById('portfolioFeatures').value;
-    if (!title) { showNotification('الرجاء إدخال عنوان المشروع', 'error'); return; }
-    try {
-        const response = await fetch(`${API_URL}/api/portfolio`, {
-            method: 'POST', headers: { 'X-API-Key': API_KEY, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, type, description, preview_link, image_url, price, features })
-        });
-        if (!response.ok) throw new Error();
-        showNotification('تمت إضافة المشروع بنجاح');
-        closePortfolioModal();
-        loadAllData();
-    } catch(e) { showNotification('خطأ في الإضافة', 'error'); }
-};
-
-window.deletePortfolioItem = async (id) => {
-    if (!confirm('هل أنت متأكد من حذف هذا المشروع؟')) return;
-    try {
-        await fetch(`${API_URL}/api/portfolio/${id}`, { method: 'DELETE', headers: { 'X-API-Key': API_KEY } });
-        showNotification('تم حذف المشروع');
-        loadAllData();
-    } catch(e) { showNotification('خطأ في الحذف', 'error'); }
-};
-
-window.openPointsModal = (userId, currentPoints) => {
-    const newPoints = prompt(`أدخل عدد النقاط الجديد للمستخدم ${userId} (الحالي: ${currentPoints})`, currentPoints);
-    if (newPoints !== null) updateUserPoints(userId, parseInt(newPoints));
-};
-async function updateUserPoints(userId, points) {
-    try {
-        await fetch(`${API_URL}/api/users/${userId}/points?points=${points}`, { method: 'POST', headers: { 'X-API-Key': API_KEY } });
-        showNotification(`تم تحديث نقاط المستخدم ${userId}`);
-        loadAllData();
-    } catch(e) { showNotification('خطأ', 'error'); }
-}
-
-function saveSettings() {
-    API_URL = document.getElementById('apiUrl').value;
-    API_KEY = document.getElementById('apiKey').value;
-    localStorage.setItem('apiUrl', API_URL);
-    localStorage.setItem('apiKey', API_KEY);
-    showNotification('تم حفظ الإعدادات، سيتم إعادة التحميل');
-    setTimeout(() => location.reload(), 1500);
-}
-
-// ==================== البحث ====================
-document.getElementById('quickSearch')?.addEventListener('keyup', function() {
-    const val = this.value.toLowerCase();
-    const rows = document.querySelectorAll('#recentOrdersContainer table tbody tr');
-    rows.forEach(row => row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none');
-});
-document.getElementById('searchOrders')?.addEventListener('keyup', function() {
-    const val = this.value.toLowerCase();
-    const rows = document.querySelectorAll('#ordersContainer table tbody tr');
-    rows.forEach(row => row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none');
-});
-document.getElementById('searchTickets')?.addEventListener('keyup', function() {
-    const val = this.value.toLowerCase();
-    const rows = document.querySelectorAll('#ticketsContainer table tbody tr');
-    rows.forEach(row => row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none');
-});
-document.getElementById('searchUsers')?.addEventListener('keyup', function() {
-    const val = this.value.toLowerCase();
-    const rows = document.querySelectorAll('#usersContainer table tbody tr');
-    rows.forEach(row => row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none');
-});
-
-// ==================== التنقل ====================
-document.querySelectorAll('.nav-link').forEach(link => {
-    link.addEventListener('click', function(e) {
-        e.preventDefault();
-        const tabId = this.getAttribute('data-tab');
-        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        document.getElementById(tabId + 'Tab').classList.add('active');
-        this.classList.add('active');
-        if (window.innerWidth <= 1024) { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
-    });
-});
-
-// ==================== Mobile Menu ====================
-document.getElementById('menuToggle').addEventListener('click', () => {
-    document.getElementById('sidebar').classList.toggle('open');
-    document.getElementById('overlay').classList.toggle('show');
-});
-document.getElementById('overlay').addEventListener('click', () => {
-    document.getElementById('sidebar').classList.remove('open');
-    document.getElementById('overlay').classList.remove('show');
-});
-
-// ==================== Dark Mode ====================
-const darkToggle = document.getElementById('darkModeToggle');
-darkToggle.addEventListener('click', () => {
-    document.body.classList.toggle('dark-mode');
-    const isDark = document.body.classList.contains('dark-mode');
-    localStorage.setItem('darkMode', isDark);
-    darkToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i> الوضع الفاتح' : '<i class="fas fa-moon"></i> الوضع المظلم';
-});
-if (localStorage.getItem('darkMode') === 'true') {
-    document.body.classList.add('dark-mode');
-    darkToggle.innerHTML = '<i class="fas fa-sun"></i> الوضع الفاتح';
-}
-
-// ==================== Initialization ====================
-document.getElementById('apiUrl').value = API_URL;
-document.getElementById('apiKey').value = API_KEY;
-loadAllData();
-setInterval(loadAllData, 30000);
+window.closePortfolioModal = () => { document.getElementById('portfolioModal').style.display = 'none'; document.getElementById('portfolioTitle').value = ''; document.getElementById('portfolioType').value = 'bot'; document.getElementById('portfolioDesc').value = ''; document.getElementById('portfolioLink').value = ''; document.getElementById('portfolioImage').value = ''; document.getElementById('portfolioPrice').value = ''; document.getElementById('portfolioFeatures').value = ''; };
+window.addPortfolioItem = async () => { const title = document.getElementById('portfolioTitle').value; const type = document.getElementById('portfolioType').value; const description = document.getElementById('portfolioDesc').value; const preview_link = document.getElementById('portfolioLink').value; const image_url = document.getElementById('portfolioImage').value; const price = document.getElementById('portfolioPrice').value; const features = document.getElementById('portfolioFeatures').value; if (!title) { showNotification('الرجاء إدخال عنوان المشروع', 'error'); return; } try { const response = await fetch(`${API_URL}/api/portfolio`, { method: 'POST', headers: { 'X-API-Key': API_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ title, type, description, preview_link, image_url, price, features }) }); if (!response.ok) throw new Error(); showNotification('تمت إضافة المشروع بنجاح'); closePortfolioModal(); loadAllData(); } catch(e) { showNotification('خطأ في الإضافة', 'error'); } };
+window.deletePortfolioItem = async (id) => { if (!confirm('هل أنت متأكد من حذف هذا المشروع؟')) return; try { await fetch(`${API_URL}/api/portfolio/${id}`, { method: 'DELETE', headers: { 'X-API-Key': API_KEY } }); showNotification('تم حذف المشروع'); loadAllData(); } catch(e) { showNotification('خطأ في الحذف', 'error'); } };
+window.openPointsModal = (userId, currentPoints) => { const newPoints = prompt(`أدخل عدد النقاط الجديد للمستخدم ${userId} (الحالي: ${currentPoints})`, currentPoints); if (newPoints !== null) updateUserPoints(userId, parseInt(newPoints)); };
+async function updateUserPoints(userId, points) { try { await fetch(`${API_URL}/api/users/${userId}/points?points=${points}`, { method: 'POST', headers: { 'X-API-Key': API_KEY } }); showNotification(`تم تحديث نقاط المستخدم ${userId}`); loadAllData(); } catch(e) { showNotification('خطأ', 'error'); } }
+function saveSettings() { API_URL = document.getElementById('apiUrl').value; API_KEY = document.getElementById('apiKey').value; localStorage.setItem('apiUrl', API_URL); localStorage.setItem('apiKey', API_KEY); showNotification('تم حفظ الإعدادات، سيتم إعادة التحميل'); setTimeout(() => location.reload(), 1500); }
+document.getElementById('quickSearch')?.addEventListener('keyup', function() { const val = this.value.toLowerCase(); const rows = document.querySelectorAll('#recentOrdersContainer table tbody tr'); rows.forEach(row => row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none'); });
+document.getElementById('searchOrders')?.addEventListener('keyup', function() { const val = this.value.toLowerCase(); const rows = document.querySelectorAll('#ordersContainer table tbody tr'); rows.forEach(row => row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none'); });
+document.getElementById('searchTickets')?.addEventListener('keyup', function() { const val = this.value.toLowerCase(); const rows = document.querySelectorAll('#ticketsContainer table tbody tr'); rows.forEach(row => row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none'); });
+document.getElementById('searchUsers')?.addEventListener('keyup', function() { const val = this.value.toLowerCase(); const rows = document.querySelectorAll('#usersContainer table tbody tr'); rows.forEach(row => row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none'); });
+document.querySelectorAll('.nav-link').forEach(link => { link.addEventListener('click', function(e) { e.preventDefault(); const tabId = this.getAttribute('data-tab'); document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active')); document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active')); document.getElementById(tabId + 'Tab').classList.add('active'); this.classList.add('active'); if (window.innerWidth <= 1024) { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); } }); });
+document.getElementById('menuToggle').addEventListener('click', () => { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('show'); });
+document.getElementById('overlay').addEventListener('click', () => { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); });
+const darkToggle = document.getElementById('darkModeToggle'); darkToggle.addEventListener('click', () => { document.body.classList.toggle('dark-mode'); const isDark = document.body.classList.contains('dark-mode'); localStorage.setItem('darkMode', isDark); darkToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i> الوضع الفاتح' : '<i class="fas fa-moon"></i> الوضع المظلم'; });
+if (localStorage.getItem('darkMode') === 'true') { document.body.classList.add('dark-mode'); darkToggle.innerHTML = '<i class="fas fa-sun"></i> الوضع الفاتح'; }
+document.getElementById('apiUrl').value = API_URL; document.getElementById('apiKey').value = API_KEY;
+loadAllData(); setInterval(loadAllData, 30000);
 </script>
 </body>
 </html>

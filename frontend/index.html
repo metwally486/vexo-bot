@@ -2,8 +2,8 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vexo Admin | لوحة التحكم الشاملة</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Vexo Admin | لوحة التحكم المتكاملة</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
@@ -30,27 +30,18 @@
             transition: transform 0.3s ease;
         }
         body.dark-mode .sidebar { background: rgba(30,41,59,0.98); border-left-color: #334155; }
-        
         .sidebar-header { padding: 1.5rem 1rem; text-align: center; border-bottom: 1px solid #e2e8f0; }
         .sidebar-logo { width: 80px; margin: 0 auto 1rem; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
         .sidebar-logo svg { width: 100%; height: auto; }
         .sidebar-title { font-size: 1.4rem; font-weight: 800; background: linear-gradient(135deg,var(--primary),var(--secondary)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; margin-bottom: 0.3rem; }
         .ceo-name { font-size: 0.85rem; color: var(--gray); }
-        
         .nav-menu { padding: 1rem; list-style: none; }
         .nav-item { margin-bottom: 0.5rem; }
-        .nav-link { 
-            display: flex; align-items: center; gap: 0.75rem; padding: 0.875rem 1rem; 
-            border-radius: 12px; color: var(--gray-dark); text-decoration: none; 
-            font-weight: 500; transition: all 0.2s; cursor: pointer;
-        }
+        .nav-link { display: flex; align-items: center; gap: 0.75rem; padding: 0.875rem 1rem; border-radius: 12px; color: var(--gray-dark); text-decoration: none; font-weight: 500; transition: all 0.2s; cursor: pointer; }
         .nav-link i { width: 24px; font-size: 1.1rem; }
-        .nav-link.active, .nav-link:hover { 
-            background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.15));             color: var(--primary); transform: translateX(-4px);
-        }
+        .nav-link.active, .nav-link:hover { background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.15)); color: var(--primary); transform: translateX(-4px); }
         body.dark-mode .nav-link { color: #e2e8f0; }
-        
         .dark-mode-toggle { margin-top: 2rem; padding: 1rem; text-align: center; border-top: 1px solid #e2e8f0; }
         .toggle-btn { background: none; border: none; cursor: pointer; font-size: 1rem; color: var(--gray); padding: 0.5rem 1rem; border-radius: 8px; transition: 0.2s; }
         .toggle-btn:hover { background: var(--light); }
@@ -58,11 +49,7 @@
         .main-content { flex: 1; margin-right: 280px; padding: 1rem; }
         
         /* Header */
-        .header {
-            background: white; border-radius: 20px; padding: 1rem 1.5rem; margin-bottom: 1.5rem;
-            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
-            box-shadow: var(--shadow-lg);
-        }
+        .header { background: white; border-radius: 20px; padding: 1rem 1.5rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; box-shadow: var(--shadow-lg); }
         body.dark-mode .header { background: var(--gray-dark); }
         .brand h1 { font-size: 1.5rem; background: linear-gradient(135deg,var(--primary),var(--secondary)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
         .brand p { font-size: 0.8rem; color: var(--gray); margin-top: 0.2rem; }
@@ -71,11 +58,7 @@
         
         /* Stats Grid */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
-        .stat-card { 
-            background: white; border-radius: 16px; padding: 1.25rem; 
-            box-shadow: var(--shadow); transition: transform 0.2s;
-            border: 2px solid transparent;
-        }
+        .stat-card { background: white; border-radius: 16px; padding: 1.25rem; box-shadow: var(--shadow); transition: transform 0.2s; border: 2px solid transparent; }
         body.dark-mode .stat-card { background: var(--gray-dark); }
         .stat-card:hover { transform: translateY(-4px); border-color: var(--primary); }
         .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 0.75rem; }
@@ -93,10 +76,7 @@
         .table-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 1rem; gap: 0.75rem; }
         .table-title { font-size: 1.1rem; font-weight: 700; }
         .search-box { position: relative; flex: 1; max-width: 300px; }
-        .search-box input { 
-            width: 100%; padding: 0.625rem 1rem 0.625rem 2.5rem; 
-            border: 2px solid #e2e8f0; border-radius: 50px; font-size: 0.875rem;
-            transition: border-color 0.2s;        }
+        .search-box input { width: 100%; padding: 0.625rem 1rem 0.625rem 2.5rem; border: 2px solid #e2e8f0; border-radius: 50px; font-size: 0.875rem; transition: border-color 0.2s; }
         .search-box input:focus { outline: none; border-color: var(--primary); }
         .search-box i { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--gray); }
         
@@ -124,11 +104,7 @@
         
         /* Modal */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; padding: 1rem; }
-        .modal-content { 
-            background: white; border-radius: 20px; padding: 1.5rem; 
-            width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto;
-            box-shadow: var(--shadow-lg);
-        }
+        .modal-content { background: white; border-radius: 20px; padding: 1.5rem; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); }
         body.dark-mode .modal-content { background: var(--gray-dark); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
         .modal-title { font-size: 1.25rem; font-weight: 700; }
@@ -136,21 +112,12 @@
         
         .form-group { margin-bottom: 1.25rem; }
         .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; }
-        .form-group input, .form-group textarea, .form-group select { 
-            width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; 
-            border-radius: 12px; font-size: 0.9rem; transition: border-color 0.2s;
-        }
-        body.dark-mode .form-group input, body.dark-mode .form-group textarea, body.dark-mode .form-group select { 
-            background: var(--dark); border-color: #475569; color: #e2e8f0;
-        }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 0.9rem; transition: border-color 0.2s; }
+        body.dark-mode .form-group input, body.dark-mode .form-group textarea, body.dark-mode .form-group select { background: var(--dark); border-color: #475569; color: #e2e8f0; }
         .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: var(--primary); }
         
-        /* Notification */        .notification { 
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); 
-            background: white; padding: 1rem 2rem; border-radius: 50px; 
-            box-shadow: var(--shadow-lg); z-index: 3000; transition: all 0.3s; 
-            opacity: 0; font-weight: 600;
-        }
+        /* Notification */
+        .notification { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: white; padding: 1rem 2rem; border-radius: 50px; box-shadow: var(--shadow-lg); z-index: 3000; transition: all 0.3s; opacity: 0; font-weight: 600; }
         body.dark-mode .notification { background: var(--gray-dark); }
         .notification.show { transform: translateX(-50%) translateY(0); opacity: 1; }
         .notification.success { border-right: 4px solid var(--success); }
@@ -161,22 +128,13 @@
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Mobile Menu Toggle */
-        .menu-toggle { 
-            display: none; position: fixed; top: 1rem; right: 1rem; z-index: 1100; 
-            background: white; border-radius: 50%; width: 48px; height: 48px; 
-            text-align: center; line-height: 48px; box-shadow: var(--shadow-lg); 
-            cursor: pointer; font-size: 1.25rem; color: var(--primary);
-        }
+        /* Mobile Menu */
+        .menu-toggle { display: none; position: fixed; top: 1rem; right: 1rem; z-index: 1100; background: white; border-radius: 50%; width: 48px; height: 48px; text-align: center; line-height: 48px; box-shadow: var(--shadow-lg); cursor: pointer; font-size: 1.25rem; color: var(--primary); }
         body.dark-mode .menu-toggle { background: var(--gray-dark); }
         
         /* Loading */
         .loading { text-align: center; padding: 3rem; color: var(--gray); }
-        .spinner { 
-            width: 50px; height: 50px; border: 4px solid #e2e8f0; 
-            border-top-color: var(--primary); border-radius: 50%; 
-            animation: spin 1s linear infinite; margin: 0 auto 1rem;
-        }
+        .spinner { width: 50px; height: 50px; border: 4px solid #e2e8f0; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem; }
         @keyframes spin { to { transform: rotate(360deg); } }
         
         /* Portfolio Grid */
@@ -188,13 +146,15 @@
         .portfolio-info { padding: 1rem; }
         .portfolio-title { font-weight: 700; margin-bottom: 0.5rem; }
         .portfolio-type { font-size: 0.8rem; color: var(--gray); }
+        .portfolio-price { font-weight: bold; color: var(--success); margin-top: 0.5rem; }
         
         /* Overlay */
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
         .overlay.show { display: block; }
         
-        /* Responsive Design */
-        @media (max-width: 1024px) {            .sidebar { transform: translateX(100%); width: 280px; }
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(100%); width: 280px; }
             .sidebar.open { transform: translateX(0); }
             .main-content { margin-right: 0; padding: 0.75rem; }
             .menu-toggle { display: block; }
@@ -202,7 +162,6 @@
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .charts-grid { grid-template-columns: 1fr; }
         }
-        
         @media (max-width: 640px) {
             .stats-grid { grid-template-columns: 1fr; }
             .stat-value { font-size: 1.5rem; }
@@ -223,19 +182,14 @@
         <div class="sidebar-header">
             <div class="sidebar-logo">
                 <svg viewBox="0 0 100 100">
-                    <defs>
-                        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#6366f1"/>
-                            <stop offset="100%" stop-color="#8b5cf6"/>
-                        </linearGradient>
-                    </defs>
+                    <defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#8b5cf6"/></linearGradient></defs>
                     <circle cx="50" cy="50" r="45" fill="url(#grad)" opacity="0.15"/>
                     <path d="M50 15 L55 35 L75 35 L60 50 L65 70 L50 55 L35 70 L40 50 L25 35 L45 35 Z" fill="url(#grad)"/>
                     <circle cx="50" cy="50" r="7" fill="white"/>
                 </svg>
             </div>
             <div class="sidebar-title">Vexo Admin</div>
-            <div class="ceo-name">المدير: متولي الوصابي</div>
+            <div class="ceo-name">المدير التنفيذي: متولي الوصابي</div>
         </div>
         <ul class="nav-menu">
             <li class="nav-item"><a class="nav-link active" data-tab="dashboard"><i class="fas fa-tachometer-alt"></i> الرئيسية</a></li>
@@ -243,7 +197,8 @@
             <li class="nav-item"><a class="nav-link" data-tab="tickets"><i class="fas fa-ticket-alt"></i> التذاكر</a></li>
             <li class="nav-item"><a class="nav-link" data-tab="users"><i class="fas fa-users"></i> المستخدمين</a></li>
             <li class="nav-item"><a class="nav-link" data-tab="portfolio"><i class="fas fa-briefcase"></i> معرض الأعمال</a></li>
-            <li class="nav-item"><a class="nav-link" data-tab="settings"><i class="fas fa-sliders-h"></i> الإعدادات</a></li>        </ul>
+            <li class="nav-item"><a class="nav-link" data-tab="settings"><i class="fas fa-sliders-h"></i> الإعدادات</a></li>
+        </ul>
         <div class="dark-mode-toggle">
             <button class="toggle-btn" id="darkModeToggle"><i class="fas fa-moon"></i> الوضع المظلم</button>
         </div>
@@ -253,7 +208,7 @@
         <div class="header">
             <div class="brand">
                 <h1>Vexo للخدمات التقنية</h1>
-                <p>نظام الإدارة المتكامل</p>
+                <p>نظام الإدارة المتكامل – متولي الوصابي</p>
             </div>
             <div class="user-area">
                 <i class="fas fa-bell" style="color: var(--primary); cursor: pointer;"></i>
@@ -264,21 +219,10 @@
 
         <!-- Dashboard Tab -->
         <div id="dashboardTab" class="tab-content active">
-            <div class="stats-grid" id="statsGrid">
-                <div class="loading"><div class="spinner"></div>جاري التحميل...</div>
-            </div>
-            <div class="charts-grid">
-                <div class="chart-card"><div id="donutChart"></div></div>
-                <div class="chart-card"><div id="weeklyChart"></div></div>
-            </div>
+            <div class="stats-grid" id="statsGrid"><div class="loading"><div class="spinner"></div>جاري التحميل...</div></div>
+            <div class="charts-grid"><div class="chart-card"><div id="donutChart"></div></div><div class="chart-card"><div id="weeklyChart"></div></div></div>
             <div class="table-card">
-                <div class="table-header">
-                    <div class="table-title">📦 أحدث الطلبات</div>
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="quickSearch" placeholder="بحث سريع...">
-                    </div>
-                </div>
+                <div class="table-header"><div class="table-title">📦 أحدث الطلبات</div><div class="search-box"><i class="fas fa-search"></i><input type="text" id="quickSearch" placeholder="بحث سريع..."></div></div>
                 <div id="recentOrdersContainer"></div>
             </div>
         </div>
@@ -286,26 +230,15 @@
         <!-- Orders Tab -->
         <div id="ordersTab" class="tab-content">
             <div class="table-card">
-                <div class="table-header">
-                    <div class="table-title">📋 إدارة الطلبات</div>
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="searchOrders" placeholder="البحث في الطلبات...">
-                    </div>
-                </div>                <div id="ordersContainer"></div>
+                <div class="table-header"><div class="table-title">📋 إدارة الطلبات</div><div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchOrders" placeholder="البحث في الطلبات..."></div></div>
+                <div id="ordersContainer"></div>
             </div>
         </div>
 
         <!-- Tickets Tab -->
         <div id="ticketsTab" class="tab-content">
             <div class="table-card">
-                <div class="table-header">
-                    <div class="table-title">🎫 تذاكر الدعم الفني</div>
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="searchTickets" placeholder="البحث في التذاكر...">
-                    </div>
-                </div>
+                <div class="table-header"><div class="table-title">🎫 تذاكر الدعم الفني</div><div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchTickets" placeholder="البحث في التذاكر..."></div></div>
                 <div id="ticketsContainer"></div>
             </div>
         </div>
@@ -313,13 +246,7 @@
         <!-- Users Tab -->
         <div id="usersTab" class="tab-content">
             <div class="table-card">
-                <div class="table-header">
-                    <div class="table-title">👥 المستخدمين</div>
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="searchUsers" placeholder="البحث عن مستخدم...">
-                    </div>
-                </div>
+                <div class="table-header"><div class="table-title">👥 المستخدمين</div><div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchUsers" placeholder="البحث عن مستخدم..."></div></div>
                 <div id="usersContainer"></div>
             </div>
         </div>
@@ -327,12 +254,7 @@
         <!-- Portfolio Tab -->
         <div id="portfolioTab" class="tab-content">
             <div class="table-card">
-                <div class="table-header">
-                    <div class="table-title">🖼️ معرض الأعمال</div>
-                    <button class="btn btn-primary btn-sm" onclick="openPortfolioModal()">
-                        <i class="fas fa-plus"></i> إضافة مشروع
-                    </button>
-                </div>
+                <div class="table-header"><div class="table-title">🖼️ معرض الأعمال</div><button class="btn btn-primary btn-sm" onclick="openPortfolioModal()"><i class="fas fa-plus"></i> إضافة مشروع</button></div>
                 <div id="portfolioContainer" class="portfolio-grid"></div>
             </div>
         </div>
@@ -341,81 +263,33 @@
         <div id="settingsTab" class="tab-content">
             <div class="table-card">
                 <div class="table-title">⚙️ الإعدادات</div>
-                <form id="settingsForm" style="margin-top: 1.5rem;">                    <div class="form-group">
-                        <label>عنوان API</label>
-                        <input type="text" id="apiUrl" value="https://vexo-backend-7tk4.onrender.com">
-                    </div>
-                    <div class="form-group">
-                        <label>مفتاح API</label>
-                        <input type="text" id="apiKey" value="VexoSecret2024!@#">
-                    </div>
-                    <div class="form-group">
-                        <label>اسم الشركة</label>
-                        <input type="text" id="companyName" value="Vexo للخدمات التقنية">
-                    </div>
-                    <div class="form-group">
-                        <label>المدير التنفيذي</label>
-                        <input type="text" id="ceoName" value="متولي الوصابي">
-                    </div>
-                    <div class="form-group">
-                        <label>رابط القناة</label>
-                        <input type="text" id="channelLink" value="https://t.me/abod_IT">
-                    </div>
-                    <button type="button" class="btn btn-primary" onclick="saveSettings()">
-                        <i class="fas fa-save"></i> حفظ الإعدادات
-                    </button>
+                <form id="settingsForm" style="margin-top: 1.5rem;">
+                    <div class="form-group"><label>عنوان API</label><input type="text" id="apiUrl" value="https://vexo-backend-7tk4.onrender.com"></div>
+                    <div class="form-group"><label>مفتاح API</label><input type="text" id="apiKey" value="VexoSecret2024!@#"></div>
+                    <div class="form-group"><label>اسم الشركة</label><input type="text" id="companyName" value="Vexo للخدمات التقنية"></div>
+                    <div class="form-group"><label>المدير التنفيذي</label><input type="text" id="ceoName" value="متولي الوصابي"></div>
+                    <div class="form-group"><label>رابط القناة</label><input type="text" id="channelLink" value="https://t.me/abod_IT"></div>
+                    <button type="button" class="btn btn-primary" onclick="saveSettings()"><i class="fas fa-save"></i> حفظ الإعدادات</button>
                 </form>
             </div>
         </div>
     </main>
 </div>
 
-<!-- Notification -->
 <div id="notification" class="notification"></div>
 
 <!-- Portfolio Modal -->
 <div class="modal" id="portfolioModal">
     <div class="modal-content">
-        <div class="modal-header">
-            <div class="modal-title">➕ إضافة مشروع جديد</div>
-            <button class="modal-close" onclick="closePortfolioModal()">&times;</button>
-        </div>
-        <div class="form-group">
-            <label>عنوان المشروع *</label>
-            <input type="text" id="portfolioTitle" placeholder="مثال: بوت متجر إلكتروني" required>
-        </div>
-        <div class="form-group">
-            <label>نوع المشروع *</label>
-            <select id="portfolioType" required>
-                <option value="bot">بوت تلجرام</option>
-                <option value="app">تطبيق جوال</option>
-                <option value="web">موقع إلكتروني</option>
-                <option value="store">متجر إلكتروني</option>            </select>
-        </div>
-        <div class="form-group">
-            <label>الوصف *</label>
-            <textarea id="portfolioDesc" rows="3" placeholder="وصف المشروع والميزات..." required></textarea>
-        </div>
-        <div class="form-group">
-            <label>السعر</label>
-            <input type="text" id="portfolioPrice" placeholder="مثال: 150$">
-        </div>
-        <div class="form-group">
-            <label>الميزات (افصل بينها بفاصلة)</label>
-            <input type="text" id="portfolioFeatures" placeholder="مثال: إدارة منتجات، دفع إلكتروني، إشعارات">
-        </div>
-        <div class="form-group">
-            <label>رابط المعاينة</label>
-            <input type="url" id="portfolioLink" placeholder="https://...">
-        </div>
-        <div class="form-group">
-            <label>رابط الصورة</label>
-            <input type="url" id="portfolioImage" placeholder="https://... (اختياري)">
-            <small style="color: var(--gray); font-size: 0.75rem;">💡 يمكنك استخدام روابط من imgur.com أو أي استضافة صور</small>
-        </div>
-        <button class="btn btn-primary" onclick="addPortfolioItem()" style="width: 100%;">
-            <i class="fas fa-plus"></i> إضافة المشروع
-        </button>
+        <div class="modal-header"><div class="modal-title">➕ إضافة مشروع جديد</div><button class="modal-close" onclick="closePortfolioModal()">&times;</button></div>
+        <div class="form-group"><label>عنوان المشروع *</label><input type="text" id="portfolioTitle" placeholder="مثال: بوت متجر إلكتروني" required></div>
+        <div class="form-group"><label>نوع المشروع *</label><select id="portfolioType" required><option value="bot">🤖 بوت تلجرام</option><option value="app">📱 تطبيق جوال</option><option value="web">💻 موقع إلكتروني</option><option value="store">🛒 متجر إلكتروني</option></select></div>
+        <div class="form-group"><label>الوصف *</label><textarea id="portfolioDesc" rows="3" placeholder="وصف المشروع والميزات..." required></textarea></div>
+        <div class="form-group"><label>السعر</label><input type="text" id="portfolioPrice" placeholder="مثال: 150$"></div>
+        <div class="form-group"><label>الميزات (افصل بينها بفاصلة)</label><input type="text" id="portfolioFeatures" placeholder="مثال: إدارة منتجات، دفع إلكتروني، إشعارات"></div>
+        <div class="form-group"><label>رابط المعاينة</label><input type="url" id="portfolioLink" placeholder="https://..."></div>
+        <div class="form-group"><label>رابط الصورة</label><input type="url" id="portfolioImage" placeholder="https://... (اختياري)"><small style="color: var(--gray); font-size: 0.75rem;">💡 يمكنك استخدام روابط من imgur.com أو أي استضافة صور</small></div>
+        <button class="btn btn-primary" onclick="addPortfolioItem()" style="width: 100%;"><i class="fas fa-plus"></i> إضافة المشروع</button>
     </div>
 </div>
 
@@ -425,7 +299,6 @@ let API_URL = localStorage.getItem('apiUrl') || "https://vexo-backend-7tk4.onren
 let API_KEY = localStorage.getItem('apiKey') || "VexoSecret2024!@#";
 let allOrders = [], allTickets = [], allUsers = [], allPortfolio = [];
 
-// ==================== الدوال المساعدة ====================
 function showNotification(msg, type='success') {
     const n = document.getElementById('notification');
     n.textContent = msg;
@@ -435,71 +308,37 @@ function showNotification(msg, type='success') {
 
 function formatDate(dateStr) {
     if (!dateStr) return '-';
-    try {
-        return new Date(dateStr).toLocaleDateString('ar-SA');
-    } catch {
-        return dateStr;
-    }}
+    try { return new Date(dateStr).toLocaleDateString('ar-SA'); } catch { return dateStr; }
+}
 
 // ==================== جلب البيانات ====================
 async function fetchOrders() {
     try {
-        const res = await fetch(`${API_URL}/api/orders`, {
-            headers: { 'X-API-Key': API_KEY }
-        });
+        const res = await fetch(`${API_URL}/api/orders`, { headers: { 'X-API-Key': API_KEY } });
         if (!res.ok) throw new Error();
         return await res.json();
-    } catch (e) {
-        console.error('Error fetching orders:', e);
-        return [];
-    }
+    } catch (e) { console.error(e); return []; }
 }
-
 async function fetchTickets() {
     try {
-        const res = await fetch(`${API_URL}/api/tickets`, {
-            headers: { 'X-API-Key': API_KEY }
-        });
+        const res = await fetch(`${API_URL}/api/tickets`, { headers: { 'X-API-Key': API_KEY } });
         if (!res.ok) throw new Error();
         return await res.json();
-    } catch (e) {
-        return [];
-    }
+    } catch (e) { return []; }
 }
-
 async function fetchUsers() {
     try {
-        const res = await fetch(`${API_URL}/api/users`, {
-            headers: { 'X-API-Key': API_KEY }
-        });
+        const res = await fetch(`${API_URL}/api/users`, { headers: { 'X-API-Key': API_KEY } });
         if (!res.ok) throw new Error();
         return await res.json();
-    } catch (e) {
-        return [];
-    }
+    } catch (e) { return []; }
 }
-
 async function fetchPortfolio() {
     try {
-        const res = await fetch(`${API_URL}/api/portfolio`, {
-            headers: { 'X-API-Key': API_KEY }
-        });
+        const res = await fetch(`${API_URL}/api/portfolio`, { headers: { 'X-API-Key': API_KEY } });
         if (!res.ok) throw new Error();
         return await res.json();
-    } catch (e) {
-        return [];
-    }}
-
-async function fetchStats() {
-    try {
-        const res = await fetch(`${API_URL}/api/stats`, {
-            headers: { 'X-API-Key': API_KEY }
-        });
-        if (!res.ok) throw new Error();
-        return await res.json();
-    } catch (e) {
-        return {};
-    }
+    } catch (e) { return []; }
 }
 
 // ==================== العرض ====================
@@ -508,7 +347,6 @@ async function loadAllData() {
     allTickets = await fetchTickets();
     allUsers = await fetchUsers();
     allPortfolio = await fetchPortfolio();
-    
     renderDashboard();
     renderOrders();
     renderTickets();
@@ -521,75 +359,29 @@ function renderDashboard() {
     const completed = allOrders.filter(o => o.status === 'completed').length;
     const pending = allOrders.filter(o => o.status === 'pending').length;
     const processing = allOrders.filter(o => o.status === 'processing').length;
-    
+    const openTickets = allTickets.filter(t => t.status === 'open').length;
     document.getElementById('statsGrid').innerHTML = `
-        <div class="stat-card">
-            <div class="stat-icon" style="background:#dbeafe;color:#3b82f6"><i class="fas fa-shopping-cart"></i></div>
-            <div class="stat-value">${total}</div>
-            <div class="stat-label">إجمالي الطلبات</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon" style="background:#d1fae5;color:#10b981"><i class="fas fa-check-circle"></i></div>
-            <div class="stat-value">${completed}</div>
-            <div class="stat-label">مكتملة</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon" style="background:#fef3c7;color:#f59e0b"><i class="fas fa-clock"></i></div>
-            <div class="stat-value">${pending}</div>
-            <div class="stat-label">قيد الانتظار</div>
-        </div>        <div class="stat-card">
-            <div class="stat-icon" style="background:#dbeafe;color:#3b82f6"><i class="fas fa-spinner"></i></div>
-            <div class="stat-value">${processing}</div>
-            <div class="stat-label">قيد التنفيذ</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon" style="background:#e0e7ff;color:#6366f1"><i class="fas fa-users"></i></div>
-            <div class="stat-value">${allUsers.length}</div>
-            <div class="stat-label">المستخدمين</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon" style="background:#fce7f3;color:#ec4899"><i class="fas fa-ticket-alt"></i></div>
-            <div class="stat-value">${allTickets.filter(t=>t.status==='open').length}</div>
-            <div class="stat-label">تذاكر مفتوحة</div>
-        </div>
+        <div class="stat-card"><div class="stat-icon" style="background:#dbeafe;color:#3b82f6"><i class="fas fa-shopping-cart"></i></div><div class="stat-value">${total}</div><div class="stat-label">إجمالي الطلبات</div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:#d1fae5;color:#10b981"><i class="fas fa-check-circle"></i></div><div class="stat-value">${completed}</div><div class="stat-label">مكتملة</div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:#fef3c7;color:#f59e0b"><i class="fas fa-clock"></i></div><div class="stat-value">${pending}</div><div class="stat-label">قيد الانتظار</div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:#dbeafe;color:#3b82f6"><i class="fas fa-spinner"></i></div><div class="stat-value">${processing}</div><div class="stat-label">قيد التنفيذ</div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:#e0e7ff;color:#6366f1"><i class="fas fa-users"></i></div><div class="stat-value">${allUsers.length}</div><div class="stat-label">المستخدمين</div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:#fce7f3;color:#ec4899"><i class="fas fa-ticket-alt"></i></div><div class="stat-value">${openTickets}</div><div class="stat-label">تذاكر مفتوحة</div></div>
     `;
-    
     // Donut Chart
-    const donutOptions = {
-        series: [pending, processing, completed, allOrders.filter(o=>o.status==='rejected').length],
-        chart: { type: 'donut', height: 300 },
-        labels: ['قيد الانتظار', 'قيد التنفيذ', 'مكتمل', 'مرفوض'],
-        colors: ['#f59e0b', '#3b82f6', '#10b981', '#ef4444'],
-        legend: { position: 'bottom', fontSize: '12px' }
-    };
+    const donutOptions = { series: [pending, processing, completed, allOrders.filter(o=>o.status==='rejected').length], chart: { type: 'donut', height: 300 }, labels: ['قيد الانتظار','قيد التنفيذ','مكتمل','مرفوض'], colors: ['#f59e0b','#3b82f6','#10b981','#ef4444'], legend: { position: 'bottom' } };
     if (window.donutChart) window.donutChart.destroy();
     window.donutChart = new ApexCharts(document.querySelector("#donutChart"), donutOptions);
     window.donutChart.render();
-    
     // Weekly Chart
-    const weeklyOptions = {
-        series: [{ name: 'الطلبات', data: [5, 7, 4, 9, total > 10 ? 12 : total, 8, 6] }],
-        chart: { type: 'line', height: 300, toolbar: { show: false } },
-        xaxis: { categories: ['سبت', 'أحد', 'اثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة'] },
-        stroke: { curve: 'smooth', width: 3 },
-        colors: ['#6366f1']
-    };
+    const weeklyOptions = { series: [{ name: 'الطلبات', data: [5,7,4,9,total>10?12:total,8,6] }], chart: { type: 'line', height: 300, toolbar: { show: false } }, xaxis: { categories: ['سبت','أحد','اثنين','ثلاثاء','أربعاء','خميس','جمعة'] }, stroke: { curve: 'smooth', width: 3 }, colors: ['#6366f1'] };
     if (window.weeklyChart) window.weeklyChart.destroy();
     window.weeklyChart = new ApexCharts(document.querySelector("#weeklyChart"), weeklyOptions);
     window.weeklyChart.render();
-    
     // Recent Orders
-    const recent = allOrders.slice(0, 5);
-    let html = '<table><thead><tr><th>#</th><th>المستخدم</th><th>الخدمة</th><th>الميزانية</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody>';
-    recent.forEach(o => {
-        html += `<tr>
-            <td>#${o.id}</td>
-            <td>${o.user_id}</td>
-            <td>${o.service_type || '-'}</td>
-            <td>${o.budget || '-'}</td>            <td><span class="status-badge status-${o.status}">${o.status}</span></td>
-            <td><button class="btn btn-success btn-sm" onclick="updateOrderStatus(${o.id},'completed')"><i class="fas fa-check"></i></button></td>
-        </tr>`;
-    });
+    const recent = allOrders.slice(0,5);
+    let html = '</table><thead><tr><th>#</th><th>المستخدم</th><th>الخدمة</th><th>الميزانية</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody>';
+    recent.forEach(o => { html += `<tr><td>#${o.id}</td><td>${o.user_id}</td><td>${o.service_type||'-'}</td><td>${o.budget||'-'}</td><td><span class="status-badge status-${o.status}">${o.status}</span></td><td><button class="btn btn-success btn-sm" onclick="updateOrderStatus(${o.id},'completed')"><i class="fas fa-check"></i></button></td></tr>`; });
     html += '</tbody></table>';
     document.getElementById('recentOrdersContainer').innerHTML = html;
 }
@@ -597,35 +389,17 @@ function renderDashboard() {
 function renderOrders() {
     let html = '<table><thead><tr><th>#</th><th>المستخدم</th><th>الخدمة</th><th>الميزانية</th><th>الحالة</th><th>التاريخ</th><th>الإجراءات</th></tr></thead><tbody>';
     allOrders.forEach(o => {
-        html += `<tr>
-            <td>#${o.id}</td>
-            <td>${o.user_id}</td>
-            <td>${o.service_type || '-'}</td>
-            <td>${o.budget || '-'}</td>
-            <td><span class="status-badge status-${o.status}">${o.status}</span></td>
-            <td>${formatDate(o.created_at)}</td>
-            <td>
-                <button class="btn btn-success btn-sm" onclick="updateOrderStatus(${o.id},'completed')"><i class="fas fa-check"></i></button>
-                <button class="btn btn-warning btn-sm" onclick="updateOrderStatus(${o.id},'processing')"><i class="fas fa-spinner"></i></button>
-                <button class="btn btn-danger btn-sm" onclick="updateOrderStatus(${o.id},'rejected')"><i class="fas fa-times"></i></button>
-            </td>
-        </tr>`;
+        html += `<tr><td>#${o.id}</td><td>${o.user_id}</td><td>${o.service_type||'-'}</td><td>${o.budget||'-'}</td><td><span class="status-badge status-${o.status}">${o.status}</span></td><td>${formatDate(o.created_at)}</td>
+        <td><button class="btn btn-success btn-sm" onclick="updateOrderStatus(${o.id},'completed')"><i class="fas fa-check"></i></button> <button class="btn btn-warning btn-sm" onclick="updateOrderStatus(${o.id},'processing')"><i class="fas fa-spinner"></i></button> <button class="btn btn-danger btn-sm" onclick="updateOrderStatus(${o.id},'rejected')"><i class="fas fa-times"></i></button></td></tr>`;
     });
-    html += '</tbody></table>';
+    html += '</tbody></tr>';
     document.getElementById('ordersContainer').innerHTML = html;
 }
 
 function renderTickets() {
     let html = '<table><thead><tr><th>#</th><th>المستخدم</th><th>الرسالة</th><th>الحالة</th><th>التاريخ</th><th>إجراء</th></tr></thead><tbody>';
     allTickets.forEach(t => {
-        html += `<tr>
-            <td>#${t.id}</td>
-            <td>${t.user_id}</td>
-            <td>${(t.message || '').substring(0, 50)}...</td>
-            <td><span class="status-badge status-${t.status}">${t.status}</span></td>
-            <td>${formatDate(t.created_at)}</td>
-            <td><button class="btn btn-primary btn-sm" onclick="closeTicket(${t.id})">إغلاق</button></td>
-        </tr>`;
+        html += `<tr><td>#${t.id}</td><td>${t.user_id}</td><td>${(t.message||'').substring(0,50)}...</td><td><span class="status-badge status-${t.status}">${t.status}</span></td><td>${formatDate(t.created_at)}</td><td><button class="btn btn-primary btn-sm" onclick="closeTicket(${t.id})">إغلاق</button></td></tr>`;
     });
     html += '</tbody></table>';
     document.getElementById('ticketsContainer').innerHTML = html;
@@ -634,29 +408,15 @@ function renderTickets() {
 function renderUsers() {
     let html = '<table><thead><tr><th>المعرف</th><th>الاسم</th><th>النقاط</th><th>القناة</th><th>تاريخ الانضمام</th><th>إجراءات</th></tr></thead><tbody>';
     allUsers.forEach(u => {
-        const channelStatus = u.joined_channel_points ? '✅' : '⏳';
-        html += `<tr>            <td>${u.id}</td>
-            <td>${u.full_name || u.username || 'غير معروف'}</td>
-            <td>${u.loyalty_points || 0} 🪙</td>
-            <td>${channelStatus}</td>
-            <td>${formatDate(u.joined_at)}</td>
-            <td>
-                <button class="btn btn-warning btn-sm" onclick="openPointsModal(${u.id}, ${u.loyalty_points || 0})">
-                    <i class="fas fa-coins"></i> تعديل
-                </button>
-            </td>
-        </tr>`;
+        const channelStatus = u.joined_channel_points ? '✅ مشترك' : '⏳ غير مشترك';
+        html += `<tr><td>${u.id}</td><td>${u.full_name || u.username || 'غير معروف'}</td><td>${u.loyalty_points||0} 🪙</td><td>${channelStatus}</td><td>${formatDate(u.joined_at)}</td><td><button class="btn btn-warning btn-sm" onclick="openPointsModal(${u.id}, ${u.loyalty_points||0})"><i class="fas fa-coins"></i> تعديل</button></td></tr>`;
     });
     html += '</tbody></table>';
     document.getElementById('usersContainer').innerHTML = html;
 }
 
 function renderPortfolio() {
-    if (allPortfolio.length === 0) {
-        document.getElementById('portfolioContainer').innerHTML = '<div style="text-align:center;padding:3rem;color:var(--gray)">لا توجد مشاريع بعد</div>';
-        return;
-    }
-    
+    if (allPortfolio.length === 0) { document.getElementById('portfolioContainer').innerHTML = '<div style="text-align:center;padding:3rem;color:var(--gray)">لا توجد مشاريع بعد</div>'; return; }
     let html = '';
     allPortfolio.forEach(p => {
         html += `<div class="portfolio-item">
@@ -664,8 +424,8 @@ function renderPortfolio() {
             <div class="portfolio-info">
                 <div class="portfolio-title">${p.title}</div>
                 <div class="portfolio-type">${p.type}</div>
-                ${p.description ? `<p style="margin-top:0.5rem;font-size:0.85rem;color:var(--gray)">${p.description.substring(0, 100)}...</p>` : ''}
-                ${p.price ? `<p style="margin-top:0.5rem;font-size:0.85rem;color:var(--primary);font-weight:bold">${p.price}</p>` : ''}
+                ${p.price ? `<div class="portfolio-price">💰 ${p.price}</div>` : ''}
+                ${p.description ? `<p style="margin-top:0.5rem;font-size:0.85rem;color:var(--gray)">${p.description.substring(0,100)}...</p>` : ''}
                 ${p.preview_link ? `<a href="${p.preview_link}" target="_blank" class="btn btn-primary btn-sm" style="margin-top:0.5rem;display:inline-block"><i class="fas fa-external-link-alt"></i> معاينة</a>` : ''}
                 <button class="btn btn-danger btn-sm" onclick="deletePortfolioItem(${p.id})" style="margin-top:0.5rem;display:inline-block"><i class="fas fa-trash"></i> حذف</button>
             </div>
@@ -677,33 +437,21 @@ function renderPortfolio() {
 // ==================== العمليات ====================
 window.updateOrderStatus = async (orderId, status) => {
     try {
-        await fetch(`${API_URL}/api/orders/${orderId}/status?status=${status}`, {
-            method: 'POST',
-            headers: { 'X-API-Key': API_KEY }
-        });
-        showNotification(`تم تحديث الطلب #${orderId}`);
+        await fetch(`${API_URL}/api/orders/${orderId}/status?status=${status}`, { method: 'POST', headers: { 'X-API-Key': API_KEY } });
+        showNotification(`تم تحديث الطلب #${orderId} إلى ${status}`);
         loadAllData();
-    } catch (e) {
-        showNotification('خطأ في التحديث', 'error');    }
+    } catch(e) { showNotification('خطأ في التحديث', 'error'); }
 };
 
 window.closeTicket = async (ticketId) => {
     try {
-        await fetch(`${API_URL}/api/tickets/${ticketId}/status?status=closed`, {
-            method: 'POST',
-            headers: { 'X-API-Key': API_KEY }
-        });
+        await fetch(`${API_URL}/api/tickets/${ticketId}/status?status=closed`, { method: 'POST', headers: { 'X-API-Key': API_KEY } });
         showNotification(`تم إغلاق التذكرة #${ticketId}`);
         loadAllData();
-    } catch (e) {
-        showNotification('خطأ في الإغلاق', 'error');
-    }
+    } catch(e) { showNotification('خطأ في الإغلاق', 'error'); }
 };
 
-window.openPortfolioModal = () => {
-    document.getElementById('portfolioModal').style.display = 'flex';
-};
-
+window.openPortfolioModal = () => { document.getElementById('portfolioModal').style.display = 'flex'; };
 window.closePortfolioModal = () => {
     document.getElementById('portfolioModal').style.display = 'none';
     document.getElementById('portfolioTitle').value = '';
@@ -723,73 +471,46 @@ window.addPortfolioItem = async () => {
     const image_url = document.getElementById('portfolioImage').value;
     const price = document.getElementById('portfolioPrice').value;
     const features = document.getElementById('portfolioFeatures').value;
-    
-    if (!title) {
-        showNotification('الرجاء إدخال عنوان المشروع', 'error');
-        return;
-    }
-    
+    if (!title) { showNotification('الرجاء إدخال عنوان المشروع', 'error'); return; }
     try {
         const response = await fetch(`${API_URL}/api/portfolio`, {
-            method: 'POST',
-            headers: { 
-                'X-API-Key': API_KEY,                'Content-Type': 'application/json'
-            },
+            method: 'POST', headers: { 'X-API-Key': API_KEY, 'Content-Type': 'application/json' },
             body: JSON.stringify({ title, type, description, preview_link, image_url, price, features })
         });
         if (!response.ok) throw new Error();
         showNotification('تمت إضافة المشروع بنجاح');
         closePortfolioModal();
         loadAllData();
-    } catch (e) {
-        showNotification('خطأ في الإضافة', 'error');
-    }
+    } catch(e) { showNotification('خطأ في الإضافة', 'error'); }
 };
 
 window.deletePortfolioItem = async (id) => {
     if (!confirm('هل أنت متأكد من حذف هذا المشروع؟')) return;
     try {
-        const response = await fetch(`${API_URL}/api/portfolio/${id}`, {
-            method: 'DELETE',
-            headers: { 'X-API-Key': API_KEY }
-        });
-        if (!response.ok) throw new Error();
+        await fetch(`${API_URL}/api/portfolio/${id}`, { method: 'DELETE', headers: { 'X-API-Key': API_KEY } });
         showNotification('تم حذف المشروع');
         loadAllData();
-    } catch (e) {
-        showNotification('خطأ في الحذف', 'error');
-    }
+    } catch(e) { showNotification('خطأ في الحذف', 'error'); }
 };
 
 window.openPointsModal = (userId, currentPoints) => {
     const newPoints = prompt(`أدخل عدد النقاط الجديد للمستخدم ${userId} (الحالي: ${currentPoints})`, currentPoints);
-    if (newPoints !== null) {
-        updateUserPoints(userId, parseInt(newPoints));
-    }
+    if (newPoints !== null) updateUserPoints(userId, parseInt(newPoints));
 };
-
 async function updateUserPoints(userId, points) {
     try {
-        await fetch(`${API_URL}/api/users/${userId}/points?points=${points}`, {
-            method: 'POST',
-            headers: { 'X-API-Key': API_KEY }
-        });
+        await fetch(`${API_URL}/api/users/${userId}/points?points=${points}`, { method: 'POST', headers: { 'X-API-Key': API_KEY } });
         showNotification(`تم تحديث نقاط المستخدم ${userId}`);
         loadAllData();
-    } catch (e) {
-        showNotification('خطأ', 'error');
-    }
+    } catch(e) { showNotification('خطأ', 'error'); }
 }
 
 function saveSettings() {
-    const newUrl = document.getElementById('apiUrl').value;    const newKey = document.getElementById('apiKey').value;
-    
-    API_URL = newUrl;
-    API_KEY = newKey;
+    API_URL = document.getElementById('apiUrl').value;
+    API_KEY = document.getElementById('apiKey').value;
     localStorage.setItem('apiUrl', API_URL);
     localStorage.setItem('apiKey', API_KEY);
-    
-    showNotification('تم حفظ الإعدادات');
+    showNotification('تم حفظ الإعدادات، سيتم إعادة التحميل');
     setTimeout(() => location.reload(), 1500);
 }
 
@@ -797,17 +518,22 @@ function saveSettings() {
 document.getElementById('quickSearch')?.addEventListener('keyup', function() {
     const val = this.value.toLowerCase();
     const rows = document.querySelectorAll('#recentOrdersContainer table tbody tr');
-    rows.forEach(row => {
-        row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none';
-    });
+    rows.forEach(row => row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none');
 });
-
 document.getElementById('searchOrders')?.addEventListener('keyup', function() {
     const val = this.value.toLowerCase();
     const rows = document.querySelectorAll('#ordersContainer table tbody tr');
-    rows.forEach(row => {
-        row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none';
-    });
+    rows.forEach(row => row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none');
+});
+document.getElementById('searchTickets')?.addEventListener('keyup', function() {
+    const val = this.value.toLowerCase();
+    const rows = document.querySelectorAll('#ticketsContainer table tbody tr');
+    rows.forEach(row => row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none');
+});
+document.getElementById('searchUsers')?.addEventListener('keyup', function() {
+    const val = this.value.toLowerCase();
+    const rows = document.querySelectorAll('#usersContainer table tbody tr');
+    rows.forEach(row => row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none');
 });
 
 // ==================== التنقل ====================
@@ -815,25 +541,19 @@ document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', function(e) {
         e.preventDefault();
         const tabId = this.getAttribute('data-tab');
-        
         document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        
         document.getElementById(tabId + 'Tab').classList.add('active');
         this.classList.add('active');
-        
-        if (window.innerWidth <= 1024) {
-            document.getElementById('sidebar').classList.remove('open');
-            document.getElementById('overlay').classList.remove('show');
-        }
+        if (window.innerWidth <= 1024) { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
     });
 });
 
 // ==================== Mobile Menu ====================
 document.getElementById('menuToggle').addEventListener('click', () => {
-    document.getElementById('sidebar').classList.toggle('open');    document.getElementById('overlay').classList.toggle('show');
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('show');
 });
-
 document.getElementById('overlay').addEventListener('click', () => {
     document.getElementById('sidebar').classList.remove('open');
     document.getElementById('overlay').classList.remove('show');
@@ -847,7 +567,6 @@ darkToggle.addEventListener('click', () => {
     localStorage.setItem('darkMode', isDark);
     darkToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i> الوضع الفاتح' : '<i class="fas fa-moon"></i> الوضع المظلم';
 });
-
 if (localStorage.getItem('darkMode') === 'true') {
     document.body.classList.add('dark-mode');
     darkToggle.innerHTML = '<i class="fas fa-sun"></i> الوضع الفاتح';
@@ -856,7 +575,6 @@ if (localStorage.getItem('darkMode') === 'true') {
 // ==================== Initialization ====================
 document.getElementById('apiUrl').value = API_URL;
 document.getElementById('apiKey').value = API_KEY;
-
 loadAllData();
 setInterval(loadAllData, 30000);
 </script>

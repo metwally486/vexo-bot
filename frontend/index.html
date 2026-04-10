@@ -2,8 +2,8 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vexo Admin · مستقرة وتفاعلية</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Vexo Admin · لوحة تحكم احترافية</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -33,9 +33,17 @@
         .dark-toggle { margin: 1rem; text-align: center; }
         /* المحتوى الرئيسي */
         .main-content { flex: 1; margin-right: var(--sidebar-width); padding: 1.5rem; }
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-right: 0; padding: 1rem; }
+            .menu-toggle { display: block; }
+            .overlay.show { display: block; }
+        }
         .header { background: white; border-radius: 20px; padding: 1rem 1.5rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; box-shadow: var(--shadow); }
         body.dark-mode .header { background: var(--gray-dark); }
         .brand h1 { font-size: 1.5rem; background: linear-gradient(135deg,var(--primary),#8b5cf6); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        .brand p { font-size: 0.9rem; color: var(--gray); }
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
         .stat-card { background: white; border-radius: 16px; padding: 1.25rem; box-shadow: var(--shadow); }
         body.dark-mode .stat-card { background: var(--gray-dark); }
@@ -43,7 +51,7 @@
         .stat-label { font-size: 0.85rem; color: var(--gray); }
         .table-card { background: white; border-radius: 16px; padding: 1rem; margin-bottom: 1.5rem; box-shadow: var(--shadow); overflow-x: auto; }
         body.dark-mode .table-card { background: var(--gray-dark); }
-        .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; }
         table { width: 100%; border-collapse: collapse; min-width: 700px; }
         th, td { padding: 0.75rem 1rem; text-align: right; border-bottom: 1px solid #e2e8f0; }
         body.dark-mode th, body.dark-mode td { border-bottom-color: #334155; }
@@ -53,6 +61,8 @@
         .status-processing { background: #dbeafe; color: #1e40af; }
         .status-completed { background: #d1fae5; color: #065f46; }
         .status-rejected { background: #fee2e2; color: #991b1b; }
+        .status-open { background: #dbeafe; color: #1e40af; }
+        .status-closed { background: #d1fae5; color: #065f46; }
         .btn { padding: 0.4rem 0.8rem; border-radius: 8px; border: none; cursor: pointer; font-size: 0.8rem; font-weight: 600; margin: 0 0.2rem; transition: 0.2s; background: white; color: var(--dark); }
         .btn-primary { background: var(--primary); color: white; }
         .btn-success { background: var(--success); color: white; }
@@ -60,21 +70,32 @@
         .btn-danger { background: var(--danger); color: white; }
         .btn-info { background: #0ea5e9; color: white; }
         .btn:hover { transform: translateY(-2px); opacity: 0.9; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: white; border-radius: 20px; padding: 1.5rem; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; padding: 1rem; }
+        .modal-content { background: white; border-radius: 20px; padding: 1.5rem; max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto; }
         body.dark-mode .modal-content { background: var(--gray-dark); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         .menu-toggle { display: none; position: fixed; top: 1rem; right: 1rem; z-index: 200; background: white; border-radius: 50%; width: 48px; height: 48px; line-height: 48px; text-align: center; box-shadow: var(--shadow); cursor: pointer; }
         .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; }
-        @media (max-width: 1024px) {
-            .sidebar { transform: translateX(100%); }
-            .sidebar.open { transform: translateX(0); }
-            .main-content { margin-right: 0; }
-            .menu-toggle { display: block; }
-            .overlay.show { display: block; }
+        /* تحسينات الجوال */
+        @media (max-width: 640px) {
+            .header { flex-direction: column; align-items: flex-start; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .stat-value { font-size: 1.4rem; }
+            table { font-size: 0.8rem; }
+            .btn { padding: 0.3rem 0.5rem; font-size: 0.7rem; }
+            .modal-content { padding: 1rem; }
         }
-        .error-message { background: #fee2e2; color: #991b1b; padding: 1rem; border-radius: 12px; margin: 1rem 0; }
+        .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; }
+        .portfolio-item { background: var(--light); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }
+        body.dark-mode .portfolio-item { background: #2d3748; }
+        .portfolio-img { width: 100%; height: 150px; object-fit: cover; background: #cbd5e1; display: flex; align-items: center; justify-content: center; color: #475569; }
+        .portfolio-info { padding: 1rem; }
+        .action-group { display: flex; gap: 0.25rem; flex-wrap: wrap; margin-top: 0.5rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.3rem; font-weight: 600; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 8px; }
+        body.dark-mode .form-group input, body.dark-mode .form-group textarea, body.dark-mode .form-group select { background: #1e293b; border-color: #475569; color: #e2e8f0; }
     </style>
 </head>
 <body>
@@ -87,7 +108,7 @@
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="sidebar-title">Vexo Admin</div>
-            <div class="ceo-name">المدير: متولي الوصابي</div>
+            <div class="ceo-name">المدير التنفيذي: متولي الوصابي</div>
             <div id="apiStatusBadge" style="margin-top: 8px; font-size: 0.8rem;"><i class="fas fa-database"></i> بيانات محلية</div>
         </div>
         <ul class="nav-menu">
@@ -108,7 +129,7 @@
         <div class="header">
             <div class="brand">
                 <h1>Vexo للخدمات التقنية</h1>
-                <p>لوحة تحكم تفاعلية · جميع الأزرار تعمل</p>
+                <p>المدير التنفيذي: متولي الوصابي – حلول تقنية متكاملة</p>
             </div>
             <div>
                 <button class="btn btn-primary" id="refreshBtn"><i class="fas fa-sync-alt"></i> تحديث</button>
@@ -140,14 +161,23 @@
             </div>
         </div>
 
-        <!-- تبويب التذاكر (مبسط) -->
+        <!-- تبويب التذاكر -->
         <div id="ticketsTab" class="tab-content">
-            <div class="table-card"><p>قسم التذاكر قيد التطوير.</p></div>
+            <div class="table-card">
+                <div class="table-header"><h3>🎫 تذاكر الدعم</h3></div>
+                <div id="ticketsTable"></div>
+            </div>
         </div>
 
         <!-- تبويب المعرض -->
         <div id="portfolioTab" class="tab-content">
-            <div class="table-card"><p>معرض الأعمال قيد التطوير.</p></div>
+            <div class="table-card">
+                <div class="table-header">
+                    <h3>🖼️ معرض الأعمال</h3>
+                    <button class="btn btn-primary btn-sm" onclick="openAddPortfolioModal()"><i class="fas fa-plus"></i> إضافة</button>
+                </div>
+                <div id="portfolioContainer" class="portfolio-grid"></div>
+            </div>
         </div>
 
         <!-- تبويب الإعدادات -->
@@ -171,7 +201,8 @@
     </main>
 </div>
 
-<!-- نافذة تفاصيل الطلب -->
+<!-- نوافذ منبثقة -->
+<!-- تفاصيل الطلب -->
 <div class="modal" id="orderDetailModal">
     <div class="modal-content">
         <h3>تفاصيل الطلب #<span id="modalOrderId"></span></h3>
@@ -192,7 +223,7 @@
     </div>
 </div>
 
-<!-- نافذة تعديل المستخدم -->
+<!-- تعديل مستخدم -->
 <div class="modal" id="userEditModal">
     <div class="modal-content">
         <h3>تعديل المستخدم</h3>
@@ -209,14 +240,66 @@
     </div>
 </div>
 
+<!-- رد على تذكرة -->
+<div class="modal" id="ticketReplyModal">
+    <div class="modal-content">
+        <h3>رد على التذكرة #<span id="modalTicketId"></span></h3>
+        <div id="ticketMessagePreview" style="background:var(--light); padding:1rem; border-radius:8px; margin-bottom:1rem;"></div>
+        <label>الرد:</label>
+        <textarea id="ticketReplyText" rows="3" style="width:100%;"></textarea><br><br>
+        <label>الحالة الجديدة:</label>
+        <select id="ticketStatusSelect">
+            <option value="open">مفتوحة</option>
+            <option value="in_progress">قيد المعالجة</option>
+            <option value="closed">مغلقة</option>
+        </select><br><br>
+        <button class="btn btn-success" onclick="sendTicketReply()">إرسال</button>
+        <button class="btn" onclick="closeModal()">إلغاء</button>
+    </div>
+</div>
+
+<!-- إضافة / تعديل مشروع -->
+<div class="modal" id="portfolioModal">
+    <div class="modal-content">
+        <h3 id="portfolioModalTitle">➕ إضافة مشروع</h3>
+        <input type="hidden" id="editPortfolioId">
+        <div class="form-group">
+            <label>العنوان</label>
+            <input type="text" id="portfolioTitle" required>
+        </div>
+        <div class="form-group">
+            <label>النوع</label>
+            <select id="portfolioType">
+                <option value="bot">🤖 بوت تلجرام</option>
+                <option value="web">💻 موقع</option>
+                <option value="app">📱 تطبيق</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>الوصف</label>
+            <textarea id="portfolioDesc" rows="2"></textarea>
+        </div>
+        <div class="form-group">
+            <label>السعر</label>
+            <input type="text" id="portfolioPrice">
+        </div>
+        <div class="form-group">
+            <label>رابط الصورة</label>
+            <input type="text" id="portfolioImage" placeholder="رابط صورة">
+        </div>
+        <button class="btn btn-primary" onclick="savePortfolioItem()">حفظ</button>
+        <button class="btn" onclick="closeModal()">إلغاء</button>
+    </div>
+</div>
+
 <script>
-    // ==================== بيانات وهمية (تظهر فوراً) ====================
+    // ==================== بيانات وهمية موسعة ====================
     const mockData = {
         orders: [
-            { id: 1001, user_id: 111222333, service_type: 'بوت تلجرام متجر', budget: '250', status: 'pending', created_at: new Date().toISOString(), description: 'بوت متكامل مع نظام نقاط ودفع إلكتروني' },
-            { id: 1002, user_id: 444555666, service_type: 'موقع شركة', budget: '600', status: 'processing', created_at: new Date(Date.now()-86400000).toISOString(), description: 'موقع تعريفي احترافي' },
-            { id: 1003, user_id: 777888999, service_type: 'بوت توصيات تداول', budget: '350', status: 'completed', created_at: new Date(Date.now()-172800000).toISOString(), description: 'بوت تحليلات' },
-            { id: 1004, user_id: 123123123, service_type: 'تطبيق جوال', budget: '1200', status: 'rejected', created_at: new Date(Date.now()-259200000).toISOString(), description: 'طلب ملغي' }
+            { id: 1001, user_id: 111222333, service_type: 'بوت تلجرام متجر', budget: '250', status: 'pending', created_at: new Date().toISOString(), description: 'بوت متكامل مع نظام نقاط ودفع إلكتروني وإدارة منتجات' },
+            { id: 1002, user_id: 444555666, service_type: 'موقع شركة', budget: '600', status: 'processing', created_at: new Date(Date.now()-86400000).toISOString(), description: 'موقع تعريفي احترافي بـ 5 صفحات مع لوحة تحكم' },
+            { id: 1003, user_id: 777888999, service_type: 'بوت توصيات تداول', budget: '350', status: 'completed', created_at: new Date(Date.now()-172800000).toISOString(), description: 'بوت تحليلات فنية وإشارات تداول' },
+            { id: 1004, user_id: 123123123, service_type: 'تطبيق جوال', budget: '1200', status: 'rejected', created_at: new Date(Date.now()-259200000).toISOString(), description: 'طلب ملغي من قبل العميل' }
         ],
         users: [
             { id: 111222333, username: 'ahmed_tech', full_name: 'أحمد محمد', loyalty_points: 120, joined_channel_points: true, is_blocked: false, joined_at: new Date().toISOString() },
@@ -224,13 +307,18 @@
             { id: 777888999, username: 'khalid_1', full_name: 'خالد عبدالله', loyalty_points: 5, joined_channel_points: false, is_blocked: true, joined_at: new Date().toISOString() },
             { id: 123123123, username: 'noura_22', full_name: 'نورة سعيد', loyalty_points: 250, joined_channel_points: true, is_blocked: false, joined_at: new Date().toISOString() }
         ],
-        tickets: [],
-        portfolio: []
+        tickets: [
+            { id: 201, user_id: 111222333, subject: 'مشكلة في تفعيل البوت', message: 'لم يتم تفعيل البوت بعد الدفع، أرجو المساعدة.', status: 'open', created_at: new Date().toISOString() },
+            { id: 202, user_id: 444555666, subject: 'استفسار بخصوص النقاط', message: 'كيف يمكنني استبدال النقاط؟', status: 'in_progress', created_at: new Date(Date.now()-3600000).toISOString() }
+        ],
+        portfolio: [
+            { id: 1, title: 'بوت متجر متكامل', type: 'bot', description: 'بوت تلجرام لإدارة المتاجر مع نظام دفع', price: '150$', preview_link: '#', image_url: 'https://picsum.photos/300/200?random=1' },
+            { id: 2, title: 'موقع شركة تقنية', type: 'web', description: 'موقع عصري وسريع', price: '400$', preview_link: '#', image_url: 'https://picsum.photos/300/200?random=2' }
+        ]
     };
 
-    let currentData = JSON.parse(JSON.stringify(mockData)); // نسخة قابلة للتعديل
-    let currentOrderId = null;
-    let currentUserId = null;
+    let currentData = JSON.parse(JSON.stringify(mockData));
+    let currentOrderId = null, currentTicketId = null, currentPortfolioId = null;
 
     // ==================== دوال العرض ====================
     function formatDate(d) { return d ? new Date(d).toLocaleDateString('ar-SA') : '-'; }
@@ -291,10 +379,48 @@
         document.getElementById('usersTable').innerHTML = html;
     }
 
+    function renderTickets() {
+        let html = `<table><tr><th>#</th><th>المستخدم</th><th>الموضوع</th><th>الحالة</th><th>التاريخ</th><th>إجراءات</th></tr>`;
+        currentData.tickets.forEach(t=>{
+            html += `<tr><td>#${t.id}</td><td>${t.user_id}</td><td>${t.subject}</td><td><span class="status-badge status-${t.status}">${t.status}</span></td><td>${formatDate(t.created_at)}</td>
+                <td><button class="btn btn-primary btn-sm" onclick="openTicketReplyModal(${t.id})"><i class="fas fa-reply"></i> رد</button>
+                <button class="btn btn-success btn-sm" onclick="updateTicketStatus(${t.id},'closed')">إغلاق</button></td></tr>`;
+        });
+        html += `</table>`;
+        document.getElementById('ticketsTable').innerHTML = html;
+    }
+
+    function renderPortfolio() {
+        const container = document.getElementById('portfolioContainer');
+        if (!currentData.portfolio.length) {
+            container.innerHTML = '<p>لا توجد مشاريع. أضف مشروعًا جديدًا.</p>';
+            return;
+        }
+        let html = '';
+        currentData.portfolio.forEach(p=>{
+            html += `<div class="portfolio-item">
+                ${p.image_url ? `<img src="${p.image_url}" class="portfolio-img" alt="${p.title}">` : '<div class="portfolio-img"><i class="fas fa-image fa-2x"></i></div>'}
+                <div class="portfolio-info">
+                    <h4>${p.title}</h4>
+                    <p><small>${p.type}</small></p>
+                    <p>${p.description || ''}</p>
+                    ${p.price ? `<p><strong>${p.price}</strong></p>` : ''}
+                    <div class="action-group">
+                        <button class="btn btn-warning btn-sm" onclick="editPortfolioItem(${p.id})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-danger btn-sm" onclick="deletePortfolioItem(${p.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            </div>`;
+        });
+        container.innerHTML = html;
+    }
+
     function refreshAllViews() {
         renderDashboard();
         renderAllOrders();
         renderUsers();
+        renderTickets();
+        renderPortfolio();
     }
 
     // ==================== التفاعل ====================
@@ -307,7 +433,7 @@
             <p><strong>المستخدم:</strong> ${order.user_id}</p>
             <p><strong>الخدمة:</strong> ${order.service_type}</p>
             <p><strong>الميزانية:</strong> ${order.budget}$</p>
-            <p><strong>الوصف:</strong> ${order.description || 'لا يوجد'}</p>
+            <p><strong>الوصف:</strong><br> ${order.description || 'لا يوجد وصف'}</p>
             <p><strong>تاريخ الإنشاء:</strong> ${new Date(order.created_at).toLocaleString('ar-SA')}</p>
         `;
         document.getElementById('orderStatusSelect').value = order.status;
@@ -330,7 +456,6 @@
     window.openUserEditModal = (id) => {
         const user = currentData.users.find(u=>u.id===id);
         if(!user) return;
-        currentUserId = id;
         document.getElementById('editUserId').value = id;
         document.getElementById('editUserPoints').value = user.loyalty_points;
         document.getElementById('editUserBlocked').value = user.is_blocked ? 'true' : 'false';
@@ -348,6 +473,86 @@
         alert('تم حفظ التغييرات');
     };
 
+    window.openTicketReplyModal = (id) => {
+        const ticket = currentData.tickets.find(t=>t.id===id);
+        if(!ticket) return;
+        currentTicketId = id;
+        document.getElementById('modalTicketId').innerText = id;
+        document.getElementById('ticketMessagePreview').innerHTML = `<strong>الرسالة:</strong><br>${ticket.message}`;
+        document.getElementById('ticketStatusSelect').value = ticket.status;
+        document.getElementById('ticketReplyModal').style.display = 'flex';
+    };
+
+    window.sendTicketReply = () => {
+        const reply = document.getElementById('ticketReplyText').value;
+        const newStatus = document.getElementById('ticketStatusSelect').value;
+        if (!reply.trim()) { alert('اكتب ردًا'); return; }
+        const ticket = currentData.tickets.find(t=>t.id===currentTicketId);
+        if(ticket) { ticket.status = newStatus; }
+        refreshAllViews();
+        closeModal();
+        alert('تم إرسال الرد');
+    };
+
+    window.updateTicketStatus = (id, status) => {
+        const ticket = currentData.tickets.find(t=>t.id===id);
+        if(ticket) ticket.status = status;
+        refreshAllViews();
+        alert(`تم تغيير حالة التذكرة إلى ${status}`);
+    };
+
+    window.openAddPortfolioModal = () => {
+        document.getElementById('portfolioModalTitle').innerText = '➕ إضافة مشروع';
+        document.getElementById('editPortfolioId').value = '';
+        document.getElementById('portfolioTitle').value = '';
+        document.getElementById('portfolioType').value = 'bot';
+        document.getElementById('portfolioDesc').value = '';
+        document.getElementById('portfolioPrice').value = '';
+        document.getElementById('portfolioImage').value = '';
+        document.getElementById('portfolioModal').style.display = 'flex';
+    };
+
+    window.editPortfolioItem = (id) => {
+        const item = currentData.portfolio.find(p=>p.id===id);
+        if(!item) return;
+        document.getElementById('portfolioModalTitle').innerText = '✏️ تعديل مشروع';
+        document.getElementById('editPortfolioId').value = id;
+        document.getElementById('portfolioTitle').value = item.title;
+        document.getElementById('portfolioType').value = item.type;
+        document.getElementById('portfolioDesc').value = item.description || '';
+        document.getElementById('portfolioPrice').value = item.price || '';
+        document.getElementById('portfolioImage').value = item.image_url || '';
+        document.getElementById('portfolioModal').style.display = 'flex';
+    };
+
+    window.savePortfolioItem = () => {
+        const id = document.getElementById('editPortfolioId').value;
+        const title = document.getElementById('portfolioTitle').value;
+        if (!title) { alert('العنوان مطلوب'); return; }
+        const newItem = {
+            id: id ? Number(id) : Date.now(),
+            title,
+            type: document.getElementById('portfolioType').value,
+            description: document.getElementById('portfolioDesc').value,
+            price: document.getElementById('portfolioPrice').value,
+            image_url: document.getElementById('portfolioImage').value
+        };
+        if (id) {
+            const index = currentData.portfolio.findIndex(p=>p.id==id);
+            if(index !== -1) currentData.portfolio[index] = newItem;
+        } else {
+            currentData.portfolio.push(newItem);
+        }
+        refreshAllViews();
+        closeModal();
+    };
+
+    window.deletePortfolioItem = (id) => {
+        if(!confirm('حذف المشروع؟')) return;
+        currentData.portfolio = currentData.portfolio.filter(p=>p.id!==id);
+        refreshAllViews();
+    };
+
     window.closeModal = () => {
         document.querySelectorAll('.modal').forEach(m=>m.style.display='none');
     };
@@ -361,27 +566,30 @@
             refreshAllViews();
             document.getElementById('settingsMessage').innerText = 'تم تحميل البيانات التجريبية.';
         } else {
-            document.getElementById('settingsMessage').innerText = 'جاري محاولة الاتصال بالخادم...';
-            // محاولة API حقيقي
+            document.getElementById('settingsMessage').innerText = 'جاري محاولة الاتصال...';
+            // محاولة API حقيقي (يمكنك تعديلها حسب احتياجك)
             const url = document.getElementById('apiUrlInput').value;
             const key = document.getElementById('apiKeyInput').value;
-            fetch(`${url}/api/orders`, { headers: {'X-API-Key': key} })
-                .then(r=>r.json()).then(data=>{
-                    currentData.orders = data;
-                    return fetch(`${url}/api/users`, { headers: {'X-API-Key': key} });
-                }).then(r=>r.json()).then(users=>{
-                    currentData.users = users;
-                    document.getElementById('apiStatusBadge').innerHTML = '<i class="fas fa-cloud"></i> متصل بالخادم';
-                    refreshAllViews();
-                    document.getElementById('settingsMessage').innerText = 'تم الاتصال بنجاح!';
-                }).catch(err=>{
-                    document.getElementById('settingsMessage').innerText = 'فشل الاتصال: ' + err.message;
-                });
+            Promise.all([
+                fetch(`${url}/api/orders`, { headers: {'X-API-Key': key} }).then(r=>r.json()),
+                fetch(`${url}/api/users`, { headers: {'X-API-Key': key} }).then(r=>r.json()),
+                fetch(`${url}/api/tickets`, { headers: {'X-API-Key': key} }).then(r=>r.json()),
+                fetch(`${url}/api/portfolio`, { headers: {'X-API-Key': key} }).then(r=>r.json())
+            ]).then(([orders, users, tickets, portfolio])=>{
+                currentData = { orders, users, tickets, portfolio };
+                document.getElementById('apiStatusBadge').innerHTML = '<i class="fas fa-cloud"></i> متصل بالخادم';
+                refreshAllViews();
+                document.getElementById('settingsMessage').innerText = 'تم الاتصال بنجاح!';
+            }).catch(err=>{
+                document.getElementById('settingsMessage').innerText = 'فشل الاتصال: ' + err.message;
+            });
         }
     };
 
-    // ربط أحداث التبويبات
-    function initTabs() {
+    // التهيئة
+    window.onload = () => {
+        refreshAllViews();
+        // التبويبات
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', e => {
                 e.preventDefault();
@@ -396,20 +604,12 @@
                 }
             });
         });
-    }
-
-    // التهيئة
-    window.onload = () => {
-        refreshAllViews();
-        initTabs();
-        
         document.getElementById('refreshBtn').addEventListener('click', ()=>{
             if(document.querySelector('input[name="dataSource"]:checked').value==='mock') {
                 currentData = JSON.parse(JSON.stringify(mockData));
             }
             refreshAllViews();
         });
-        
         document.getElementById('menuToggle').addEventListener('click', ()=>{
             document.getElementById('sidebar').classList.toggle('open');
             document.getElementById('overlay').classList.toggle('show');
@@ -418,14 +618,11 @@
             document.getElementById('sidebar').classList.remove('open');
             document.getElementById('overlay').classList.remove('show');
         });
-        
         const darkToggle = document.getElementById('darkModeToggle');
         darkToggle.addEventListener('click', ()=>{
             document.body.classList.toggle('dark-mode');
             darkToggle.innerHTML = document.body.classList.contains('dark-mode') ? '<i class="fas fa-sun"></i> الوضع الفاتح' : '<i class="fas fa-moon"></i> الوضع المظلم';
         });
-        
-        // إظهار/إخفاء إعدادات API
         document.querySelectorAll('input[name="dataSource"]').forEach(r=>{
             r.addEventListener('change', e=>{
                 document.getElementById('apiSettings').style.display = e.target.value==='api' ? 'block' : 'none';

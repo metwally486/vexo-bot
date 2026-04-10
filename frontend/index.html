@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Vexo Admin · متجاوب مع الهاتف</title>
+    <title>Vexo Admin · نسخة محسّنة</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -19,7 +19,7 @@
         body.dark-mode { background: #0f172a; color: #e2e8f0; }
         .app-wrapper { display: flex; min-height: 100vh; }
         /* الشريط الجانبي */
-        .sidebar { width: var(--sidebar-width); background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); box-shadow: 2px 0 20px rgba(0,0,0,0.05); position: fixed; right: 0; top: 0; bottom: 0; z-index: 100; overflow-y: auto; border-left: 1px solid rgba(0,0,0,0.05); transition: transform 0.3s; }
+        .sidebar { width: var(--sidebar-width); background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); box-shadow: 2px 0 20px rgba(0,0,0,0.05); position: fixed; right: 0; top: 0; bottom: 0; z-index: 1000; overflow-y: auto; border-left: 1px solid rgba(0,0,0,0.05); transition: transform 0.3s; }
         body.dark-mode .sidebar { background: #1e293b; border-left-color: #334155; }
         .sidebar-header { padding: 1.5rem 1rem; text-align: center; border-bottom: 1px solid #e2e8f0; }
         .sidebar-title { font-size: 1.4rem; font-weight: 800; background: linear-gradient(135deg,var(--primary),#8b5cf6); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
@@ -37,7 +37,7 @@
             .sidebar { transform: translateX(100%); }
             .sidebar.open { transform: translateX(0); }
             .main-content { margin-right: 0; padding: 1rem; }
-            .menu-toggle { display: block; }
+            .menu-toggle { display: flex; }
             .overlay.show { display: block; }
         }
         .header { background: white; border-radius: 20px; padding: 1rem 1.5rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; box-shadow: var(--shadow); }
@@ -52,7 +52,7 @@
         .table-card { background: white; border-radius: 16px; padding: 1rem; margin-bottom: 1.5rem; box-shadow: var(--shadow); overflow-x: auto; }
         body.dark-mode .table-card { background: var(--gray-dark); }
         .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; }
-        /* الجداول العادية تظهر فقط على الشاشات الكبيرة */
+        /* الجداول تظهر فقط للشاشات الكبيرة */
         .desktop-table { width: 100%; border-collapse: collapse; min-width: 700px; display: table; }
         .mobile-cards { display: none; }
         th, td { padding: 0.75rem 1rem; text-align: right; border-bottom: 1px solid #e2e8f0; }
@@ -72,14 +72,14 @@
         .btn-danger { background: var(--danger); color: white; }
         .btn-info { background: #0ea5e9; color: white; }
         .btn:hover { transform: translateY(-2px); opacity: 0.9; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; padding: 1rem; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; padding: 1rem; }
         .modal-content { background: white; border-radius: 20px; padding: 1.5rem; max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto; }
         body.dark-mode .modal-content { background: var(--gray-dark); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .menu-toggle { display: none; position: fixed; top: 1rem; right: 1rem; z-index: 200; background: white; border-radius: 50%; width: 48px; height: 48px; line-height: 48px; text-align: center; box-shadow: var(--shadow); cursor: pointer; }
-        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; }
-        /* عرض الجوال: إخفاء الجدول العادي وإظهار البطاقات */
+        .menu-toggle { display: none; position: fixed; top: 1rem; right: 1rem; z-index: 1100; background: white; border-radius: 50%; width: 48px; height: 48px; align-items: center; justify-content: center; box-shadow: var(--shadow); cursor: pointer; }
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 900; }
+        /* عرض البطاقات للجوال */
         @media (max-width: 640px) {
             .desktop-table { display: none; }
             .mobile-cards { display: block; }
@@ -89,7 +89,6 @@
             .btn { padding: 0.3rem 0.5rem; font-size: 0.7rem; }
             .modal-content { padding: 1rem; }
         }
-        /* تنسيق البطاقات في الجوال */
         .card-item {
             background: var(--light);
             border-radius: 16px;
@@ -216,7 +215,7 @@
     </main>
 </div>
 
-<!-- النوافذ المنبثقة (كما هي بدون تغيير) -->
+<!-- النوافذ المنبثقة -->
 <!-- تفاصيل الطلب -->
 <div class="modal" id="orderDetailModal">
     <div class="modal-content">
@@ -346,18 +345,15 @@
             container.innerHTML = `<p style="text-align:center;padding:2rem;">${emptyMsg}</p>`;
             return;
         }
-        // عرض الجدول للشاشات الكبيرة
         let tableHtml = `<table class="desktop-table"><tr>${columns.map(c=>`<th>${c}</th>`).join('')}</tr>`;
         items.forEach(item => { tableHtml += renderRow(item, 'table'); });
         tableHtml += '</table>';
-        // عرض البطاقات للجوال
         let cardsHtml = '<div class="mobile-cards">';
         items.forEach(item => { cardsHtml += renderRow(item, 'card'); });
         cardsHtml += '</div>';
         container.innerHTML = tableHtml + cardsHtml;
     }
 
-    // دوال العرض الخاصة بكل قسم
     function renderDashboard() {
         const orders = currentData.orders;
         const total = orders.length;
@@ -373,7 +369,6 @@
             <div class="stat-card"><div class="stat-value">${currentData.users.length}</div><div class="stat-label">المستخدمين</div></div>
             <div class="stat-card"><div class="stat-value">${revenue}$</div><div class="stat-label">إيرادات</div></div>
         `;
-
         const recent = orders.slice(0,5);
         renderTableOrCards('recentOrdersTable', recent, 
             ['#', 'المستخدم', 'الخدمة', 'الميزانية', 'الحالة', 'إجراءات'],
@@ -508,7 +503,7 @@
         renderPortfolio();
     }
 
-    // تعريف الدوال العامة (معالجة الأحداث)
+    // تعريف الدوال العامة
     window.viewOrderDetails = (id) => {
         const order = currentData.orders.find(o=>o.id===id);
         if(!order) return;
@@ -676,10 +671,7 @@
                 document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
                 document.getElementById(tabId+'Tab').classList.add('active');
                 link.classList.add('active');
-                if(window.innerWidth<=1024) {
-                    document.getElementById('sidebar').classList.remove('open');
-                    document.getElementById('overlay').classList.remove('show');
-                }
+                // لا نغلق القائمة تلقائياً هنا لتجنب المشاكل، ولكن يمكن إغلاقها يدوياً بالضغط على overlay
             });
         });
         document.getElementById('refreshBtn').addEventListener('click', ()=>{
@@ -687,6 +679,7 @@
                 currentData = JSON.parse(JSON.stringify(mockData));
             }
             refreshAllViews();
+            // لا نغلق القائمة
         });
         document.getElementById('menuToggle').addEventListener('click', ()=>{
             document.getElementById('sidebar').classList.toggle('open');

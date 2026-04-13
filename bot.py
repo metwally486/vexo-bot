@@ -1,20 +1,57 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+بوت Vexo للخدمات التقنية - مع دعم مراقبة UptimeRobot
+"""
+
+import os
+import threading
+import asyncio
+from datetime import datetime
+
+from fastapi import FastAPI
+from uvicorn import Config, Server
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import Command
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
+
 import config
 import database as db
-from datetime import datetime
+
+# ==================== إعداد خادم الويب لـ UptimeRobot ====================
+web_app = FastAPI()
+
+@web_app.get("/")
+@web_app.head("/")
+async def root():
+    return {"status": "running", "service": "Vexo Bot"}
+
+@web_app.get("/health")
+@web_app.head("/health")
+async def health():
+    return {"status": "healthy", "timestamp": datetime.now().isoformat()}
+
+def run_web_server():
+    """تشغيل خادم FastAPI في منفذ Render"""
+    port = int(os.environ.get("PORT", 10000))
+    config = Config(web_app, host="0.0.0.0", port=port, loop="asyncio")
+    server = Server(config)
+    asyncio.run(server.serve())
+
+# تشغيل الخادم في خيط منفصل (حتى لا يتعارض مع تشغيل البوت)
+threading.Thread(target=run_web_server, daemon=True).start()
+print(f"✅ خادم الويب يعمل على المنفذ {os.environ.get('PORT', 10000)}")
 
 # ==================== معلومات الشركة والحسابات ====================
 COMPANY_NAME = "Vexo للخدمات التقنية"
 CEO_NAME = "متولي الوصابي"
-ADMIN_USERNAME = "@m_7_1_1_w"              # حساب المدير
-SUPPORT_USERNAME = "@abohamed12"           # حساب الدعم الفني
-CHANNEL_LINK = "https://t.me/abod_IT"      # قناة الأعمال
-CHANNEL_USERNAME = "abod_IT"               # معرف القناة بدون @
-ORDERS_CHANNEL_USERNAME = "@Vixo_Company"  # قناة استلام الطلبات
+ADMIN_USERNAME = "@m_7_1_1_w"
+SUPPORT_USERNAME = "@abohamed12"
+CHANNEL_LINK = "https://t.me/abod_IT"
+CHANNEL_USERNAME = "abod_IT"
+ORDERS_CHANNEL_USERNAME = "@Vixo_Company"
 
 # ==================== حالات النموذج ====================
 class OrderState(StatesGroup):
@@ -39,7 +76,6 @@ def main_keyboard():
     return ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True)
 
 def main_inline_kb():
-    """لوحة مفاتيح إنلاين للاستخدام مع edit_text"""
     kb = [
         [InlineKeyboardButton(text="🎯 خدماتنا", callback_data="services_menu")],
         [InlineKeyboardButton(text="📝 طلب جديد", callback_data="new_order")],
@@ -269,7 +305,7 @@ async def profile_handler(message: types.Message):
 👨‍💼 المدير: {ADMIN_USERNAME}
 📢 القناة: {CHANNEL_LINK}
 """
-    await message.answer(text)   # no parse_mode
+    await message.answer(text)
 
 async def order_handler(message: types.Message, state: FSMContext):
     await state.set_state(OrderState.service_type)
@@ -292,7 +328,7 @@ async def support_handler(message: types.Message):
 
 📢 تابعنا: {CHANNEL_LINK}
 """
-    await message.answer(text, reply_markup=support_kb())   # no parse_mode
+    await message.answer(text, reply_markup=support_kb())
 
 async def contact_admin(message: types.Message):
     text = f"""
@@ -367,12 +403,10 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
 
     if data == "main_menu":
         await state.clear()
-        # ✅ تصحيح: استخدام InlineKeyboardMarkup بدلاً من ReplyKeyboardMarkup
         await call.message.edit_text("📋 القائمة الرئيسية:", reply_markup=main_inline_kb())
         await call.answer()
         return
 
-    # قائمة فرعية للخدمات وغيرها (يمكنك إضافة بقية الأزرار حسب الحاجة)
     elif data == "services_menu":
         text = "🎯 اختر الخدمة المطلوبة:"
         await call.message.edit_text(text, reply_markup=services_inline_kb())
@@ -419,7 +453,6 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
         await call.answer()
         return
 
-    # باقي الأزرار (خدمات، ميزانية، طلب، إلخ) كما هي لكن بدون Markdown
     elif data.startswith("srv_"):
         service_map = {
             "srv_create_bot": "🤖 إنشاء بوت تلجرام",
@@ -497,9 +530,8 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
                 f"🔔 الحالة: قيد المراجعة\n"
                 f"💡 تابع حسابك لمعرفة التحديثات\n\n"
                 f"👨‍💼 المدير: {ADMIN_USERNAME}",
-                reply_markup=main_inline_kb()   # استخدام اللوحة الإنلاين بدلاً من الرد العادي
+                reply_markup=main_inline_kb()
             )
-            # إشعار للمدير
             try:
                 await call.message.bot.send_message(
                     config.ADMIN_ID,
@@ -512,7 +544,6 @@ async def callback_handler(call: types.CallbackQuery, state: FSMContext):
                 )
             except:
                 pass
-            # إشعار لقناة الطلبات
             try:
                 await call.message.bot.send_message(
                     ORDERS_CHANNEL_USERNAME,
@@ -717,3 +748,13 @@ def register_handlers(dp: Dispatcher):
     dp.message.register(payment_handler, F.text == "💳 طرق الدفع")
     dp.message.register(handle_text)
     dp.callback_query.register(callback_handler)
+
+# ==================== التشغيل الرئيسي ====================
+async def main():
+    bot = Bot(token=config.BOT_TOKEN)
+    dp = Dispatcher()
+    register_handlers(dp)
+    await dp.start_polling(bot)
+
+if __name__ == "__main__":
+    asyncio.run(main())

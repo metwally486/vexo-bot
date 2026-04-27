@@ -38,6 +38,11 @@ class AdminState(StatesGroup):
     reply_ticket   = State()
     add_portfolio  = State()
     order_notes    = State()
+    # حالات إدارة المعرض الجديدة
+    portfolio_title = State()
+    portfolio_desc  = State()
+    portfolio_image = State()
+    portfolio_link  = State()
 
 
 # ══════════════════════════════════════════════════════════════
@@ -908,6 +913,80 @@ async def cmd_add_points(message: Message):
         await message.answer(f"✅ تمت إضافة {amount} نقطة للمستخدم {uid}.")
     except ValueError:
         await message.answer("❌ قيم غير صحيحة.")
+
+
+# ══════════════════════════════════════════════════════════════
+# وظائف إدارة المعرض (إضافة مشاريع)
+# ══════════════════════════════════════════════════════════════
+
+@router.message(F.text == "🖼️ إدارة المعرض")
+async def admin_portfolio_start(message: Message, state: FSMContext):
+    if not is_admin(message.from_user.id): return
+    
+    await state.set_state(AdminState.portfolio_title)
+    await message.answer(
+        "✨ بدء إضافة مشروع جديد للمعرض\n\nأرسل الآن (عنوان المشروع):",
+        reply_markup=cancel_keyboard()
+    )
+
+@router.message(AdminState.portfolio_title)
+async def process_p_title(message: Message, state: FSMContext):
+    if message.text == "❌ إلغاء":
+        await state.clear()
+        await go_home(message, state)
+        return
+    await state.update_data(p_title=message.text)
+    await state.set_state(AdminState.portfolio_desc)
+    await message.answer(f"✅ العنوان: {message.text}\n\nالآن أرسل وصف المشروع:")
+
+@router.message(AdminState.portfolio_desc)
+async def process_p_desc(message: Message, state: FSMContext):
+    if message.text == "❌ إلغاء":
+        await state.clear()
+        await go_home(message, state)
+        return
+    await state.update_data(p_desc=message.text)
+    await state.set_state(AdminState.portfolio_image)
+    await message.answer("🖼️ أرسل الآن صورة المشروع (أو أرسل 'تخطي'):")
+
+@router.message(AdminState.portfolio_image)
+async def process_p_image(message: Message, state: FSMContext):
+    if message.text == "❌ إلغاء":
+        await state.clear()
+        await go_home(message, state)
+        return
+    if message.photo:
+        file_id = message.photo[-1].file_id
+        await state.update_data(p_image=file_id)
+    else:
+        await state.update_data(p_image=None)
+        
+    await state.set_state(AdminState.portfolio_link)
+    await message.answer("🔗 أرسل رابط المعاينة (أو أرسل 'لا يوجد'):")
+
+@router.message(AdminState.portfolio_link)
+async def process_p_final(message: Message, state: FSMContext):
+    if message.text == "❌ إلغاء":
+        await state.clear()
+        await go_home(message, state)
+        return
+    data = await state.get_data()
+    link = message.text if message.text != "لا يوجد" else None
+    
+    # حفظ في قاعدة البيانات (تأكد من وجود الدالة في database.py)
+    success = await db.add_portfolio_item(
+        title=data['p_title'],
+        p_type="مشروع تقني",
+        description=data['p_desc'],
+        image_url=data.get('p_image'),
+        preview_link=link
+    )
+    
+    await state.clear()
+    if success:
+        await message.answer(f"✅ تم إضافة {data['p_title']} للمعرض بنجاح!", reply_markup=admin_keyboard())
+    else:
+        await message.answer("❌ حدث خطأ أثناء الحفظ في قاعدة البيانات.", reply_markup=admin_keyboard())
 
 
 # ══════════════════════════════════════════════════════════════

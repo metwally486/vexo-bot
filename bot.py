@@ -1,760 +1,918 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-بوت Vexo للخدمات التقنية - مع دعم مراقبة UptimeRobot
+bot.py — Vexo Bot Handlers (aiogram 3.x)
+يتضمن: أوامر المستخدم + لوحة الأدمن + نقاط الولاء + تذاكر الدعم + معرض الأعمال
 """
-
-import os
-import threading
 import asyncio
-from datetime import datetime
-
-from fastapi import FastAPI
-from uvicorn import Config, Server
-from aiogram import Bot, Dispatcher, types, F
-from aiogram.filters import Command
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import State, StatesGroup
-
 import config
 import database as db
+from aiogram import Bot, Dispatcher, Router, F
+from aiogram.filters import Command, CommandStart
+from aiogram.types import (
+    Message, CallbackQuery,
+    InlineKeyboardMarkup, InlineKeyboardButton,
+    ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove,
+)
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import StatesGroup, State
+from aiogram.fsm.storage.memory import MemoryStorage
 
-# ==================== إعداد خادم الويب لـ UptimeRobot ====================
-web_app = FastAPI()
+router = Router()
 
-@web_app.get("/")
-@web_app.head("/")
-async def root():
-    return {"status": "running", "service": "Vexo Bot"}
+# ══════════════════════════════════════════════════════════════
+# الحالات (FSM States)
+# ══════════════════════════════════════════════════════════════
 
-@web_app.get("/health")
-@web_app.head("/health")
-async def health():
-    return {"status": "healthy", "timestamp": datetime.now().isoformat()}
-
-def run_web_server():
-    """تشغيل خادم FastAPI في منفذ Render"""
-    port = int(os.environ.get("PORT", 10000))
-    config = Config(web_app, host="0.0.0.0", port=port, loop="asyncio")
-    server = Server(config)
-    asyncio.run(server.serve())
-
-# تشغيل الخادم في خيط منفصل (حتى لا يتعارض مع تشغيل البوت)
-threading.Thread(target=run_web_server, daemon=True).start()
-print(f"✅ خادم الويب يعمل على المنفذ {os.environ.get('PORT', 10000)}")
-
-# ==================== معلومات الشركة والحسابات ====================
-COMPANY_NAME = "Vexo للخدمات التقنية"
-CEO_NAME = "متولي الوصابي"
-ADMIN_USERNAME = "@m_7_1_1_w"
-SUPPORT_USERNAME = "@abohamed12"
-CHANNEL_LINK = "https://t.me/abod_IT"
-CHANNEL_USERNAME = "abod_IT"
-ORDERS_CHANNEL_USERNAME = "@Vixo_Company"
-
-# ==================== حالات النموذج ====================
 class OrderState(StatesGroup):
-    service_type = State()
-    details = State()
-    budget = State()
-    payment_method = State()
-    confirm = State()
+    service   = State()
+    details   = State()
+    budget    = State()
+    confirm   = State()
 
-class SupportState(StatesGroup):
-    message = State()
+class TicketState(StatesGroup):
+    subject   = State()
+    message   = State()
+    confirm   = State()
 
-# ==================== الأزرار الرئيسية (نفس ما تراه في الصورة) ====================
-def main_keyboard():
-    kb = [
-        [KeyboardButton(text="🎯 خدماتنا"), KeyboardButton(text="📝 طلب جديد")],
-        [KeyboardButton(text="🎁 العروض والهدايا"), KeyboardButton(text="💳 طرق الدفع")],
-        [KeyboardButton(text="📁 أعمالنا"), KeyboardButton(text="👤 حسابي")],
-        [KeyboardButton(text="🤝 شارك واربح"), KeyboardButton(text="💬 الدعم الفني")],
-        [KeyboardButton(text="📞 الإدارة")]
+class AdminState(StatesGroup):
+    broadcast      = State()
+    reply_ticket   = State()
+    add_portfolio  = State()
+    order_notes    = State()
+
+
+# ══════════════════════════════════════════════════════════════
+# لوحات المفاتيح المشتركة
+# ══════════════════════════════════════════════════════════════
+
+def main_keyboard(is_admin: bool = False) -> ReplyKeyboardMarkup:
+    buttons = [
+        [KeyboardButton(text="📦 طلب خدمة"), KeyboardButton(text="🖼️ معرض أعمالنا")],
+        [KeyboardButton(text="🎫 الدعم الفني"), KeyboardButton(text="💎 نقاطي")],
+        [KeyboardButton(text="📋 طلباتي"),     KeyboardButton(text="ℹ️ من نحن")],
     ]
-    return ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True)
+    if is_admin:
+        buttons.append([KeyboardButton(text="🔐 لوحة الأدمن")])
+    return ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
 
-def main_inline_kb():
-    kb = [
-        [InlineKeyboardButton(text="🎯 خدماتنا", callback_data="services_menu")],
-        [InlineKeyboardButton(text="📝 طلب جديد", callback_data="new_order")],
-        [InlineKeyboardButton(text="🎁 العروض والهدايا", callback_data="offers_menu")],
-        [InlineKeyboardButton(text="💳 طرق الدفع", callback_data="payment_menu")],
-        [InlineKeyboardButton(text="📁 أعمالنا", callback_data="portfolio_menu")],
-        [InlineKeyboardButton(text="👤 حسابي", callback_data="profile_menu")],
-        [InlineKeyboardButton(text="🤝 شارك واربح", callback_data="share_menu")],
-        [InlineKeyboardButton(text="💬 الدعم الفني", callback_data="support_menu")],
-        [InlineKeyboardButton(text="📞 الإدارة", callback_data="contact_menu")]
-    ]
-    return InlineKeyboardMarkup(inline_keyboard=kb)
+def cancel_keyboard() -> ReplyKeyboardMarkup:
+    return ReplyKeyboardMarkup(
+        keyboard=[[KeyboardButton(text="❌ إلغاء")]],
+        resize_keyboard=True,
+    )
 
-def services_inline_kb():
-    kb = [
-        [InlineKeyboardButton(text="🤖 إنشاء بوت تلجرام", callback_data="srv_create_bot")],
-        [InlineKeyboardButton(text="⚙️ تطوير بوت موجود", callback_data="srv_dev_bot")],
-        [InlineKeyboardButton(text="📱 تطبيق أندرويد", callback_data="srv_android")],
-        [InlineKeyboardButton(text="🍎 تطبيق iOS", callback_data="srv_ios")],
-        [InlineKeyboardButton(text="💻 موقع إلكتروني", callback_data="srv_website")],
-        [InlineKeyboardButton(text="🛒 متجر إلكتروني", callback_data="srv_store")],
-        [InlineKeyboardButton(text="🔧 معاملات برمجية", callback_data="srv_scripts")],
-        [InlineKeyboardButton(text="🎨 خدمات مميزة", callback_data="srv_premium")],
-        [InlineKeyboardButton(text="🔙 القائمة الرئيسية", callback_data="main_menu")]
-    ]
-    return InlineKeyboardMarkup(inline_keyboard=kb)
+def budget_keyboard() -> ReplyKeyboardMarkup:
+    return ReplyKeyboardMarkup(
+        keyboard=[
+            [KeyboardButton(text="💵 أقل من 100$"), KeyboardButton(text="💵 100$ - 300$")],
+            [KeyboardButton(text="💵 300$ - 1000$"), KeyboardButton(text="💵 أكثر من 1000$")],
+            [KeyboardButton(text="❌ إلغاء")],
+        ],
+        resize_keyboard=True,
+    )
 
-def payment_methods_kb():
-    kb = [
-        [InlineKeyboardButton(text="📱 جيب (Jeew)", callback_data="pay_jeew")],
-        [InlineKeyboardButton(text="📲 جوالي (Jawali)", callback_data="pay_jawali")],
-        [InlineKeyboardButton(text="💵 ون كاش (OneCash)", callback_data="pay_onecash")],
-        [InlineKeyboardButton(text="💰 موني (Monee)", callback_data="pay_monee")],
-        [InlineKeyboardButton(text="💳 فلوسك (Floosak)", callback_data="pay_floosak")],
-        [InlineKeyboardButton(text="💰 الكريمي", callback_data="pay_kareemi")],
-        [InlineKeyboardButton(text="🤝 تضامن", callback_data="pay_tadhamon")],
-        [InlineKeyboardButton(text="🏛 بنك اليمن والكويت", callback_data="pay_yemen_kuwait")],
-        [InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]
-    ]
-    return InlineKeyboardMarkup(inline_keyboard=kb)
+def services_keyboard() -> ReplyKeyboardMarkup:
+    return ReplyKeyboardMarkup(
+        keyboard=[
+            [KeyboardButton(text="🤖 بوت تلجرام"), KeyboardButton(text="💻 موقع إلكتروني")],
+            [KeyboardButton(text="📱 تطبيق جوال"), KeyboardButton(text="🎨 تصميم جرافيك")],
+            [KeyboardButton(text="📊 لوحة تحكم"), KeyboardButton(text="🔧 خدمة أخرى")],
+            [KeyboardButton(text="❌ إلغاء")],
+        ],
+        resize_keyboard=True,
+    )
 
-def confirmation_kb():
-    kb = [
-        [InlineKeyboardButton(text="✅ تأكيد الطلب", callback_data="order_confirm")],
-        [InlineKeyboardButton(text="❌ إلغاء", callback_data="order_cancel")]
-    ]
-    return InlineKeyboardMarkup(inline_keyboard=kb)
+def admin_keyboard() -> ReplyKeyboardMarkup:
+    return ReplyKeyboardMarkup(
+        keyboard=[
+            [KeyboardButton(text="📋 الطلبات المعلقة"), KeyboardButton(text="🎫 التذاكر المفتوحة")],
+            [KeyboardButton(text="👥 المستخدمين"),       KeyboardButton(text="📊 الإحصائيات")],
+            [KeyboardButton(text="📢 بث رسالة"),         KeyboardButton(text="🖼️ إدارة المعرض")],
+            [KeyboardButton(text="🏠 الرئيسية")],
+        ],
+        resize_keyboard=True,
+    )
 
-def budget_kb():
-    kb = [
-        [InlineKeyboardButton(text="💰 أقل من 100$", callback_data="budget_low")],
-        [InlineKeyboardButton(text="💵 100$ - 300$", callback_data="budget_mid")],
-        [InlineKeyboardButton(text="💎 300$ - 1000$", callback_data="budget_high")],
-        [InlineKeyboardButton(text="👑 أكثر من 1000$", callback_data="budget_premium")],
-        [InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]
-    ]
-    return InlineKeyboardMarkup(inline_keyboard=kb)
+def order_actions_inline(order_id: int) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [
+            InlineKeyboardButton(text="✅ قبول",    callback_data=f"order_accept_{order_id}"),
+            InlineKeyboardButton(text="⚙️ تنفيذ",   callback_data=f"order_processing_{order_id}"),
+        ],
+        [
+            InlineKeyboardButton(text="❌ رفض",     callback_data=f"order_reject_{order_id}"),
+            InlineKeyboardButton(text="📝 ملاحظة",  callback_data=f"order_note_{order_id}"),
+        ],
+    ])
 
-def support_kb():
-    kb = [
-        [InlineKeyboardButton(text="🎫 فتح تذكرة جديدة", callback_data="ticket_new")],
-        [InlineKeyboardButton(text="📋 تذاكري السابقة", callback_data="ticket_my")],
-        [InlineKeyboardButton(text="❓ الأسئلة الشائعة", callback_data="faq")],
-        [InlineKeyboardButton(text="👨‍💻 الدعم الفني", url=f"https://t.me/{SUPPORT_USERNAME.replace('@', '')}")],
-        [InlineKeyboardButton(text="📞 المدير التنفيذي", url=f"https://t.me/{ADMIN_USERNAME.replace('@', '')}")],
-        [InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]
-    ]
-    return InlineKeyboardMarkup(inline_keyboard=kb)
+def ticket_actions_inline(ticket_id: int) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [
+            InlineKeyboardButton(text="💬 رد",      callback_data=f"ticket_reply_{ticket_id}"),
+            InlineKeyboardButton(text="✅ إغلاق",   callback_data=f"ticket_close_{ticket_id}"),
+        ],
+    ])
 
-def portfolio_kb():
-    kb = [
-        [InlineKeyboardButton(text="🤖 البوتات", callback_data="port_bot")],
-        [InlineKeyboardButton(text="📱 التطبيقات", callback_data="port_app")],
-        [InlineKeyboardButton(text="💻 المواقع", callback_data="port_web")],
-        [InlineKeyboardButton(text="🛒 المتاجر", callback_data="port_store")],
-        [InlineKeyboardButton(text="📚 الكل", callback_data="port_all")],
-        [InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]
-    ]
-    return InlineKeyboardMarkup(inline_keyboard=kb)
+def confirm_keyboard() -> ReplyKeyboardMarkup:
+    return ReplyKeyboardMarkup(
+        keyboard=[
+            [KeyboardButton(text="✅ تأكيد"), KeyboardButton(text="❌ إلغاء")],
+        ],
+        resize_keyboard=True,
+    )
 
-def share_kb():
-    kb = [
-        [InlineKeyboardButton(text="📤 مشاركة البوت", switch_inline_query=f"🎉 انضم لي على {COMPANY_NAME} للخدمات التقنية! 🚀")],
-        [InlineKeyboardButton(text="📢 الانضمام للقناة", url=CHANNEL_LINK)],
-        [InlineKeyboardButton(text="🎁 استلام الهدية", callback_data="share_claim")],
-        [InlineKeyboardButton(text="🏆 صدارة المشاركين", callback_data="share_leaderboard")],
-        [InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]
-    ]
-    return InlineKeyboardMarkup(inline_keyboard=kb)
 
-def offers_kb():
-    kb = [
-        [InlineKeyboardButton(text="🎁 العروض الحالية", callback_data="offers_current")],
-        [InlineKeyboardButton(text="🎟️ كوبونات الخصم", callback_data="offers_coupons")],
-        [InlineKeyboardButton(text="🏆 برنامج الولاء", callback_data="offers_loyalty")],
-        [InlineKeyboardButton(text="🎪 عروض موسمية", callback_data="offers_seasonal")],
-        [InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]
-    ]
-    return InlineKeyboardMarkup(inline_keyboard=kb)
+# ══════════════════════════════════════════════════════════════
+# مساعدات داخلية
+# ══════════════════════════════════════════════════════════════
 
-# ==================== دوال مساعدة ====================
-async def check_channel_subscription(user_id: int, bot: Bot) -> bool:
+def is_admin(user_id: int) -> bool:
+    return user_id == config.ADMIN_ID
+
+
+async def ensure_user(message: Message) -> dict | None:
+    """تسجيل / تحديث المستخدم في قاعدة البيانات"""
+    u = message.from_user
+    await db.upsert_user(u.id, u.username, u.full_name)
+    return await db.get_user(u.id)
+
+
+async def notify_admin(bot: Bot, text: str, reply_markup=None):
+    """إرسال إشعار للأدمن"""
     try:
-        member = await bot.get_chat_member(CHANNEL_USERNAME, user_id)
-        return member.status in ['member', 'administrator', 'creator']
-    except:
-        return False
+        await bot.send_message(config.ADMIN_ID, text, reply_markup=reply_markup, parse_mode="HTML")
+    except Exception as e:
+        print(f"⚠️ notify_admin error: {e}")
 
-async def add_share_points(user_id: int) -> bool:
-    return await db.add_points(user_id, 50)
 
-async def add_join_points(user_id: int) -> bool:
-    return await db.add_points(user_id, 30)
+# ══════════════════════════════════════════════════════════════
+# /start  و الرئيسية
+# ══════════════════════════════════════════════════════════════
 
-# ==================== المعالجات (بدون Markdown غير آمن) ====================
+@router.message(CommandStart())
+async def cmd_start(message: Message, bot: Bot):
+    user = await ensure_user(message)
+    admin = is_admin(message.from_user.id)
 
-async def start_handler(message: types.Message):
-    await db.add_user(message.from_user.id, message.from_user.username, message.from_user.full_name)
-    is_subscribed = await check_channel_subscription(message.from_user.id, message.bot)
-    welcome_text = f"""
-🌟 أهلاً وسهلاً بك في {COMPANY_NAME} 🌟
+    welcome = (
+        f"👋 أهلاً <b>{message.from_user.first_name}</b>!\n\n"
+        "🚀 مرحباً بك في <b>Vexo للخدمات التقنية</b>\n"
+        "نقدم لك أفضل الحلول التقنية بأسعار تنافسية.\n\n"
+        "🎯 اختر من القائمة أدناه:"
+    )
 
-👋 مرحباً: {message.from_user.first_name}
-🏢 شركة {COMPANY_NAME}
-👨‍💼 المدير التنفيذي: {CEO_NAME}
+    # نقاط الترحيب للمستخدمين الجدد
+    if user and user.get("loyalty_points", 0) == 0:
+        await db.add_points(message.from_user.id, 10, "welcome_bonus")
+        welcome += "\n\n🎁 <b>حصلت على 10 نقاط ترحيبية!</b>"
 
-💎 لماذا تختارنا؟
-✅ أسعار منافسة وجودة عالية
-✅ تسليم سريع وضمان حقيقي
-✅ دعم فني 24/7
-✅ طرق دفع متعددة ومرنة
+    await message.answer(
+        welcome,
+        reply_markup=main_keyboard(admin),
+        parse_mode="HTML",
+    )
 
-🎁 عروض خاصة:
-🔸 خصم 10% للطلب الأول
-🔸 خصم 15% عند مشاركة البوت
-🔸 نقاط ولاء على كل طلب
-🔸 هدايا حصرية للمشتركين
 
-📢 تابعنا: {CHANNEL_LINK}
-"""
-    if not is_subscribed:
-        welcome_text += f"\n\n⚠️ انضم لقناتنا واحصل على 30 نقطة!\n{CHANNEL_LINK}"
-    await message.answer(welcome_text, reply_markup=main_keyboard())
+@router.message(F.text == "🏠 الرئيسية")
+async def go_home(message: Message, state: FSMContext):
+    await state.clear()
+    admin = is_admin(message.from_user.id)
+    await message.answer(
+        "🏠 القائمة الرئيسية:", reply_markup=main_keyboard(admin)
+    )
 
-async def services_handler(message: types.Message):
-    text = f"""
-🎯 خدمات {COMPANY_NAME} المتكاملة
 
-🤖 بوتات تلجرام: من 100$
-📱 تطبيقات الجوال: من 500$
-💻 مواقع إلكترونية: من 200$
-🛒 متاجر إلكترونية: من 400$
+@router.message(F.text == "❌ إلغاء")
+async def cancel_action(message: Message, state: FSMContext):
+    await state.clear()
+    admin = is_admin(message.from_user.id)
+    await message.answer("✅ تم الإلغاء.", reply_markup=main_keyboard(admin))
 
-📞 للطلب: اضغط 'طلب جديد'
-"""
-    await message.answer(text, reply_markup=services_inline_kb())
 
-async def payment_handler(message: types.Message):
-    text = f"""
-💳 طرق الدفع المتاحة - {COMPANY_NAME}
+# ══════════════════════════════════════════════════════════════
+# من نحن
+# ══════════════════════════════════════════════════════════════
 
-📱 المحافظ الإلكترونية: جيب، جوالي، ون كاش، موني، فلوسك
-🏦 البنوك اليمنية: الكريمي، تضامن، بنك اليمن والكويت
+@router.message(F.text == "ℹ️ من نحن")
+async def about_us(message: Message):
+    text = (
+        "🏢 <b>Vexo للخدمات التقنية</b>\n\n"
+        "نحن فريق متخصص في تطوير الحلول التقنية المتكاملة:\n\n"
+        "🤖 <b>بوتات تلجرام</b> — متجر، حجز، دعم، تداول\n"
+        "💻 <b>مواقع إلكترونية</b> — احترافية وسريعة\n"
+        "📱 <b>تطبيقات جوال</b> — iOS & Android\n"
+        "🎨 <b>تصميم جرافيك</b> — هوية بصرية متكاملة\n"
+        "📊 <b>لوحات تحكم</b> — إدارة سهلة وذكية\n\n"
+        "⭐ <b>ضمان الجودة وسرعة التسليم</b>\n"
+        "💬 الدعم الفني متاح 24/7"
+    )
+    await message.answer(text, parse_mode="HTML")
 
-📝 يتم إرسال رقم الحساب/المحفظة بعد تأكيد الطلب.
-💡 اختر طريقة الدفع المفضلة:
-"""
-    await message.answer(text, reply_markup=payment_methods_kb())
 
-async def portfolio_handler(message: types.Message):
-    text = f"""📁 أعمال {COMPANY_NAME}
+# ══════════════════════════════════════════════════════════════
+# معرض الأعمال
+# ══════════════════════════════════════════════════════════════
 
-🎨 نماذج من مشاريعنا:
+@router.message(F.text == "🖼️ معرض أعمالنا")
+async def show_portfolio(message: Message):
+    items = await db.get_portfolio(limit=10)
+    if not items:
+        await message.answer("📂 لا توجد مشاريع في المعرض حالياً.")
+        return
 
-🤖 البوتات: بوت متجر إلكتروني - 150$، بوت حماية متقدم - 200$
-📱 التطبيقات: تطبيق توصيل طلبات - 800$، تطبيق إدارة مهام - 650$
-💻 المواقع: موقع شركة - 350$، موقع متجر - 550$
+    await message.answer("🖼️ <b>أبرز أعمالنا:</b>", parse_mode="HTML")
+    for item in items:
+        text = (
+            f"<b>{item['title']}</b>\n"
+            f"📂 النوع: {item['type']}\n"
+        )
+        if item.get("description"):
+            text += f"📝 {item['description']}\n"
+        if item.get("price"):
+            text += f"💰 السعر يبدأ من: {item['price']}\n"
 
-📌 اختر نوع المشروع:
-"""
-    await message.answer(text, reply_markup=portfolio_kb())
+        buttons = []
+        if item.get("preview_link"):
+            buttons.append([InlineKeyboardButton(text="🔗 معاينة", url=item["preview_link"])])
 
-async def profile_handler(message: types.Message):
-    user = await db.get_user(message.from_user.id)
-    orders = await db.get_user_orders(message.from_user.id)
-    points = user['loyalty_points'] if user else 0
-    discount_percent = min(points // 10, 25)
-    total_orders = len(orders)
-    pending_orders = len([o for o in orders if o['status'] == 'pending'])
-    processing_orders = len([o for o in orders if o['status'] == 'processing'])
-    completed_orders = len([o for o in orders if o['status'] == 'completed'])
-    rejected_orders = len([o for o in orders if o['status'] == 'rejected'])
+        markup = InlineKeyboardMarkup(inline_keyboard=buttons) if buttons else None
 
-    text = f"""
-👤 معلومات حسابك - {COMPANY_NAME}
+        if item.get("image_url"):
+            try:
+                await message.answer_photo(
+                    item["image_url"], caption=text,
+                    parse_mode="HTML", reply_markup=markup
+                )
+            except Exception:
+                await message.answer(text, parse_mode="HTML", reply_markup=markup)
+        else:
+            await message.answer(text, parse_mode="HTML", reply_markup=markup)
 
-📊 الإحصائيات:
-├ إجمالي الطلبات: {total_orders}
-├ قيد المراجعة: {pending_orders} ⏳
-├ قيد التنفيذ: {processing_orders} 🔄
-├ مكتملة: {completed_orders} ✅
-├ مرفوضة: {rejected_orders} ❌
-└ نقاط الولاء: {points} 🪙
 
-🎁 مزاياك:
-├ خصم متاح: {discount_percent}%
-└ الرصيد: {points * 0.1}$ (قابل للاستخدام)
+# ══════════════════════════════════════════════════════════════
+# نقاط الولاء
+# ══════════════════════════════════════════════════════════════
 
-📦 طلباتك:
-"""
-    if orders:
-        for order in orders[:5]:
-            emoji = {"pending":"⏳","processing":"🔄","completed":"✅","rejected":"❌"}.get(order['status'],"⏳")
-            date_str = order['created_at'].strftime('%Y-%m-%d') if hasattr(order.get('created_at'),'strftime') else str(order['created_at'])[:10] if order.get('created_at') else "N/A"
-            text += f"\n{emoji} طلب #{order['id']}: {order['service_type']} - {order['budget']} ({date_str})"
+@router.message(F.text == "💎 نقاطي")
+async def show_points(message: Message, bot: Bot):
+    user = await ensure_user(message)
+    if not user:
+        await message.answer("❌ حدث خطأ، حاول مجدداً.")
+        return
+
+    points = user.get("loyalty_points", 0)
+    channel_bonus = user.get("joined_channel_points", False)
+
+    text = (
+        f"💎 <b>نقاطك:</b> {points} نقطة\n"
+        f"💵 <b>القيمة:</b> {points // config.POINTS_REDEEM_RATE:.1f}$\n\n"
+    )
+
+    markup = None
+    if not channel_bonus and config.CHANNEL_USERNAME:
+        text += (
+            f"🎁 <b>احصل على {config.POINTS_ON_JOIN_CHANNEL} نقطة إضافية</b>\n"
+            f"بمجرد الاشتراك في قناتنا!"
+        )
+        markup = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="📢 اشترك في القناة", url=f"https://t.me/{config.CHANNEL_USERNAME.lstrip('@')}")],
+            [InlineKeyboardButton(text="✅ تحقق من اشتراكي", callback_data="check_channel_join")],
+        ])
     else:
-        text += "\n❌ لا توجد طلبات بعد\n🎁 ابدأ بطلبك الأول واحصل على خصم 10%!"
-
-    text += f"""
-
-💡 كيف تربح نقاط؟
-• شارك البوت: +50 نقطة
-• انضم للقناة: +30 نقطة
-• كل طلب: +10 نقاط
-• كل 10 نقاط = خصم 1$
-
-👨‍💼 المدير: {ADMIN_USERNAME}
-📢 القناة: {CHANNEL_LINK}
-"""
-    await message.answer(text)
-
-async def order_handler(message: types.Message, state: FSMContext):
-    await state.set_state(OrderState.service_type)
-    text = f"📝 بدء طلب جديد - {COMPANY_NAME}\n\n🎯 اختر نوع الخدمة:"
-    await message.answer(text, reply_markup=services_inline_kb())
-
-async def support_handler(message: types.Message):
-    text = f"""
-💬 الدعم الفني - {COMPANY_NAME}
-
-👨‍💼 فريقنا جاهز لمساعدتك!
-
-📞 التواصل المباشر:
-├ الدعم الفني: {SUPPORT_USERNAME}
-└ المدير التنفيذي: {ADMIN_USERNAME}
-
-⏱ وقت الاستجابة: خلال 24 ساعة للتذاكر، فوري للدعم المباشر
-
-🎫 نظام التذاكر: تتبع طلباتك، محادثة منظمة
-
-📢 تابعنا: {CHANNEL_LINK}
-"""
-    await message.answer(text, reply_markup=support_kb())
-
-async def contact_admin(message: types.Message):
-    text = f"""
-📞 تواصل مع الإدارة
-
-👨‍💼 المدير التنفيذي: {CEO_NAME}
-📱 الحساب: {ADMIN_USERNAME}
-
-💡 متى تتواصل؟
-• للاستفسارات المهمة
-• للمشاريع الكبيرة
-• للشكاوى والاقتراحات
-
-⏱ متوفر: 9 صباحاً - 11 مساءً
-
-🔗 اضغط هنا: https://t.me/{ADMIN_USERNAME.replace('@', '')}
-"""
-    await message.answer(text)
-
-async def share_handler(message: types.Message):
-    user = await db.get_user(message.from_user.id)
-    points = user['loyalty_points'] if user else 0
-    is_subscribed = await check_channel_subscription(message.from_user.id, message.bot)
-    text = f"""
-🤝 شارك واربح - {COMPANY_NAME}
-
-🎁 برنامج الإحالة:
-
-💰 كيف تربح؟
-1️⃣ شارك البوت مع أصدقائك: +50 نقطة
-2️⃣ انضم للقناة: +30 نقطة
-3️⃣ استبدل النقاط بخصومات!
-
-🎯 المكافآت:
-• 50 نقطة = خصم 5$
-• 100 نقطة = خصم 10$
-• 200 نقطة = خصم 25$ + هدية
-
-📊 رصيدك الحالي: {points} نقطة
-💵 القيمة: {points * 0.1}$
-
-📤 شارك الآن: اضغط الزر أدناه
-
-📢 القناة: {CHANNEL_LINK}
-{"✅ مشترك" if is_subscribed else "⚠️ غير مشترك"}
-"""
-    await message.answer(text, reply_markup=share_kb())
-
-async def offers_handler(message: types.Message):
-    text = f"""
-🎁 العروض والهدايا - {COMPANY_NAME}
-
-🔥 العروض الحالية:
-
-🎉 عرض الطلب الأول: خصم 10% (كود: FIRST10)
-🎊 عرض الباقة الكاملة: خصم 25% (كود: VEXO25)
-🏆 برنامج الولاء: اجمع نقاط واستبدلها بخصومات
-
-🎟️ كوبونات الخصم:
-• FIRST10 = 10% (الطلب الأول)
-• VEXO15 = 15% (فوق 300$)
-• SHARE20 = 20% (بعد المشاركة)
-• VIP25 = 25% (فوق 1000$)
-
-💡 استخدم الكود عند الطلب!
-"""
-    await message.answer(text, reply_markup=offers_kb())
-
-# ==================== معالج Callback (مع تصحيح main_menu) ====================
-async def callback_handler(call: types.CallbackQuery, state: FSMContext):
-    data = call.data
-
-    if data == "main_menu":
-        await state.clear()
-        await call.message.edit_text("📋 القائمة الرئيسية:", reply_markup=main_inline_kb())
-        await call.answer()
-        return
-
-    elif data == "services_menu":
-        text = "🎯 اختر الخدمة المطلوبة:"
-        await call.message.edit_text(text, reply_markup=services_inline_kb())
-        await call.answer()
-        return
-
-    elif data == "offers_menu":
-        await offers_handler(call.message)
-        await call.answer()
-        return
-
-    elif data == "payment_menu":
-        await payment_handler(call.message)
-        await call.answer()
-        return
-
-    elif data == "portfolio_menu":
-        await portfolio_handler(call.message)
-        await call.answer()
-        return
-
-    elif data == "profile_menu":
-        await profile_handler(call.message)
-        await call.answer()
-        return
-
-    elif data == "share_menu":
-        await share_handler(call.message)
-        await call.answer()
-        return
-
-    elif data == "support_menu":
-        await support_handler(call.message)
-        await call.answer()
-        return
-
-    elif data == "contact_menu":
-        await contact_admin(call.message)
-        await call.answer()
-        return
-
-    elif data == "new_order":
-        await order_handler(call.message, state)
-        await call.answer()
-        return
-
-    elif data.startswith("srv_"):
-        service_map = {
-            "srv_create_bot": "🤖 إنشاء بوت تلجرام",
-            "srv_dev_bot": "⚙️ تطوير بوت موجود",
-            "srv_android": "📱 تطبيق أندرويد",
-            "srv_ios": "🍎 تطبيق iOS",
-            "srv_website": "💻 موقع إلكتروني",
-            "srv_store": "🛒 متجر إلكتروني",
-            "srv_scripts": "🔧 معاملات برمجية",
-            "srv_premium": "🎨 خدمات مميزة"
-        }
-        service_name = service_map.get(data, "خدمة")
-        await state.update_data(service_type=service_name)
-        await state.set_state(OrderState.details)
-        await call.message.edit_text(
-            f"✅ {service_name}\n\n"
-            f"📝 أرسل تفاصيل المشروع:\n"
-            f"• ما الوظيفة المطلوبة؟\n"
-            f"• ما الميزات الخاصة؟\n"
-            f"• هل هناك متطلبات إضافية؟\n\n"
-            f"🔙 للرجوع: اضغط رجوع",
-            reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="🔙 رجوع", callback_data="main_menu")]])
+        text += (
+            "🎯 كيف تكسب نقاطاً:\n"
+            f"• طلب خدمة → +{config.POINTS_ON_ORDER} نقاط\n"
+            f"• الانضمام للقناة → +{config.POINTS_ON_JOIN_CHANNEL} نقاط\n"
+            "• مشاركة أصدقاء → نقاط إضافية قريباً\n\n"
+            f"💡 كل {config.POINTS_REDEEM_RATE} نقطة = 1$ خصم على طلباتك"
         )
-        await call.answer()
+
+    await message.answer(text, parse_mode="HTML", reply_markup=markup)
+
+
+@router.callback_query(F.data == "check_channel_join")
+async def check_channel_join(callback: CallbackQuery, bot: Bot):
+    user_id = callback.from_user.id
+    already = await db.get_user_channel_status(user_id)
+    if already:
+        await callback.answer("✅ لقد حصلت على النقاط مسبقاً!", show_alert=True)
         return
 
-    elif data.startswith("budget_"):
-        budget_map = {
-            "budget_low": "أقل من 100$",
-            "budget_mid": "100$ - 300$",
-            "budget_high": "300$ - 1000$",
-            "budget_premium": "أكثر من 1000$"
-        }
-        await state.update_data(budget=budget_map[data])
-        data_state = await state.get_data()
-        confirm_text = f"""
-📋 تأكيد الطلب - {COMPANY_NAME}
-
-📦 تفاصيل الطلب:
-├ الخدمة: {data_state.get('service_type')}
-├ الميزانية: {budget_map[data]}
-└ التفاصيل: {data_state.get('details')}
-
-💡 ملاحظات:
-• سيتم مراجعة طلبك خلال 24 ساعة
-• بعد الموافقة، سيصلك إشعار
-• يمكنك متابعة طلبك من 'حسابي'
-
-✅ اضغط 'تأكيد الطلب' للمتابعة
-"""
-        await state.set_state(OrderState.confirm)
-        await call.message.edit_text(confirm_text, reply_markup=confirmation_kb())
-        await call.answer()
-        return
-
-    elif data == "order_confirm":
-        data_state = await state.get_data()
-        await db.add_user(call.from_user.id, call.from_user.username, call.from_user.full_name)
-        order_id = await db.create_order(
-            user_id=call.from_user.id,
-            service_type=data_state.get("service_type", "عام"),
-            details=data_state.get("details", ""),
-            budget=data_state.get("budget", "غير محدد")
-        )
-        if order_id:
-            await db.add_points(call.from_user.id, 10)
-            await state.clear()
-            await call.message.edit_text(
-                f"✅ تم استلام طلبك بنجاح!\n\n"
-                f"🎉 تهانينا! حصلت على 10 نقاط ولاء\n\n"
-                f"📦 تفاصيل الطلب:\n"
-                f"├ رقم الطلب: #{order_id}\n"
-                f"├ الخدمة: {data_state.get('service_type')}\n"
-                f"├ الميزانية: {data_state.get('budget')}\n\n"
-                f"🔔 الحالة: قيد المراجعة\n"
-                f"💡 تابع حسابك لمعرفة التحديثات\n\n"
-                f"👨‍💼 المدير: {ADMIN_USERNAME}",
-                reply_markup=main_inline_kb()
+    try:
+        member = await bot.get_chat_member(config.CHANNEL_ID, user_id)
+        if member.status in ("member", "administrator", "creator"):
+            await db.mark_channel_joined(user_id)
+            await db.add_points(user_id, config.POINTS_ON_JOIN_CHANNEL, "channel_join")
+            await callback.answer(
+                f"🎉 تم! حصلت على {config.POINTS_ON_JOIN_CHANNEL} نقطة!", show_alert=True
             )
-            try:
-                await call.message.bot.send_message(
-                    config.ADMIN_ID,
-                    f"🔔 طلب جديد!\n\n"
-                    f"👤 المستخدم: {call.from_user.username or call.from_user.first_name}\n"
-                    f"🆔 ID: {call.from_user.id}\n"
-                    f"📦 الخدمة: {data_state.get('service_type')}\n"
-                    f"💰 الميزانية: {data_state.get('budget')}\n"
-                    f"📝 التفاصيل: {data_state.get('details')}"
-                )
-            except:
-                pass
-            try:
-                await call.message.bot.send_message(
-                    ORDERS_CHANNEL_USERNAME,
-                    f"🔔 طلب جديد #{order_id}\n\n"
-                    f"👤 المستخدم: {call.from_user.username or call.from_user.first_name}\n"
-                    f"🆔 ID: {call.from_user.id}\n"
-                    f"📦 الخدمة: {data_state.get('service_type')}\n"
-                    f"💰 الميزانية: {data_state.get('budget')}\n"
-                    f"📝 التفاصيل: {data_state.get('details')}\n\n"
-                    f"📅 التاريخ: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
-                )
-            except Exception as e:
-                print(f"⚠️ فشل إرسال الإشعار إلى القناة: {e}")
-        await call.answer()
-        return
-
-    elif data == "order_cancel":
-        await state.clear()
-        await call.message.edit_text("❌ تم إلغاء الطلب\n\nيمكنك إنشاء طلب جديد في أي وقت!", reply_markup=main_inline_kb())
-        await call.answer()
-        return
-
-    elif data.startswith("pay_"):
-        payment_map = {
-            "pay_jeew": "📱 جيب (Jeew)", "pay_jawali": "📲 جوالي (Jawali)",
-            "pay_onecash": "💵 ون كاش (OneCash)", "pay_monee": "💰 موني (Monee)",
-            "pay_floosak": "💳 فلوسك (Floosak)", "pay_kareemi": "💰 الكريمي",
-            "pay_tadhamon": "🤝 تضامن", "pay_yemen_kuwait": "🏛 بنك اليمن والكويت"
-        }
-        payment_name = payment_map.get(data, "طريقة الدفع")
-        await call.message.edit_text(
-            f"✅ {payment_name}\n\n"
-            f"📝 سيتم إرسال تفاصيل الدفع بعد تأكيد طلبك\n\n"
-            f"💡 لبدء الطلب: اضغط 'طلب جديد'",
-            reply_markup=payment_methods_kb()
-        )
-        await call.answer()
-        return
-
-    elif data == "share_claim":
-        user = await db.get_user(call.from_user.id)
-        points = user['loyalty_points'] if user else 0
-        is_subscribed = await check_channel_subscription(call.from_user.id, call.message.bot)
-        points_added = False
-        if is_subscribed:
-            already_got_points = await db.get_user_channel_status(call.from_user.id)
-            if not already_got_points:
-                await add_join_points(call.from_user.id)
-                await db.mark_channel_joined(call.from_user.id)
-                points_added = True
-        new_points = points + (30 if points_added else 0)
-        await call.message.edit_text(
-            f"🎁 رصيدك من النقاط: {new_points}\n\n"
-            f"💰 القيمة: {new_points * 0.1}$\n"
-            f"{'✅ حصلت على 30 نقطة للانضمام للقناة!' if points_added else '✅ بالفعل حصلت على نقاط القناة'}\n\n"
-            f"📤 شارك الآن واربح 50 نقطة!\n"
-            f"🔗 رابط البوت: @VexoServiceBot\n\n"
-            f"📢 القناة: {CHANNEL_LINK}",
-            reply_markup=share_kb()
-        )
-        await call.answer()
-        return
-
-    elif data == "share_leaderboard":
-        await call.message.edit_text("🏆 صدارة المشاركين\n\n🥇 قيد التطوير...\n📊 سيتم عرض القائمة قريباً", reply_markup=share_kb())
-        await call.answer()
-        return
-
-    elif data.startswith("port_"):
-        project_type_map = {"port_bot":"bot","port_app":"app","port_web":"web","port_store":"store"}
-        p_type = project_type_map.get(data)
-        projects = await db.get_portfolio(p_type) if p_type else await db.get_portfolio()
-        if projects:
-            text = "📁 المشاريع:\n\n"
-            for proj in projects[:5]:
-                text += f"┌────────────────\n"
-                text += f"│ {proj['title']}\n"
-                if proj.get('price'): text += f"│ 💰 السعر: {proj['price']}\n"
-                if proj.get('description'): text += f"│ 📝 {proj['description'][:150]}{'...' if len(proj['description'])>150 else ''}\n"
-                if proj.get('features'): text += f"│ ⭐ الميزات: {proj['features']}\n"
-                if proj.get('preview_link'): text += f"│ 🔗 للمعاينة: {proj['preview_link']}\n"
-                text += "└────────────────\n\n"
-            await call.message.edit_text(text, reply_markup=portfolio_kb())
+            await callback.message.edit_reply_markup()
         else:
-            await call.message.edit_text("📌 قريباً...", reply_markup=portfolio_kb())
-        await call.answer()
+            await callback.answer(
+                "❌ لم يتم الاشتراك بعد. اشترك ثم اضغط تحقق.", show_alert=True
+            )
+    except Exception:
+        await callback.answer("❌ تعذر التحقق، تأكد من الاشتراك وأعد المحاولة.", show_alert=True)
+
+
+# ══════════════════════════════════════════════════════════════
+# طلب خدمة (FSM)
+# ══════════════════════════════════════════════════════════════
+
+@router.message(F.text == "📦 طلب خدمة")
+async def order_start(message: Message, state: FSMContext):
+    user = await ensure_user(message)
+    if not user:
+        await message.answer("❌ حدث خطأ، حاول مجدداً.")
+        return
+    if user.get("is_blocked"):
+        await message.answer("🚫 حسابك محظور. تواصل مع الدعم.")
         return
 
-    elif data == "ticket_new":
-        await state.set_state(SupportState.message)
-        await call.message.edit_text(
-            "🎫 فتح تذكرة دعم جديدة\n\n📝 اكتب مشكلتك بالتفصيل:",
-            reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="🔙 إلغاء", callback_data="main_menu")]])
-        )
-        await call.answer()
-        return
-
-    elif data == "ticket_my":
-        tickets = await db.get_user_tickets(call.from_user.id)
-        if tickets:
-            text = "📋 تذاكرك السابقة:\n\n"
-            for ticket in tickets[:5]:
-                status_emoji = "🟢" if ticket['status'] == 'closed' else "🟡"
-                text += f"{status_emoji} تذكرة #{ticket['id']} - {ticket['status']}\n"
-            await call.message.edit_text(text, reply_markup=support_kb())
-        else:
-            await call.message.edit_text("📋 لا توجد تذاكر سابقة", reply_markup=support_kb())
-        await call.answer()
-        return
-
-    elif data == "faq":
-        faq_text = f"""
-❓ الأسئلة الشائعة - {COMPANY_NAME}
-
-س: كم وقت التنفيذ؟
-ج: 3-7 أيام للبوتات، 7-14 يوم للتطبيقات
-
-س: هل هناك ضمان؟
-ج: نعم، ضمان 30 يوم على جميع المشاريع
-
-س: طرق الدفع؟
-ج: محافظ محلية وبنوك يمنية
-
-س: هل هناك دعم بعد التسليم؟
-ج: نعم، دعم مجاني لمدة شهر
-
-س: كيف أربح نقاط؟
-ج: شارك البوت (+50)، انضم للقناة (+30)، اطلب (+10)
-
-👨‍💼 للاستفسار: {ADMIN_USERNAME}
-📢 القناة: {CHANNEL_LINK}
-"""
-        await call.message.edit_text(faq_text, reply_markup=support_kb())
-        await call.answer()
-        return
-
-    elif data == "offers_current":
-        await call.message.edit_text("🔥 العروض الحالية\n\n🎉 عرض الطلب الأول: 10% خصم\n🎊 الباقة الكاملة: 25% خصم\n🏆 الطلبات الكبيرة: خصم حتى 30%\n\n💡 استخدم الكود عند الطلب!", reply_markup=offers_kb())
-        await call.answer()
-        return
-
-    elif data == "offers_coupons":
-        await call.message.edit_text("🎟️ كوبونات الخصم\n\nFIRST10 = 10% (الطلب الأول)\nVEXO15 = 15% (فوق 300$)\nSHARE20 = 20% (بعد المشاركة)\nVIP25 = 25% (فوق 1000$)\n\n💡 اطلب الكود من المدير", reply_markup=offers_kb())
-        await call.answer()
-        return
-
-    elif data == "offers_loyalty":
-        await call.message.edit_text("🏆 برنامج الولاء\n\n💰 كيف يعمل؟\n• كل طلب = 10 نقطة\n• مشاركة البوت = 50 نقطة\n• الانضمام للقناة = 30 نقطة\n• كل 10 نقاط = 1$ خصم\n\n🎁 مستويات الولاء:\n🥉 برونزي: 0-100 نقطة\n🥈 فضي: 100-500 نقطة\n🥇 ذهبي: 500+ نقطة\n\n💎 مزايا الذهب: خصم إضافي 5%", reply_markup=offers_kb())
-        await call.answer()
-        return
-
-    elif data == "offers_seasonal":
-        await call.message.edit_text("🎪 عروض موسمية\n\n🎄 عرض العيد: 20% خصم\n🎓 عرض الطلاب: 15% خصم\n🎂 عرض السنة الجديدة: قريباً\n\n📢 تابعنا للعروض الجديدة!", reply_markup=offers_kb())
-        await call.answer()
-        return
-
-    await call.answer()
-
-# ==================== معالج الرسائل النصية ====================
-async def handle_text(message: types.Message, state: FSMContext):
-    current_state = await state.get_state()
-    if current_state == OrderState.details:
-        await state.update_data(details=message.text)
-        await state.set_state(OrderState.budget)
-        await message.answer("💰 اختر الميزانية المتوقعة:\n\n💡 نصيحة: اختر الميزانية الأقرب لمشروعك", reply_markup=budget_kb())
-        return
-    elif current_state == SupportState.message:
-        ticket_id = await db.create_ticket(message.from_user.id, message.text)
-        await state.clear()
+    # فحص حد الطلبات اليومية
+    count_today = await db.count_user_orders_today(message.from_user.id)
+    if count_today >= config.MAX_ORDERS_PER_DAY:
         await message.answer(
-            f"✅ تم فتح تذكرة الدعم!\n\n"
-            f"🎫 رقم التذكرة: #{ticket_id}\n"
-            f"📝 رسالتك: {message.text[:100]}...\n\n"
-            f"⏱ سنرد عليك خلال 24 ساعة\n"
-            f"💬 للتواصل السريع: {SUPPORT_USERNAME}",
-            reply_markup=main_keyboard()
+            f"⚠️ وصلت للحد الأقصى ({config.MAX_ORDERS_PER_DAY} طلبات يومياً).\n"
+            "حاول غداً أو تواصل مع الدعم."
         )
-        try:
-            await message.bot.send_message(
-                config.ADMIN_ID,
-                f"🎫 تذكرة دعم جديدة!\n\n"
-                f"👤 المستخدم: {message.from_user.username or message.from_user.first_name}\n"
-                f"🆔 ID: {message.from_user.id}\n"
-                f"🎫 الرقم: #{ticket_id}\n"
-                f"📝 الرسالة: {message.text}"
-            )
-        except:
-            pass
         return
 
-# ==================== تسجيل المعالجات ====================
-def register_handlers(dp: Dispatcher):
-    dp.message.register(start_handler, Command("start"))
-    dp.message.register(services_handler, F.text == "🎯 خدماتنا")
-    dp.message.register(portfolio_handler, F.text == "📁 أعمالنا")
-    dp.message.register(profile_handler, F.text == "👤 حسابي")
-    dp.message.register(order_handler, F.text == "📝 طلب جديد")
-    dp.message.register(support_handler, F.text == "💬 الدعم الفني")
-    dp.message.register(contact_admin, F.text == "📞 الإدارة")
-    dp.message.register(share_handler, F.text == "🤝 شارك واربح")
-    dp.message.register(offers_handler, F.text == "🎁 العروض والهدايا")
-    dp.message.register(payment_handler, F.text == "💳 طرق الدفع")
-    dp.message.register(handle_text)
-    dp.callback_query.register(callback_handler)
+    await state.set_state(OrderState.service)
+    await message.answer(
+        "🛒 <b>طلب خدمة جديدة</b>\n\nاختر نوع الخدمة:",
+        parse_mode="HTML",
+        reply_markup=services_keyboard(),
+    )
 
-# ==================== التشغيل الرئيسي ====================
-async def main():
-    bot = Bot(token=config.BOT_TOKEN)
-    dp = Dispatcher()
-    register_handlers(dp)
-    await dp.start_polling(bot)
 
-if __name__ == "__main__":
-    asyncio.run(main())
+@router.message(OrderState.service)
+async def order_service(message: Message, state: FSMContext):
+    if message.text == "❌ إلغاء":
+        await state.clear()
+        await go_home(message, state)
+        return
+    await state.update_data(service=message.text)
+    await state.set_state(OrderState.details)
+    await message.answer(
+        f"✅ الخدمة: <b>{message.text}</b>\n\n"
+        "📝 اشرح تفاصيل طلبك بدقة (ميزات، متطلبات، تفضيلات):",
+        parse_mode="HTML",
+        reply_markup=cancel_keyboard(),
+    )
+
+
+@router.message(OrderState.details)
+async def order_details(message: Message, state: FSMContext):
+    if message.text == "❌ إلغاء":
+        await state.clear()
+        await go_home(message, state)
+        return
+    if len(message.text) < 20:
+        await message.answer("⚠️ الرجاء كتابة وصف أكثر تفصيلاً (20 حرف على الأقل).")
+        return
+    await state.update_data(details=message.text)
+    await state.set_state(OrderState.budget)
+    await message.answer(
+        "💰 ما هي ميزانيتك التقريبية؟",
+        reply_markup=budget_keyboard(),
+    )
+
+
+@router.message(OrderState.budget)
+async def order_budget(message: Message, state: FSMContext):
+    if message.text == "❌ إلغاء":
+        await state.clear()
+        await go_home(message, state)
+        return
+    await state.update_data(budget=message.text)
+    data = await state.get_data()
+    await state.set_state(OrderState.confirm)
+    summary = (
+        "📋 <b>ملخص طلبك:</b>\n\n"
+        f"🔧 <b>الخدمة:</b> {data['service']}\n"
+        f"📝 <b>التفاصيل:</b>\n{data['details']}\n\n"
+        f"💰 <b>الميزانية:</b> {data['budget']}\n\n"
+        "هل تريد تأكيد الطلب؟"
+    )
+    await message.answer(summary, parse_mode="HTML", reply_markup=confirm_keyboard())
+
+
+@router.message(OrderState.confirm)
+async def order_confirm(message: Message, state: FSMContext, bot: Bot):
+    if message.text == "❌ إلغاء":
+        await state.clear()
+        await go_home(message, state)
+        return
+    if message.text != "✅ تأكيد":
+        await message.answer("⚠️ اضغط تأكيد أو إلغاء.")
+        return
+
+    data = await state.get_data()
+    user_id = message.from_user.id
+    order_id = await db.create_order(
+        user_id, data["service"], data["details"], data["budget"]
+    )
+    await state.clear()
+
+    if not order_id:
+        await message.answer("❌ فشل إنشاء الطلب، حاول مجدداً.")
+        return
+
+    await db.add_points(user_id, config.POINTS_ON_ORDER, f"order_{order_id}")
+    admin = is_admin(user_id)
+    await message.answer(
+        f"✅ <b>تم إرسال طلبك!</b>\n"
+        f"🔢 رقم الطلب: <code>#{order_id}</code>\n"
+        f"🎁 كسبت {config.POINTS_ON_ORDER} نقاط!\n\n"
+        "سيتواصل معك فريقنا قريباً.",
+        parse_mode="HTML",
+        reply_markup=main_keyboard(admin),
+    )
+
+    # إشعار الأدمن
+    username = message.from_user.username
+    admin_text = (
+        f"📦 <b>طلب جديد #{order_id}</b>\n\n"
+        f"👤 {message.from_user.full_name} (@{username or 'بدون'})\n"
+        f"🆔 {user_id}\n\n"
+        f"🔧 <b>الخدمة:</b> {data['service']}\n"
+        f"📝 <b>التفاصيل:</b>\n{data['details']}\n\n"
+        f"💰 <b>الميزانية:</b> {data['budget']}"
+    )
+    await notify_admin(bot, admin_text, order_actions_inline(order_id))
+
+
+# ══════════════════════════════════════════════════════════════
+# طلباتي
+# ══════════════════════════════════════════════════════════════
+
+@router.message(F.text == "📋 طلباتي")
+async def show_my_orders(message: Message):
+    await ensure_user(message)
+    orders = await db.get_user_orders(message.from_user.id)
+    if not orders:
+        await message.answer("📭 لا توجد طلبات بعد. أنشئ طلبك الأول!")
+        return
+
+    STATUS_AR = {
+        "pending":    "⏳ قيد الانتظار",
+        "processing": "⚙️ قيد التنفيذ",
+        "completed":  "✅ مكتمل",
+        "rejected":   "❌ مرفوض",
+        "cancelled":  "🚫 ملغى",
+    }
+
+    text = "📋 <b>طلباتك الأخيرة:</b>\n\n"
+    for o in orders[:5]:
+        status = STATUS_AR.get(o["status"], o["status"])
+        text += (
+            f"🔢 <b>#{o['id']}</b> — {o['service_type']}\n"
+            f"   الحالة: {status}\n"
+            f"   التاريخ: {db.format_date(o['created_at'])}\n\n"
+        )
+    await message.answer(text, parse_mode="HTML")
+
+
+# ══════════════════════════════════════════════════════════════
+# الدعم الفني - تذاكر (FSM)
+# ══════════════════════════════════════════════════════════════
+
+@router.message(F.text == "🎫 الدعم الفني")
+async def support_start(message: Message, state: FSMContext):
+    user = await ensure_user(message)
+    if not user:
+        return
+
+    open_count = await db.count_user_open_tickets(message.from_user.id)
+    if open_count >= config.MAX_TICKETS_OPEN:
+        await message.answer(
+            f"⚠️ لديك {open_count} تذاكر مفتوحة. انتظر الرد قبل فتح تذكرة جديدة."
+        )
+        return
+
+    await state.set_state(TicketState.subject)
+    await message.answer(
+        "🎫 <b>تذكرة دعم جديدة</b>\n\nما موضوع مشكلتك؟",
+        parse_mode="HTML",
+        reply_markup=ReplyKeyboardMarkup(
+            keyboard=[
+                [KeyboardButton(text="❓ استفسار"), KeyboardButton(text="🐛 مشكلة تقنية")],
+                [KeyboardButton(text="💳 مشكلة دفع"), KeyboardButton(text="📦 متابعة طلب")],
+                [KeyboardButton(text="❌ إلغاء")],
+            ],
+            resize_keyboard=True,
+        ),
+    )
+
+
+@router.message(TicketState.subject)
+async def ticket_subject(message: Message, state: FSMContext):
+    if message.text == "❌ إلغاء":
+        await state.clear()
+        await go_home(message, state)
+        return
+    await state.update_data(subject=message.text)
+    await state.set_state(TicketState.message)
+    await message.answer(
+        f"📌 الموضوع: <b>{message.text}</b>\n\nاشرح مشكلتك بالتفصيل:",
+        parse_mode="HTML",
+        reply_markup=cancel_keyboard(),
+    )
+
+
+@router.message(TicketState.message)
+async def ticket_message(message: Message, state: FSMContext):
+    if message.text == "❌ إلغاء":
+        await state.clear()
+        await go_home(message, state)
+        return
+    await state.update_data(message_text=message.text)
+    data = await state.get_data()
+    await state.set_state(TicketState.confirm)
+    await message.answer(
+        f"📋 <b>ملخص تذكرتك:</b>\n\n"
+        f"📌 الموضوع: {data['subject']}\n"
+        f"📝 الرسالة: {message.text}\n\n"
+        "تأكيد الإرسال؟",
+        parse_mode="HTML",
+        reply_markup=confirm_keyboard(),
+    )
+
+
+@router.message(TicketState.confirm)
+async def ticket_confirm(message: Message, state: FSMContext, bot: Bot):
+    if message.text == "❌ إلغاء":
+        await state.clear()
+        await go_home(message, state)
+        return
+    if message.text != "✅ تأكيد":
+        return
+
+    data = await state.get_data()
+    user_id = message.from_user.id
+    ticket_id = await db.create_ticket(user_id, data["subject"], data["message_text"])
+    await state.clear()
+
+    if not ticket_id:
+        await message.answer("❌ فشل إنشاء التذكرة، حاول مجدداً.")
+        return
+
+    admin = is_admin(user_id)
+    await message.answer(
+        f"✅ <b>تم إرسال تذكرتك!</b>\n"
+        f"🔢 رقم التذكرة: <code>#{ticket_id}</code>\n"
+        "سيرد عليك فريق الدعم قريباً.",
+        parse_mode="HTML",
+        reply_markup=main_keyboard(admin),
+    )
+
+    username = message.from_user.username
+    admin_text = (
+        f"🎫 <b>تذكرة جديدة #{ticket_id}</b>\n\n"
+        f"👤 {message.from_user.full_name} (@{username or 'بدون'})\n"
+        f"🆔 {user_id}\n\n"
+        f"📌 <b>الموضوع:</b> {data['subject']}\n"
+        f"📝 <b>الرسالة:</b>\n{data['message_text']}"
+    )
+    await notify_admin(bot, admin_text, ticket_actions_inline(ticket_id))
+
+
+# ══════════════════════════════════════════════════════════════
+# لوحة الأدمن
+# ══════════════════════════════════════════════════════════════
+
+@router.message(F.text == "🔐 لوحة الأدمن")
+async def admin_panel(message: Message):
+    if not is_admin(message.from_user.id):
+        await message.answer("🚫 غير مصرح.")
+        return
+    stats = await db.get_dashboard_stats()
+    text = (
+        "🔐 <b>لوحة الأدمن</b>\n\n"
+        f"👥 المستخدمين: <b>{stats.get('total_users', 0)}</b>\n"
+        f"📦 إجمالي الطلبات: <b>{stats.get('total_orders', 0)}</b>\n"
+        f"⏳ طلبات اليوم: <b>{stats.get('today_orders', 0)}</b>\n"
+        f"🎫 تذاكر مفتوحة: <b>{stats.get('open_tickets', 0)}</b>\n"
+        f"🖼️ المعرض: <b>{stats.get('portfolio_count', 0)}</b> مشروع"
+    )
+    await message.answer(text, parse_mode="HTML", reply_markup=admin_keyboard())
+
+
+@router.message(F.text == "📊 الإحصائيات")
+async def admin_stats(message: Message):
+    if not is_admin(message.from_user.id):
+        return
+    stats  = await db.get_dashboard_stats()
+    weekly = await db.get_weekly_orders()
+    monthly = await db.get_monthly_stats()
+
+    by_status = stats.get("orders_by_status", {})
+    text = (
+        "📊 <b>إحصائيات تفصيلية</b>\n\n"
+        f"👥 المستخدمين: {stats.get('total_users', 0)}\n\n"
+        "<b>الطلبات:</b>\n"
+        f"  ⏳ انتظار:   {by_status.get('pending', 0)}\n"
+        f"  ⚙️ تنفيذ:    {by_status.get('processing', 0)}\n"
+        f"  ✅ مكتمل:   {by_status.get('completed', 0)}\n"
+        f"  ❌ مرفوض:   {by_status.get('rejected', 0)}\n\n"
+        f"<b>الشهر الحالي:</b>\n"
+        f"  🛒 طلبات: {monthly.get('monthly_orders', 0)}\n"
+        f"  👤 مستخدمين جدد: {monthly.get('new_users', 0)}\n"
+        f"  💵 إيرادات متوقعة: {monthly.get('estimated_revenue', 0)}$\n\n"
+        f"<b>آخر 7 أيام:</b>\n"
+    )
+    if weekly:
+        for row in weekly:
+            text += f"  📅 {row['date']}: {row['count']} طلبات\n"
+    else:
+        text += "  لا توجد بيانات\n"
+
+    await message.answer(text, parse_mode="HTML")
+
+
+@router.message(F.text == "📋 الطلبات المعلقة")
+async def admin_pending_orders(message: Message, bot: Bot):
+    if not is_admin(message.from_user.id):
+        return
+    orders = await db.get_orders_by_status("pending", limit=10)
+    if not orders:
+        await message.answer("✅ لا توجد طلبات معلقة.")
+        return
+    await message.answer(f"📋 <b>{len(orders)} طلبات معلقة:</b>", parse_mode="HTML")
+    for o in orders:
+        text = (
+            f"🔢 <b>#{o['id']}</b> — {o['service_type']}\n"
+            f"👤 {o.get('full_name', o['user_id'])}\n"
+            f"💰 {o.get('budget', '-')}\n"
+            f"📝 {str(o.get('details', ''))[:100]}..."
+        )
+        await message.answer(text, parse_mode="HTML", reply_markup=order_actions_inline(o["id"]))
+
+
+@router.message(F.text == "🎫 التذاكر المفتوحة")
+async def admin_open_tickets(message: Message):
+    if not is_admin(message.from_user.id):
+        return
+    tickets = await db.get_all_open_tickets(limit=10)
+    if not tickets:
+        await message.answer("✅ لا توجد تذاكر مفتوحة.")
+        return
+    await message.answer(f"🎫 <b>{len(tickets)} تذاكر:</b>", parse_mode="HTML")
+    for t in tickets:
+        text = (
+            f"🔢 <b>#{t['id']}</b> — {t.get('subject', 'دعم')}\n"
+            f"👤 {t.get('full_name', t['user_id'])}\n"
+            f"📝 {str(t.get('message', ''))[:80]}..."
+        )
+        await message.answer(text, parse_mode="HTML", reply_markup=ticket_actions_inline(t["id"]))
+
+
+@router.message(F.text == "👥 المستخدمين")
+async def admin_users(message: Message):
+    if not is_admin(message.from_user.id):
+        return
+    users = await db.get_all_users(limit=10)
+    if not users:
+        await message.answer("لا يوجد مستخدمين.")
+        return
+    text = "👥 <b>آخر المستخدمين:</b>\n\n"
+    for u in users:
+        blocked = " 🚫" if u.get("is_blocked") else ""
+        text += (
+            f"🆔 {u['id']}{blocked}\n"
+            f"   {u.get('full_name', '-')} (@{u.get('username', '-')})\n"
+            f"   💎 {u.get('loyalty_points', 0)} نقطة\n\n"
+        )
+    await message.answer(text, parse_mode="HTML")
+
+
+# ══════════════════════════════════════════════════════════════
+# Callbacks إجراءات الأدمن
+# ══════════════════════════════════════════════════════════════
+
+@router.callback_query(F.data.startswith("order_"))
+async def handle_order_action(callback: CallbackQuery, state: FSMContext, bot: Bot):
+    if not is_admin(callback.from_user.id):
+        await callback.answer("🚫 غير مصرح.", show_alert=True)
+        return
+
+    parts  = callback.data.split("_")
+    action = parts[1]
+    order_id = int(parts[2])
+    order  = await db.get_order_by_id(order_id)
+    if not order:
+        await callback.answer("❌ الطلب غير موجود.", show_alert=True)
+        return
+
+    STATUS_MAP = {
+        "accept":     ("completed",  "✅ تم قبول طلبك وإكماله!"),
+        "processing": ("processing", "⚙️ بدأنا العمل على طلبك!"),
+        "reject":     ("rejected",   "❌ عذراً، تم رفض طلبك."),
+    }
+
+    if action == "note":
+        await state.update_data(target_order_id=order_id, target_user_id=order["user_id"])
+        await state.set_state(AdminState.order_notes)
+        await callback.message.answer(
+            f"📝 اكتب ملاحظتك على الطلب #{order_id}:"
+        )
+        await callback.answer()
+        return
+
+    if action in STATUS_MAP:
+        new_status, user_msg = STATUS_MAP[action]
+        await db.update_order_status(order_id, new_status)
+        await callback.answer(f"✅ تم تحديث الطلب #{order_id}", show_alert=True)
+        try:
+            await bot.send_message(
+                order["user_id"],
+                f"📦 <b>تحديث طلبك #{order_id}</b>\n\n{user_msg}",
+                parse_mode="HTML",
+            )
+        except Exception:
+            pass
+        await callback.message.edit_reply_markup(reply_markup=None)
+
+
+@router.message(AdminState.order_notes)
+async def save_order_notes(message: Message, state: FSMContext, bot: Bot):
+    if not is_admin(message.from_user.id):
+        return
+    data = await state.get_data()
+    order_id = data.get("target_order_id")
+    user_id  = data.get("target_user_id")
+    await db.update_order_notes(order_id, message.text)
+    await state.clear()
+    await message.answer(f"✅ تم إضافة الملاحظة على الطلب #{order_id}.")
+    try:
+        await bot.send_message(
+            user_id,
+            f"💬 <b>ملاحظة جديدة على طلبك #{order_id}</b>\n\n{message.text}",
+            parse_mode="HTML",
+        )
+    except Exception:
+        pass
+
+
+@router.callback_query(F.data.startswith("ticket_"))
+async def handle_ticket_action(callback: CallbackQuery, state: FSMContext, bot: Bot):
+    if not is_admin(callback.from_user.id):
+        await callback.answer("🚫 غير مصرح.", show_alert=True)
+        return
+
+    parts     = callback.data.split("_")
+    action    = parts[1]
+    ticket_id = int(parts[2])
+
+    if action == "close":
+        await db.update_ticket_status(ticket_id, "closed")
+        await callback.answer(f"✅ تم إغلاق التذكرة #{ticket_id}", show_alert=True)
+        await callback.message.edit_reply_markup(reply_markup=None)
+        return
+
+    if action == "reply":
+        ticket = await db.get_ticket_by_id(ticket_id)
+        if not ticket:
+            await callback.answer("❌ التذكرة غير موجودة.", show_alert=True)
+            return
+        await state.update_data(
+            target_ticket_id=ticket_id,
+            target_user_id=ticket["user_id"],
+        )
+        await state.set_state(AdminState.reply_ticket)
+        await callback.message.answer(f"💬 اكتب ردك على التذكرة #{ticket_id}:")
+        await callback.answer()
+
+
+@router.message(AdminState.reply_ticket)
+async def send_ticket_reply(message: Message, state: FSMContext, bot: Bot):
+    if not is_admin(message.from_user.id):
+        return
+    data      = await state.get_data()
+    ticket_id = data.get("target_ticket_id")
+    user_id   = data.get("target_user_id")
+
+    await db.add_ticket_reply(ticket_id, config.ADMIN_ID, message.text, is_admin=True)
+    await db.update_ticket_status(ticket_id, "in_progress")
+    await state.clear()
+    await message.answer(f"✅ تم إرسال الرد على التذكرة #{ticket_id}.")
+
+    try:
+        await bot.send_message(
+            user_id,
+            f"💬 <b>رد على تذكرتك #{ticket_id}</b>\n\n"
+            f"👨‍💼 <b>فريق الدعم:</b>\n{message.text}",
+            parse_mode="HTML",
+        )
+    except Exception:
+        pass
+
+
+# ══════════════════════════════════════════════════════════════
+# البث
+# ══════════════════════════════════════════════════════════════
+
+@router.message(F.text == "📢 بث رسالة")
+async def broadcast_start(message: Message, state: FSMContext):
+    if not is_admin(message.from_user.id):
+        return
+    await state.set_state(AdminState.broadcast)
+    await message.answer(
+        "📢 اكتب رسالة البث (HTML مدعوم):\n\n"
+        "(سيتم إرسالها لجميع المستخدمين)",
+        reply_markup=cancel_keyboard(),
+    )
+
+
+@router.message(AdminState.broadcast)
+async def broadcast_send(message: Message, state: FSMContext, bot: Bot):
+    if not is_admin(message.from_user.id):
+        return
+    if message.text == "❌ إلغاء":
+        await state.clear()
+        await go_home(message, state)
+        return
+
+    broadcast_text = message.text
+    user_ids = await db.get_all_user_ids()
+    await state.clear()
+    await message.answer(
+        f"📤 بدء إرسال البث لـ {len(user_ids)} مستخدم...",
+        reply_markup=admin_keyboard(),
+    )
+
+    sent, failed = 0, 0
+    for uid in user_ids:
+        try:
+            await bot.send_message(uid, broadcast_text, parse_mode="HTML")
+            sent += 1
+            await asyncio.sleep(0.05)  # تجنب الـ flood limit
+        except Exception:
+            failed += 1
+
+    await db.log_broadcast(broadcast_text, sent, config.ADMIN_ID)
+    await message.answer(
+        f"✅ <b>اكتمل البث</b>\n✅ أُرسل: {sent}\n❌ فشل: {failed}",
+        parse_mode="HTML",
+    )
+
+
+# ══════════════════════════════════════════════════════════════
+# أوامر /admin
+# ══════════════════════════════════════════════════════════════
+
+@router.message(Command("block"))
+async def cmd_block(message: Message):
+    if not is_admin(message.from_user.id):
+        return
+    parts = message.text.split()
+    if len(parts) < 2:
+        await message.answer("⚠️ الاستخدام: /block <user_id>")
+        return
+    try:
+        uid = int(parts[1])
+        await db.block_user(uid, True)
+        await message.answer(f"🚫 تم حظر المستخدم {uid}.")
+    except ValueError:
+        await message.answer("❌ معرف غير صحيح.")
+
+
+@router.message(Command("unblock"))
+async def cmd_unblock(message: Message):
+    if not is_admin(message.from_user.id):
+        return
+    parts = message.text.split()
+    if len(parts) < 2:
+        await message.answer("⚠️ الاستخدام: /unblock <user_id>")
+        return
+    try:
+        uid = int(parts[1])
+        await db.block_user(uid, False)
+        await message.answer(f"✅ تم رفع الحظر عن {uid}.")
+    except ValueError:
+        await message.answer("❌ معرف غير صحيح.")
+
+
+@router.message(Command("addpoints"))
+async def cmd_add_points(message: Message):
+    if not is_admin(message.from_user.id):
+        return
+    parts = message.text.split()
+    if len(parts) < 3:
+        await message.answer("⚠️ الاستخدام: /addpoints <user_id> <amount>")
+        return
+    try:
+        uid    = int(parts[1])
+        amount = int(parts[2])
+        await db.add_points(uid, amount, "admin_grant")
+        await message.answer(f"✅ تمت إضافة {amount} نقطة للمستخدم {uid}.")
+    except ValueError:
+        await message.answer("❌ قيم غير صحيحة.")
+
+
+# ══════════════════════════════════════════════════════════════
+# تسجيل الـ Handlers
+# ══════════════════════════════════════════════════════════════
+
+def register_handlers(dp: Dispatcher) -> None:
+    dp.include_router(router)
